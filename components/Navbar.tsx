@@ -29,7 +29,7 @@ const Navbar: React.FC = () => {
             <Code2 className="h-8 w-8 text-primary" />
             <span className="font-bold text-xl text-white tracking-tight">Steven.Tech.Lab</span>
           </a>
-          
+
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
@@ -41,9 +41,6 @@ const Navbar: React.FC = () => {
                 {link.name}
               </a>
             ))}
-            <a href="#contact" className="px-5 py-2 text-sm font-medium text-white bg-primary hover:bg-blue-600 rounded-full transition-colors">
-              Hire Me
-            </a>
           </div>
 
           {/* Mobile Menu Button */}

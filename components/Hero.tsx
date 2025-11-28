@@ -44,9 +44,9 @@ const Hero: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-6 pt-4">
-              <a href="#" className="text-slate-500 hover:text-white transition-colors"><Github className="h-6 w-6" /></a>
-              <a href="#" className="text-slate-500 hover:text-white transition-colors"><Linkedin className="h-6 w-6" /></a>
-              <a href="#" className="text-slate-500 hover:text-white transition-colors"><AtSign className="h-6 w-6" /></a>
+              <a href="https://github.chiwencheng.com" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-white transition-colors"><Github className="h-6 w-6" /></a>
+              <a href="https://cv.chiwencheng.com" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-white transition-colors"><Linkedin className="h-6 w-6" /></a>
+              <a href="https://thread.chiwencheng.com" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-white transition-colors"><AtSign className="h-6 w-6" /></a>
             </div>
           </div>
           

@@ -18,7 +18,6 @@ const Navbar: React.FC = () => {
     { name: 'Blog', href: '#blog' },
     { name: 'Event', href: '#event' },
     { name: 'Speak', href: '#speak' },
-    { name: 'Experience', href: '#experience' },
     { name: 'Contact', href: '#contact' },
   ];
 
@@ -26,10 +25,10 @@ const Navbar: React.FC = () => {
     <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-darker/90 backdrop-blur-md border-b border-white/10 py-4' : 'bg-transparent py-6'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
-          <div className="flex-shrink-0 flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo(0,0)}>
+          <a href="#home" className="flex-shrink-0 flex items-center gap-2 cursor-pointer">
             <Code2 className="h-8 w-8 text-primary" />
             <span className="font-bold text-xl text-white tracking-tight">Steven.Tech.Lab</span>
-          </div>
+          </a>
           
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">

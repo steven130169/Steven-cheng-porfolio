@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, Github, Linkedin, Heart } from 'lucide-react';
+import { Mail, Github, Linkedin, Heart, AtSign } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
@@ -22,8 +22,9 @@ const Footer: React.FC = () => {
           
           <div className="flex flex-col justify-end items-start md:items-end">
              <div className="flex gap-6 mb-8">
-                 <a href="#" className="p-3 bg-white/5 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-all"><Github className="h-6 w-6" /></a>
-                 <a href="#" className="p-3 bg-white/5 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-all"><Linkedin className="h-6 w-6" /></a>
+                 <a href="https://github.chiwencheng.com" target="_blank" rel="noopener noreferrer" className="p-3 bg-white/5 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-all"><Github className="h-6 w-6" /></a>
+                 <a href="https://cv.chiwencheng.com" target="_blank" rel="noopener noreferrer" className="p-3 bg-white/5 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-all"><Linkedin className="h-6 w-6" /></a>
+                 <a href="https://thread.chiwencheng.com" target="_blank" rel="noopener noreferrer" className="p-3 bg-white/5 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-all"><AtSign className="h-6 w-6" /></a>
              </div>
              <p className="text-slate-500 text-sm">
                  San Francisco, CA • Remote Friendly

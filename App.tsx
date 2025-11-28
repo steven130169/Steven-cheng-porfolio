@@ -3,7 +3,6 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
 import Blog from './components/Blog';
-import Experience from './components/Experience';
 import Event from './components/Event';
 import Speak from './components/Speak';
 import Footer from './components/Footer';
@@ -18,7 +17,6 @@ const App: React.FC = () => {
         <Blog />
         <Event />
         <Speak />
-        <Experience />
       </main>
       <Footer />
     </div>

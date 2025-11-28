@@ -1,9 +1,9 @@
 import React from 'react';
-import { ArrowRight, Github, Linkedin, AtSign, Cloud, Calendar } from 'lucide-react';
+import { ArrowRight, AtSign, Cloud, Github, Linkedin } from 'lucide-react';
 
 const Hero: React.FC = () => {
   return (
-    <section id="home" className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+    <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
       {/* Background Decor */}
       <div className="absolute top-0 right-0 -z-10 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[120px] opacity-50 translate-x-1/2 -translate-y-1/4"></div>
       <div className="absolute bottom-0 left-0 -z-10 w-[600px] h-[600px] bg-secondary/20 rounded-full blur-[120px] opacity-30 -translate-x-1/2 translate-y-1/4"></div>

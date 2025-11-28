@@ -11,7 +11,7 @@ const App: React.FC = () => {
   return (
     <div className="bg-dark min-h-screen text-slate-300">
       <Navbar />
-      <main>
+      <main id="home">
         <Hero />
         <About />
         <Blog />

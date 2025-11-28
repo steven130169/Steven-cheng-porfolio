@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, Github, Linkedin, Heart, AtSign } from 'lucide-react';
+import { Mail, Heart, AtSign, Github, Linkedin } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
@@ -12,11 +12,11 @@ const Footer: React.FC = () => {
               I'm always open to discussing product design work or partnership opportunities.
             </p>
             <a 
-                href="mailto:contact@steven.dev" 
+                href="mailto:steven@chiwencheng.com" 
                 className="inline-flex items-center gap-2 text-xl font-semibold text-white hover:text-primary transition-colors"
             >
                 <Mail className="h-6 w-6" />
-                contact@steven.dev
+                steven@chiwencheng.com
             </a>
           </div>
           

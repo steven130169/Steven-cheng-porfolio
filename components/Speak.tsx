@@ -39,47 +39,44 @@ const talks: SpeakingEngagement[] = [
 
 const Speak: React.FC = () => {
   return (
-    <section id="speak" className="py-24 bg-darker relative overflow-hidden">
-        {/* Background Accent */}
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
-        
+    <section id="speak" className="py-24 bg-white relative overflow-hidden">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <div className="inline-flex items-center justify-center p-3 bg-primary/10 rounded-full mb-6">
             <Mic className="h-6 w-6 text-primary" />
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Public Speaking</h2>
-          <p className="text-slate-400">Sharing knowledge and experiences at conferences and meetups.</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-dark-text mb-4">Public Speaking</h2>
+          <p className="text-dark-text/70">Sharing knowledge and experiences at conferences and meetups.</p>
         </div>
 
         <div className="space-y-6">
           {talks.map((talk) => (
-            <div key={talk.id} className="group bg-card hover:bg-white/5 rounded-xl p-6 border border-white/5 hover:border-primary/30 transition-all duration-300 flex flex-col sm:flex-row gap-6 items-start sm:items-center">
-              <div className="flex-shrink-0 w-16 h-16 bg-darker rounded-lg flex flex-col items-center justify-center border border-white/10 text-center">
-                <span className="text-xs text-slate-500 uppercase font-bold">{talk.date.split(' ')[0]}</span>
-                <span className="text-lg font-bold text-white">{talk.date.split(' ')[1]}</span>
+            <div key={talk.id} className="group bg-card hover:bg-stone-50 rounded-xl p-6 border border-border-light hover:border-primary/30 transition-all duration-300 flex flex-col sm:flex-row gap-6 items-start sm:items-center shadow-sm hover:shadow-lg">
+              <div className="flex-shrink-0 w-16 h-16 bg-light-background rounded-lg flex flex-col items-center justify-center border border-border-light text-center">
+                <span className="text-xs text-dark-text/50 uppercase font-bold">{talk.date.split(' ')[0]}</span>
+                <span className="text-lg font-bold text-dark-text">{talk.date.split(' ')[1]}</span>
               </div>
               
               <div className="flex-grow">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-1">
-                    <h3 className="text-lg font-bold text-white group-hover:text-primary transition-colors">{talk.title}</h3>
+                    <h3 className="text-lg font-bold text-dark-text group-hover:text-primary transition-colors">{talk.title}</h3>
                     <span className={`text-xs px-2 py-0.5 rounded border ${
-                        talk.type === 'Conference' ? 'border-purple-500/30 text-purple-400 bg-purple-500/10' :
-                        talk.type === 'Podcast' ? 'border-orange-500/30 text-orange-400 bg-orange-500/10' :
-                        'border-blue-500/30 text-blue-400 bg-blue-500/10'
+                        talk.type === 'Conference' ? 'border-purple-500/30 text-purple-600 bg-purple-500/10' :
+                        talk.type === 'Podcast' ? 'border-orange-500/30 text-orange-600 bg-orange-500/10' :
+                        'border-blue-500/30 text-blue-600 bg-blue-500/10'
                     }`}>
                         {talk.type}
                     </span>
                 </div>
-                <p className="text-slate-300 font-medium mb-2">{talk.event}</p>
-                <div className="flex items-center text-slate-500 text-sm">
+                <p className="text-dark-text/80 font-medium mb-2">{talk.event}</p>
+                <div className="flex items-center text-dark-text/50 text-sm">
                   <MapPin className="h-3.5 w-3.5 mr-1.5" />
                   {talk.location}
                 </div>
               </div>
 
               <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-4 group-hover:translate-x-0 duration-300">
-                  <a href="#" className="p-2 text-slate-400 hover:text-white transition-colors">
+                  <a href="#" className="p-2 text-dark-text/60 hover:text-primary transition-colors">
                       <ExternalLink className="h-5 w-5" />
                   </a>
               </div>

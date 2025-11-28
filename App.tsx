@@ -9,7 +9,7 @@ import Footer from './components/Footer';
 
 const App: React.FC = () => {
   return (
-    <div className="bg-dark min-h-screen text-slate-300">
+    <div>
       <Navbar />
       <main id="home">
         <Hero />

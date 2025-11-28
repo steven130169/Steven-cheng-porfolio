@@ -1,72 +1,87 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight, AtSign, Cloud, Github, Linkedin } from 'lucide-react';
 
-const Hero: React.FC = () => {
-  return (
-    <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
-      {/* Background Decor */}
-      <div className="absolute top-0 right-0 -z-10 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[120px] opacity-50 translate-x-1/2 -translate-y-1/4"></div>
-      <div className="absolute bottom-0 left-0 -z-10 w-[600px] h-[600px] bg-secondary/20 rounded-full blur-[120px] opacity-30 -translate-x-1/2 translate-y-1/4"></div>
+const images = [
+  '/image/ddd.webp',
+  '/image/2023DevOpsDays-1.webp',
+  '/image/2023DevOpsDays-2.webp'
+];
 
+const Hero: React.FC = () => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 5000); // 每 5 秒切換一次圖片
+
+    return () => clearInterval(timer); // 組件卸載時清除計時器
+  }, []);
+
+  return (
+    <section className="min-h-screen flex items-center pt-32 pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-8">
-            <a href="#event" className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 hover:border-secondary/50 hover:bg-white/10 transition-all cursor-pointer group">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="space-y-8 text-center lg:text-left">
+            <a href="#event" className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 hover:bg-primary/20 transition-all cursor-pointer group">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
               </span>
-              <span className="text-sm text-slate-300 font-medium group-hover:text-white transition-colors">
-                <span className="text-secondary font-bold">Next Event:</span> K8s Workshop (Oct 20)
+              <span className="text-sm text-primary font-medium">
+                Next Event: K8s Workshop (Oct 20)
               </span>
-              <ArrowRight className="h-3.5 w-3.5 text-slate-400 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="h-3.5 w-3.5 text-primary/80 group-hover:translate-x-1 transition-transform" />
             </a>
             
-            <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tight leading-tight">
+            <h1 className="text-5xl md:text-7xl font-bold text-dark-text tracking-tight leading-tight">
               Architecting <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
                 High Availability
               </span> Cloud Systems.
             </h1>
             
-            <p className="text-lg text-slate-400 max-w-xl leading-relaxed">
+            <p className="text-lg text-dark-text/70 max-w-xl leading-relaxed mx-auto lg:mx-0">
               I'm Steven (鄭棋文), a Senior Cloud Architect. I specialize in designing resilient cloud infrastructures, optimizing DevOps workflows, and mastering CI/CD pipelines to deliver speed and stability.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4">
-              <a href="#blog" className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary hover:bg-blue-600 transition-all shadow-lg hover:shadow-primary/25">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <a href="#blog" className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary hover:bg-orange-700 transition-all shadow-lg hover:shadow-primary/40">
                 View My Blog
                 <ArrowRight className="ml-2 h-4 w-4" />
               </a>
-              <a href="#contact" className="inline-flex items-center justify-center px-6 py-3 border border-slate-700 text-base font-medium rounded-lg text-slate-300 hover:text-white hover:bg-white/5 transition-all">
+              <a href="#contact" className="inline-flex items-center justify-center px-8 py-3 border border-border-light text-base font-medium rounded-lg text-dark-text hover:bg-black/5 transition-all">
                 Contact Me
               </a>
             </div>
 
-            <div className="flex items-center gap-6 pt-4">
-              <a href="https://github.chiwencheng.com" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-white transition-colors"><Github className="h-6 w-6" /></a>
-              <a href="https://cv.chiwencheng.com" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-white transition-colors"><Linkedin className="h-6 w-6" /></a>
-              <a href="https://thread.chiwencheng.com" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-white transition-colors"><AtSign className="h-6 w-6" /></a>
+            <div className="flex items-center gap-6 pt-4 justify-center lg:justify-start">
+              <a href="https://github.chiwencheng.com" target="_blank" rel="noopener noreferrer" className="text-dark-text/50 hover:text-primary transition-colors"><Github className="h-6 w-6" /></a>
+              <a href="https://cv.chiwencheng.com" target="_blank" rel="noopener noreferrer" className="text-dark-text/50 hover:text-primary transition-colors"><Linkedin className="h-6 w-6" /></a>
+              <a href="https://thread.chiwencheng.com" target="_blank" rel="noopener noreferrer" className="text-dark-text/50 hover:text-primary transition-colors"><AtSign className="h-6 w-6" /></a>
             </div>
           </div>
           
           <div className="relative hidden lg:block">
-            <div className="relative z-10 w-full max-w-md mx-auto aspect-square rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-card">
-               {/* Placeholder for Profile Image */}
-               <img 
-                src="https://picsum.photos/800/800?grayscale" 
-                alt="Steven Cheng Cloud Architect" 
-                className="object-cover w-full h-full hover:scale-105 transition-transform duration-700"
-               />
+            <div className="relative z-10 w-full max-w-md mx-auto aspect-square rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-white">
+              {images.map((image, index) => (
+                <img
+                  key={image}
+                  src={image}
+                  alt={`Steven Cheng portfolio image ${index + 1}`}
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
+                    index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+                  }`}
+                />
+              ))}
             </div>
-            {/* Decorative Elements around image */}
-            <div className="absolute -bottom-6 -right-6 z-20 bg-darker border border-white/10 p-4 rounded-xl shadow-xl flex items-center gap-4 animate-bounce-slow">
-                <div className="bg-blue-500/20 p-2 rounded-full text-blue-500">
+            <div className="absolute -bottom-6 -right-6 z-20 bg-card border border-border-light p-4 rounded-xl shadow-lg flex items-center gap-4">
+                <div className="bg-primary/10 p-2 rounded-full text-primary">
                     <Cloud className="h-6 w-6" />
                 </div>
                 <div>
-                    <p className="text-xs text-slate-400">Uptime</p>
-                    <p className="text-lg font-bold text-white">99.99%</p>
+                    <p className="text-xs text-dark-text/60">Uptime</p>
+                    <p className="text-lg font-bold text-dark-text">99.99%</p>
                 </div>
             </div>
           </div>

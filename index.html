@@ -16,36 +16,38 @@
                         sans: ['Inter', 'sans-serif'],
                     },
                     colors: {
-                        // 新的暖色調定義
-                        'light-background': '#f8f5f2', // 溫暖的淺米色
-                        'dark-text': '#403d39',       // 溫暖的深棕灰色
-                        primary: '#c2410c',           // 專業的赤陶色/磚橘色
-                        secondary: '#f97316',         // 較亮的橘色，用於點綴
-                        card: '#ffffff',              // 簡潔的白色
-                        'border-light': '#e7e5e4',    // 淺暖灰色
-                        // 移除舊的 dark 和 darker，因為我們將使用 light-background
+                        'light-background': '#f8f5f2',
+                        'dark-text': '#403d39',
+                        primary: '#c2410c',
+                        secondary: '#f97316',
+                        card: '#ffffff',
+                        'border-light': '#e7e5e4',
                     }
                 }
             }
         }
     </script>
     <style>
-        /* Custom scrollbar for Webkit - 更新為暖色調 */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f0edea; }
+        ::-webkit-scrollbar-thumb { background: #d4b499; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #c2a186; }
 
-        ::-webkit-scrollbar-track {
-            background: #f0edea; /* 淺於背景色 */
+        /* Ink Splash Animation */
+        @keyframes ink-splash-reveal {
+            from {
+                mask-size: 0% 0%;
+            }
+            to {
+                mask-size: 300% 300%;
+            }
         }
-
-        ::-webkit-scrollbar-thumb {
-            background: #d4b499; /* 暖色調的捲軸 */
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #c2a186;
+        .animate-ink-splash {
+            mask-image: radial-gradient(circle, black 50%, transparent 100%);
+            mask-position: center;
+            mask-repeat: no-repeat;
+            animation: ink-splash-reveal 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
     </style>
 </head>

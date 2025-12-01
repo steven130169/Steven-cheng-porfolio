@@ -10,15 +10,6 @@ export interface Project {
   github?: string;
 }
 
-export interface Experience {
-  id: string;
-  company: string;
-  role: string;
-  period: string;
-  description: string[];
-  technologies: string[];
-}
-
 export interface SpeakingEngagement {
   id: string;
   event: string;

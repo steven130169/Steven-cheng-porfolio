@@ -88,6 +88,7 @@ exports[`Event > renders correctly 1`] = `
       >
         <div
           class="group bg-card p-8 rounded-2xl border border-border-light shadow-sm hover:shadow-lg hover:border-secondary/50 transition-all duration-300 hover:-translate-y-1"
+          data-testid="event-item"
         >
           <div
             class="flex justify-between items-start mb-6"
@@ -205,6 +206,7 @@ exports[`Event > renders correctly 1`] = `
         </div>
         <div
           class="group bg-card p-8 rounded-2xl border border-border-light shadow-sm hover:shadow-lg hover:border-secondary/50 transition-all duration-300 hover:-translate-y-1"
+          data-testid="event-item"
         >
           <div
             class="flex justify-between items-start mb-6"
@@ -322,6 +324,7 @@ exports[`Event > renders correctly 1`] = `
         </div>
         <div
           class="group bg-card p-8 rounded-2xl border border-border-light shadow-sm hover:shadow-lg hover:border-secondary/50 transition-all duration-300 hover:-translate-y-1"
+          data-testid="event-item"
         >
           <div
             class="flex justify-between items-start mb-6"
@@ -437,6 +440,15 @@ exports[`Event > renders correctly 1`] = `
             </span>
           </div>
         </div>
+      </div>
+      <div
+        class="text-center mt-12"
+      >
+        <button
+          class="px-6 py-3 bg-gray-100 text-dark-text font-medium rounded-lg hover:bg-gray-200 transition-colors"
+        >
+          View All Events
+        </button>
       </div>
     </div>
   </section>

@@ -29,6 +29,24 @@ const initialEvents: EventItem[] = [
     date: 'Aug 2023',
     tags: ['Training', 'IaC', 'Terraform'],
     status: 'Past'
+  },
+  {
+    id: '4',
+    title: 'Kubernetes Advanced Networking',
+    role: 'Speaker',
+    description: 'Exploring Calico and Cilium advanced features.',
+    date: 'Nov 2023',
+    tags: ['K8s', 'Networking'],
+    status: 'Past'
+  },
+  {
+    id: '5',
+    title: 'Serverless Security Workshop',
+    role: 'Host',
+    description: 'Securing AWS Lambda and API Gateway.',
+    date: 'Dec 2023',
+    tags: ['AWS', 'Serverless', 'Security'],
+    status: 'Past'
   }
 ];
 
@@ -147,8 +165,8 @@ const Event: React.FC = () => {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {events.map((event) => (
-            <div key={event.id} className="group bg-card p-8 rounded-2xl border border-border-light shadow-sm hover:shadow-lg hover:border-secondary/50 transition-all duration-300 hover:-translate-y-1">
+          {events.slice(0, 3).map((event) => (
+            <div key={event.id} data-testid="event-item" className="group bg-card p-8 rounded-2xl border border-border-light shadow-sm hover:shadow-lg hover:border-secondary/50 transition-all duration-300 hover:-translate-y-1">
               <div className="flex justify-between items-start mb-6">
                 <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
                   event.status === 'Upcoming' 
@@ -184,6 +202,13 @@ const Event: React.FC = () => {
             </div>
           ))}
         </div>
+        {events.length > 3 && (
+            <div className="text-center mt-12">
+                <button className="px-6 py-3 bg-gray-100 text-dark-text font-medium rounded-lg hover:bg-gray-200 transition-colors">
+                    View All Events
+                </button>
+            </div>
+        )}
       </div>
     </section>
   );

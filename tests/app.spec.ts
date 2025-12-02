@@ -76,4 +76,19 @@ test.describe('Portfolio E2E Smoke Tests', () => {
     await expect(page.getByText('Jan 2026')).toBeVisible();
   });
 
+  test('should display a maximum of 3 events and a "View All Events" button', async ({ page }) => {
+    // Navigate to Event section
+    await page.getByRole('link', { name: 'Event' }).first().click();
+
+    // Verify only 3 event cards are visible (initialEvents has 5)
+    const eventCards = page.locator('[data-testid="event-item"]');
+    await expect(eventCards).toHaveCount(3); // Expecting 3 directly displayed
+
+    // Verify "View All Events" button is visible
+    await expect(page.getByRole('button', { name: 'View All Events' })).toBeVisible();
+
+    // Verify the 4th event (Kubernetes Advanced Networking) is NOT visible
+    await expect(page.getByText('Kubernetes Advanced Networking')).not.toBeVisible();
+  });
+
 });

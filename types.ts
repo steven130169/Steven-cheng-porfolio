@@ -1,15 +1,5 @@
 import React from 'react';
 
-export interface Project {
-  id: string;
-  title: string;
-  description: string;
-  tags: string[];
-  imageUrl: string;
-  link?: string;
-  github?: string;
-}
-
 export interface SpeakingEngagement {
   id: string;
   event: string;
@@ -22,7 +12,7 @@ export interface SpeakingEngagement {
 export interface EventItem {
   id: string;
   title: string;
-  role: 'Organizer' | 'Host' | 'Instructor';
+  role: 'Organizer' | 'Host' | 'Instructor' | 'Speaker';
   description: string;
   date: string;
   tags: string[];
@@ -38,17 +28,4 @@ export interface BlogPost {
   tags: string[];
   imageUrl?: string;
   category?: string;
-}
-
-export interface ChatMessage {
-  id: string;
-  role: 'user' | 'model';
-  text: string;
-  isError?: boolean;
-}
-
-export interface SocialLink {
-  platform: string;
-  url: string;
-  icon: React.ReactNode;
 }

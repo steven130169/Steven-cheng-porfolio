@@ -1,8 +1,13 @@
 {
   "default": {
-    "paths": ["specs/**/*.feature"],
-    "import": ["tests/bdd-steps/**/*.ts", "tests/bdd-steps/hooks.ts"],
-    "format": ["progress"],
-    "publishQuiet": true
+    "loader": [
+      "ts-node/esm"
+    ],
+    "import": [
+      "tests/bdd-steps/**/*.ts"
+    ],
+    "paths": [
+      "specs/**/*.feature"
+    ]
   }
 }

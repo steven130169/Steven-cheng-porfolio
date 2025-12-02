@@ -40,6 +40,7 @@ test.describe('Portfolio E2E Smoke Tests', () => {
     // Verify Footer
     await expect(page.locator('footer')).toBeVisible();
     await expect(page.getByText('Steven Cheng (鄭棋文)')).toBeVisible();
+    await expect(page.getByText('Taiwan Taipei')).toBeVisible();
   });
 
   test('should navigate to sections when navbar links are clicked', async ({ page }) => {

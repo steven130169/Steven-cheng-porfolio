@@ -27,7 +27,7 @@ const Footer: React.FC = () => {
                  <a href="https://thread.chiwencheng.com" target="_blank" rel="noopener noreferrer" className="p-3 bg-black/5 rounded-full text-dark-text/60 hover:text-primary hover:bg-primary/10 transition-all"><AtSign className="h-6 w-6" /></a>
              </div>
              <p className="text-dark-text/50 text-sm">
-                 San Francisco, CA • Remote Friendly
+                 Taiwan Taipei • Remote Friendly
              </p>
           </div>
         </div>

@@ -106,7 +106,7 @@ const Event: React.FC = () => {
                 <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl">
                     <div className="flex justify-between items-center mb-6">
                         <h3 className="text-2xl font-bold text-dark-text">Add New Event</h3>
-                        <button onClick={() => setIsFormOpen(false)} className="text-dark-text/50 hover:text-dark-text">
+                        <button onClick={() => setIsFormOpen(false)} className="text-dark-text/50 hover:text-dark-text" aria-label="Cancel">
                             <X className="h-6 w-6" />
                         </button>
                     </div>

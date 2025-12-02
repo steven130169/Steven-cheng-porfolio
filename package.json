@@ -13,6 +13,7 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "test:bdd": "NODE_OPTIONS=\"--loader ts-node/esm --no-warnings\" cucumber-js specs/**/*.feature --import tests/bdd-steps/**/*.ts --import tests/bdd-steps/hooks.ts",
     "lint": "eslint. --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
@@ -22,6 +23,7 @@
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
+    "@cucumber/cucumber": "^12.3.0",
     "@playwright/test": "^1.57.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
@@ -33,6 +35,8 @@
     "eslint-plugin-react": "^7.37.5",
     "jsdom": "^27.2.0",
     "playwright": "^1.57.0",
+    "playwright-bdd": "^8.4.2",
+    "ts-node": "^10.9.2",
     "typescript": "^5.9.0",
     "vite": "^6.2.0",
     "vitest": "^4.0.14"

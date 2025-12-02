@@ -32,8 +32,8 @@ Feature: Event Management System (活動管理系統)
 
   # 新增的 Scenario: 限制活動顯示數量
   Scenario: Display only the first 3 events with a "View All Events" button
-    Given there are more than 3 events available (e.g., 4 or more)
-    When I view the "Events & Community" section
+    Given there are more than 3 events available
+    When I view the "Event" section
     Then I should see exactly 3 events displayed
     And I should see a "View All Events" button
     And I should not see the 4th event or subsequent events directly in the list

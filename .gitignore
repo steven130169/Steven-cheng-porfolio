@@ -26,3 +26,4 @@ dist-ssr
 coverage/
 playwright-report/
 .gemini/*.orig
+.gemini/settings.json

@@ -27,32 +27,61 @@ exports[`Event > renders correctly 1`] = `
             I believe in growing together. Here are the community events, study groups, and workshops I organize and host.
           </p>
         </div>
-        <a
-          class="flex items-center text-secondary hover:text-orange-500 transition-colors font-medium group"
-          href="#"
+        <div
+          class="flex gap-4"
         >
-          Join our next meetup 
-          <svg
-            aria-hidden="true"
-            class="lucide lucide-arrow-right ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform"
-            fill="none"
-            height="24"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
+          <button
+            class="flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-orange-700 transition-colors shadow-md"
           >
-            <path
-              d="M5 12h14"
-            />
-            <path
-              d="m12 5 7 7-7 7"
-            />
-          </svg>
-        </a>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-plus h-4 w-4 mr-2"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5 12h14"
+              />
+              <path
+                d="M12 5v14"
+              />
+            </svg>
+             Add Event
+          </button>
+          <a
+            class="flex items-center text-secondary hover:text-orange-500 transition-colors font-medium group"
+            href="#"
+          >
+            Join our next meetup 
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-arrow-right ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5 12h14"
+              />
+              <path
+                d="m12 5 7 7-7 7"
+              />
+            </svg>
+          </a>
+        </div>
       </div>
       <div
         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"

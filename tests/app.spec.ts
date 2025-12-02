@@ -54,4 +54,26 @@ test.describe('Portfolio E2E Smoke Tests', () => {
     await expect(page).toHaveURL(/.*#contact/);
   });
 
+  test('should allow adding a new event via the form', async ({ page }) => {
+    // 1. Navigate to Event section
+    await page.getByRole('link', { name: 'Event' }).first().click();
+    
+    // 2. Click "Add Event"
+    await page.getByRole('button', { name: 'Add Event' }).click();
+
+    // 3. Fill form
+    await page.getByLabel('Title').fill('Playwright E2E Workshop');
+    await page.getByLabel('Role').fill('Lead Instructor');
+    await page.getByLabel('Date').fill('Jan 2026');
+    await page.getByLabel('Description').fill('Learning E2E testing best practices.');
+
+    // 4. Submit
+    await page.getByRole('button', { name: 'Save Event' }).click();
+
+    // 5. Verify
+    await expect(page.getByText('Playwright E2E Workshop')).toBeVisible();
+    await expect(page.getByText('Lead Instructor')).toBeVisible();
+    await expect(page.getByText('Jan 2026')).toBeVisible();
+  });
+
 });

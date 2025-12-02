@@ -1,8 +1,8 @@
-import React from 'react';
-import { Users, Calendar, ArrowRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { Users, Calendar, ArrowRight, Plus, X } from 'lucide-react';
 import { EventItem } from '../types';
 
-const events: EventItem[] = [
+const initialEvents: EventItem[] = [
   {
     id: '1',
     title: 'Cloud Native Taiwan Study Group',
@@ -33,6 +33,31 @@ const events: EventItem[] = [
 ];
 
 const Event: React.FC = () => {
+  const [events, setEvents] = useState<EventItem[]>(initialEvents);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [newEvent, setNewEvent] = useState({
+    title: '',
+    role: '',
+    date: '',
+    description: ''
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const eventToAdd: EventItem = {
+      id: Date.now().toString(),
+      title: newEvent.title,
+      role: newEvent.role,
+      description: newEvent.description,
+      date: newEvent.date,
+      tags: ['New'], // Default tag
+      status: 'Upcoming' // Default status
+    };
+    setEvents([eventToAdd, ...events]);
+    setIsFormOpen(false);
+    setNewEvent({ title: '', role: '', date: '', description: '' });
+  };
+
   return (
     <section id="event" className="py-24 bg-light-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -44,10 +69,82 @@ const Event: React.FC = () => {
               I believe in growing together. Here are the community events, study groups, and workshops I organize and host.
             </p>
           </div>
-          <a href="#" className="flex items-center text-secondary hover:text-orange-500 transition-colors font-medium group">
-            Join our next meetup <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-          </a>
+          
+          <div className="flex gap-4">
+             <button 
+                onClick={() => setIsFormOpen(true)}
+                className="flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-orange-700 transition-colors shadow-md"
+             >
+                <Plus className="h-4 w-4 mr-2" /> Add Event
+             </button>
+             <a href="#" className="flex items-center text-secondary hover:text-orange-500 transition-colors font-medium group">
+                Join our next meetup <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+             </a>
+          </div>
         </div>
+
+        {isFormOpen && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl">
+                    <div className="flex justify-between items-center mb-6">
+                        <h3 className="text-2xl font-bold text-dark-text">Add New Event</h3>
+                        <button onClick={() => setIsFormOpen(false)} className="text-dark-text/50 hover:text-dark-text">
+                            <X className="h-6 w-6" />
+                        </button>
+                    </div>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                            <label htmlFor="title" className="block text-sm font-medium text-dark-text mb-1">Title</label>
+                            <input 
+                                id="title"
+                                type="text" 
+                                required
+                                className="w-full px-4 py-2 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/50 outline-none"
+                                value={newEvent.title}
+                                onChange={e => setNewEvent({...newEvent, title: e.target.value})}
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="role" className="block text-sm font-medium text-dark-text mb-1">Role</label>
+                            <input 
+                                id="role"
+                                type="text" 
+                                required
+                                className="w-full px-4 py-2 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/50 outline-none"
+                                value={newEvent.role}
+                                onChange={e => setNewEvent({...newEvent, role: e.target.value})}
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="date" className="block text-sm font-medium text-dark-text mb-1">Date</label>
+                            <input 
+                                id="date"
+                                type="text" 
+                                required
+                                placeholder="e.g., Oct 2025"
+                                className="w-full px-4 py-2 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/50 outline-none"
+                                value={newEvent.date}
+                                onChange={e => setNewEvent({...newEvent, date: e.target.value})}
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="description" className="block text-sm font-medium text-dark-text mb-1">Description</label>
+                            <textarea 
+                                id="description"
+                                required
+                                rows={3}
+                                className="w-full px-4 py-2 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/50 outline-none"
+                                value={newEvent.description}
+                                onChange={e => setNewEvent({...newEvent, description: e.target.value})}
+                            />
+                        </div>
+                        <button type="submit" className="w-full py-3 bg-primary text-white font-bold rounded-lg hover:bg-orange-700 transition-colors">
+                            Save Event
+                        </button>
+                    </form>
+                </div>
+            </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {events.map((event) => (

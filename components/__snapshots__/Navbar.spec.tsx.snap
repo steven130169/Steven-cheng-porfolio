@@ -1,0 +1,116 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Navbar > renders correctly 1`] = `
+<div>
+  <nav
+    class="fixed w-full z-50 bg-light-background/80 backdrop-blur-md border-b border-border-light shadow-sm py-4 transition-all duration-300"
+  >
+    <div
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+    >
+      <div
+        class="flex justify-between items-center"
+      >
+        <a
+          class="flex-shrink-0 flex items-center gap-2 cursor-pointer"
+          href="#home"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-code-xml h-8 w-8 text-primary"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m18 16 4-4-4-4"
+            />
+            <path
+              d="m6 8-4 4 4 4"
+            />
+            <path
+              d="m14.5 4-5 16"
+            />
+          </svg>
+          <span
+            class="font-bold text-xl text-dark-text tracking-tight"
+          >
+            Steven.Tech.Lab
+          </span>
+        </a>
+        <div
+          class="hidden md:flex items-center space-x-8"
+        >
+          <a
+            class="text-sm font-medium text-dark-text hover:text-primary transition-colors"
+            href="#about"
+          >
+            About
+          </a>
+          <a
+            class="text-sm font-medium text-dark-text hover:text-primary transition-colors"
+            href="#blog"
+          >
+            Blog
+          </a>
+          <a
+            class="text-sm font-medium text-dark-text hover:text-primary transition-colors"
+            href="#event"
+          >
+            Event
+          </a>
+          <a
+            class="text-sm font-medium text-dark-text hover:text-primary transition-colors"
+            href="#speak"
+          >
+            Speak
+          </a>
+          <a
+            class="text-sm font-medium text-dark-text hover:text-primary transition-colors"
+            href="#contact"
+          >
+            Contact
+          </a>
+        </div>
+        <div
+          class="md:hidden flex items-center"
+        >
+          <button
+            class="text-dark-text hover:text-primary focus:outline-none"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-menu h-6 w-6"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M4 5h16"
+              />
+              <path
+                d="M4 12h16"
+              />
+              <path
+                d="M4 19h16"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+</div>
+`;

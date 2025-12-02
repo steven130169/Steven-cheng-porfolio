@@ -1,0 +1,489 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`About > renders correctly 1`] = `
+<div>
+  <section
+    class="py-24 bg-light-background"
+    id="about"
+  >
+    <div
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+    >
+      <div
+        class="text-center mb-16"
+      >
+        <h2
+          class="text-3xl md:text-4xl font-bold text-dark-text mb-4"
+        >
+          About Me
+        </h2>
+        <div
+          class="h-1 w-20 bg-primary mx-auto rounded-full"
+        />
+        <p
+          class="mt-4 text-dark-text/70 max-w-2xl mx-auto"
+        >
+          I architect scalable, secure, and cost-effective cloud solutions. My obsession is automating the boring stuff so teams can focus on innovation.
+        </p>
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+      >
+        <div
+          class="bg-card p-6 rounded-2xl border border-border-light shadow-sm hover:shadow-lg hover:border-primary/30 transition-all duration-300 hover:-translate-y-1"
+        >
+          <div
+            class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-cloud h-6 w-6 text-primary"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"
+              />
+            </svg>
+          </div>
+          <h3
+            class="text-xl font-semibold text-dark-text mb-4"
+          >
+            Cloud Architecture
+          </h3>
+          <ul
+            class="space-y-2"
+          >
+            <li
+              class="flex items-center text-dark-text/70 text-sm"
+            >
+              <span
+                class="w-1.5 h-1.5 bg-primary rounded-full mr-2"
+              />
+              AWS
+            </li>
+            <li
+              class="flex items-center text-dark-text/70 text-sm"
+            >
+              <span
+                class="w-1.5 h-1.5 bg-primary rounded-full mr-2"
+              />
+              Azure
+            </li>
+            <li
+              class="flex items-center text-dark-text/70 text-sm"
+            >
+              <span
+                class="w-1.5 h-1.5 bg-primary rounded-full mr-2"
+              />
+              GCP
+            </li>
+            <li
+              class="flex items-center text-dark-text/70 text-sm"
+            >
+              <span
+                class="w-1.5 h-1.5 bg-primary rounded-full mr-2"
+              />
+              Hybrid Cloud
+            </li>
+            <li
+              class="flex items-center text-dark-text/70 text-sm"
+            >
+              <span
+                class="w-1.5 h-1.5 bg-primary rounded-full mr-2"
+              />
+              Serverless
+            </li>
+          </ul>
+        </div>
+        <div
+          class="bg-card p-6 rounded-2xl border border-border-light shadow-sm hover:shadow-lg hover:border-primary/30 transition-all duration-300 hover:-translate-y-1"
+        >
+          <div
+            class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-terminal h-6 w-6 text-primary"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 19h8"
+              />
+              <path
+                d="m4 17 6-6-6-6"
+              />
+            </svg>
+          </div>
+          <h3
+            class="text-xl font-semibold text-dark-text mb-4"
+          >
+            DevOps & IaC
+          </h3>
+          <ul
+            class="space-y-2"
+          >
+            <li
+              class="flex items-center text-dark-text/70 text-sm"
+            >
+              <span
+                class="w-1.5 h-1.5 bg-primary rounded-full mr-2"
+              />
+              Terraform
+            </li>
+            <li
+              class="flex items-center text-dark-text/70 text-sm"
+            >
+              <span
+                class="w-1.5 h-1.5 bg-primary rounded-full mr-2"
+              />
+              Ansible
+            </li>
+            <li
+              class="flex items-center text-dark-text/70 text-sm"
+            >
+              <span
+                class="w-1.5 h-1.5 bg-primary rounded-full mr-2"
+              />
+              Kubernetes
+            </li>
+            <li
+              class="flex items-center text-dark-text/70 text-sm"
+            >
+              <span
+                class="w-1.5 h-1.5 bg-primary rounded-full mr-2"
+              />
+              Docker
+            </li>
+            <li
+              class="flex items-center text-dark-text/70 text-sm"
+            >
+              <span
+                class="w-1.5 h-1.5 bg-primary rounded-full mr-2"
+              />
+              Helm
+            </li>
+          </ul>
+        </div>
+        <div
+          class="bg-card p-6 rounded-2xl border border-border-light shadow-sm hover:shadow-lg hover:border-primary/30 transition-all duration-300 hover:-translate-y-1"
+        >
+          <div
+            class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-git-branch h-6 w-6 text-primary"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <line
+                x1="6"
+                x2="6"
+                y1="3"
+                y2="15"
+              />
+              <circle
+                cx="18"
+                cy="6"
+                r="3"
+              />
+              <circle
+                cx="6"
+                cy="18"
+                r="3"
+              />
+              <path
+                d="M18 9a9 9 0 0 1-9 9"
+              />
+            </svg>
+          </div>
+          <h3
+            class="text-xl font-semibold text-dark-text mb-4"
+          >
+            CI / CD
+          </h3>
+          <ul
+            class="space-y-2"
+          >
+            <li
+              class="flex items-center text-dark-text/70 text-sm"
+            >
+              <span
+                class="w-1.5 h-1.5 bg-primary rounded-full mr-2"
+              />
+              Jenkins
+            </li>
+            <li
+              class="flex items-center text-dark-text/70 text-sm"
+            >
+              <span
+                class="w-1.5 h-1.5 bg-primary rounded-full mr-2"
+              />
+              GitLab CI
+            </li>
+            <li
+              class="flex items-center text-dark-text/70 text-sm"
+            >
+              <span
+                class="w-1.5 h-1.5 bg-primary rounded-full mr-2"
+              />
+              GitHub Actions
+            </li>
+            <li
+              class="flex items-center text-dark-text/70 text-sm"
+            >
+              <span
+                class="w-1.5 h-1.5 bg-primary rounded-full mr-2"
+              />
+              ArgoCD
+            </li>
+            <li
+              class="flex items-center text-dark-text/70 text-sm"
+            >
+              <span
+                class="w-1.5 h-1.5 bg-primary rounded-full mr-2"
+              />
+              CircleCI
+            </li>
+          </ul>
+        </div>
+        <div
+          class="bg-card p-6 rounded-2xl border border-border-light shadow-sm hover:shadow-lg hover:border-primary/30 transition-all duration-300 hover:-translate-y-1"
+        >
+          <div
+            class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-shield h-6 w-6 text-primary"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"
+              />
+            </svg>
+          </div>
+          <h3
+            class="text-xl font-semibold text-dark-text mb-4"
+          >
+            Security & Ops
+          </h3>
+          <ul
+            class="space-y-2"
+          >
+            <li
+              class="flex items-center text-dark-text/70 text-sm"
+            >
+              <span
+                class="w-1.5 h-1.5 bg-primary rounded-full mr-2"
+              />
+              IAM Policies
+            </li>
+            <li
+              class="flex items-center text-dark-text/70 text-sm"
+            >
+              <span
+                class="w-1.5 h-1.5 bg-primary rounded-full mr-2"
+              />
+              Prometheus
+            </li>
+            <li
+              class="flex items-center text-dark-text/70 text-sm"
+            >
+              <span
+                class="w-1.5 h-1.5 bg-primary rounded-full mr-2"
+              />
+              Grafana
+            </li>
+            <li
+              class="flex items-center text-dark-text/70 text-sm"
+            >
+              <span
+                class="w-1.5 h-1.5 bg-primary rounded-full mr-2"
+              />
+              ELK Stack
+            </li>
+            <li
+              class="flex items-center text-dark-text/70 text-sm"
+            >
+              <span
+                class="w-1.5 h-1.5 bg-primary rounded-full mr-2"
+              />
+              DevSecOps
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div
+        class="mt-20 bg-white rounded-3xl p-8 md:p-12 border border-border-light relative overflow-hidden shadow-md"
+      >
+        <div
+          class="relative z-10 grid md:grid-cols-2 gap-12 items-center"
+        >
+          <div>
+            <h3
+              class="text-2xl font-bold text-dark-text mb-4"
+            >
+              Why work with me?
+            </h3>
+            <p
+              class="text-dark-text/70 mb-6 leading-relaxed"
+            >
+              I don't just provision servers; I build resilience. With a deep focus on 
+              <strong>
+                High Availability
+              </strong>
+               and 
+              <strong>
+                Disaster Recovery
+              </strong>
+              , I ensure your business stays online no matter what.
+            </p>
+            <p
+              class="text-dark-text/70 leading-relaxed"
+            >
+              I am passionate about 
+              <span
+                class="text-primary font-medium"
+              >
+                DevOps culture
+              </span>
+              . I believe in empowering development teams with self-service infrastructure and automated pipelines (CI/CD) that remove bottlenecks and accelerate deployment velocity.
+            </p>
+          </div>
+          <div
+            class="bg-light-background p-6 rounded-xl border border-border-light"
+          >
+            <code
+              class="text-sm font-mono text-dark-text/70"
+            >
+              <span
+                class="text-purple-600"
+              >
+                resource
+              </span>
+               
+              <span
+                class="text-green-600"
+              >
+                "cloud_architect"
+              </span>
+               
+              <span
+                class="text-orange-500"
+              >
+                "steven"
+              </span>
+               
+              <span
+                class="text-orange-500"
+              >
+                {
+              </span>
+              <br />
+                name       = 
+              <span
+                class="text-green-600"
+              >
+                "Steven Cheng"
+              </span>
+              <br />
+                specialty  = 
+              <span
+                class="text-green-600"
+              >
+                "High Availability"
+              </span>
+              <br />
+                tools      = [
+              <span
+                class="text-green-600"
+              >
+                "Terraform"
+              </span>
+              , 
+              <span
+                class="text-green-600"
+              >
+                "K8s"
+              </span>
+              ]
+              <br />
+              <br />
+                
+              <span
+                class="text-purple-600"
+              >
+                provisioner
+              </span>
+               
+              <span
+                class="text-green-600"
+              >
+                "local-exec"
+              </span>
+               
+              <span
+                class="text-orange-500"
+              >
+                {
+              </span>
+              <br />
+                  command = 
+              <span
+                class="text-green-600"
+              >
+                "optimize_pipelines.sh"
+              </span>
+              <br />
+                
+              <span
+                class="text-orange-500"
+              >
+                }
+              </span>
+              <br />
+              <span
+                class="text-orange-500"
+              >
+                }
+              </span>
+            </code>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+`;

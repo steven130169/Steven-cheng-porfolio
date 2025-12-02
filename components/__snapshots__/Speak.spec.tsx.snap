@@ -1,0 +1,464 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Speak > renders correctly 1`] = `
+<div>
+  <section
+    class="py-24 bg-white relative overflow-hidden"
+    id="speak"
+  >
+    <div
+      class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8"
+    >
+      <div
+        class="text-center mb-16"
+      >
+        <div
+          class="inline-flex items-center justify-center p-3 bg-primary/10 rounded-full mb-6"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-mic h-6 w-6 text-primary"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 19v3"
+            />
+            <path
+              d="M19 10v2a7 7 0 0 1-14 0v-2"
+            />
+            <rect
+              height="13"
+              rx="3"
+              width="6"
+              x="9"
+              y="2"
+            />
+          </svg>
+        </div>
+        <h2
+          class="text-3xl md:text-4xl font-bold text-dark-text mb-4"
+        >
+          Public Speaking
+        </h2>
+        <p
+          class="text-dark-text/70"
+        >
+          Sharing knowledge and experiences at conferences and meetups.
+        </p>
+      </div>
+      <div
+        class="space-y-6"
+      >
+        <div
+          class="group bg-card hover:bg-stone-50 rounded-xl p-6 border border-border-light hover:border-primary/30 transition-all duration-300 flex flex-col sm:flex-row gap-6 items-start sm:items-center shadow-sm hover:shadow-lg"
+        >
+          <div
+            class="flex-shrink-0 w-16 h-16 bg-light-background rounded-lg flex flex-col items-center justify-center border border-border-light text-center"
+          >
+            <span
+              class="text-xs text-dark-text/50 uppercase font-bold"
+            >
+              Sep
+            </span>
+            <span
+              class="text-lg font-bold text-dark-text"
+            >
+              2023
+            </span>
+          </div>
+          <div
+            class="flex-grow"
+          >
+            <div
+              class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-1"
+            >
+              <h3
+                class="text-lg font-bold text-dark-text group-hover:text-primary transition-colors"
+              >
+                Scaling Kubernetes Federation to 10M Users
+              </h3>
+              <span
+                class="text-xs px-2 py-0.5 rounded border border-purple-500/30 text-purple-600 bg-purple-500/10"
+              >
+                Conference
+              </span>
+            </div>
+            <p
+              class="text-dark-text/80 font-medium mb-2"
+            >
+              DevOpsDays Taipei 2023
+            </p>
+            <div
+              class="flex items-center text-dark-text/50 text-sm"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-map-pin h-3.5 w-3.5 mr-1.5"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"
+                />
+                <circle
+                  cx="12"
+                  cy="10"
+                  r="3"
+                />
+              </svg>
+              Taipei, Taiwan
+            </div>
+          </div>
+          <div
+            class="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-4 group-hover:translate-x-0 duration-300"
+          >
+            <a
+              class="p-2 text-dark-text/60 hover:text-primary transition-colors"
+              href="#"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-external-link h-5 w-5"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M15 3h6v6"
+                />
+                <path
+                  d="M10 14 21 3"
+                />
+                <path
+                  d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                />
+              </svg>
+            </a>
+          </div>
+        </div>
+        <div
+          class="group bg-card hover:bg-stone-50 rounded-xl p-6 border border-border-light hover:border-primary/30 transition-all duration-300 flex flex-col sm:flex-row gap-6 items-start sm:items-center shadow-sm hover:shadow-lg"
+        >
+          <div
+            class="flex-shrink-0 w-16 h-16 bg-light-background rounded-lg flex flex-col items-center justify-center border border-border-light text-center"
+          >
+            <span
+              class="text-xs text-dark-text/50 uppercase font-bold"
+            >
+              Jun
+            </span>
+            <span
+              class="text-lg font-bold text-dark-text"
+            >
+              2023
+            </span>
+          </div>
+          <div
+            class="flex-grow"
+          >
+            <div
+              class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-1"
+            >
+              <h3
+                class="text-lg font-bold text-dark-text group-hover:text-primary transition-colors"
+              >
+                Serverless Patterns for High Availability
+              </h3>
+              <span
+                class="text-xs px-2 py-0.5 rounded border border-purple-500/30 text-purple-600 bg-purple-500/10"
+              >
+                Conference
+              </span>
+            </div>
+            <p
+              class="text-dark-text/80 font-medium mb-2"
+            >
+              AWS Community Day
+            </p>
+            <div
+              class="flex items-center text-dark-text/50 text-sm"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-map-pin h-3.5 w-3.5 mr-1.5"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"
+                />
+                <circle
+                  cx="12"
+                  cy="10"
+                  r="3"
+                />
+              </svg>
+              Taichung, Taiwan
+            </div>
+          </div>
+          <div
+            class="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-4 group-hover:translate-x-0 duration-300"
+          >
+            <a
+              class="p-2 text-dark-text/60 hover:text-primary transition-colors"
+              href="#"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-external-link h-5 w-5"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M15 3h6v6"
+                />
+                <path
+                  d="M10 14 21 3"
+                />
+                <path
+                  d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                />
+              </svg>
+            </a>
+          </div>
+        </div>
+        <div
+          class="group bg-card hover:bg-stone-50 rounded-xl p-6 border border-border-light hover:border-primary/30 transition-all duration-300 flex flex-col sm:flex-row gap-6 items-start sm:items-center shadow-sm hover:shadow-lg"
+        >
+          <div
+            class="flex-shrink-0 w-16 h-16 bg-light-background rounded-lg flex flex-col items-center justify-center border border-border-light text-center"
+          >
+            <span
+              class="text-xs text-dark-text/50 uppercase font-bold"
+            >
+              Apr
+            </span>
+            <span
+              class="text-lg font-bold text-dark-text"
+            >
+              2023
+            </span>
+          </div>
+          <div
+            class="flex-grow"
+          >
+            <div
+              class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-1"
+            >
+              <h3
+                class="text-lg font-bold text-dark-text group-hover:text-primary transition-colors"
+              >
+                Ep. 42: The Future of Platform Engineering
+              </h3>
+              <span
+                class="text-xs px-2 py-0.5 rounded border border-orange-500/30 text-orange-600 bg-orange-500/10"
+              >
+                Podcast
+              </span>
+            </div>
+            <p
+              class="text-dark-text/80 font-medium mb-2"
+            >
+              Cloud Native Podcast
+            </p>
+            <div
+              class="flex items-center text-dark-text/50 text-sm"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-map-pin h-3.5 w-3.5 mr-1.5"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"
+                />
+                <circle
+                  cx="12"
+                  cy="10"
+                  r="3"
+                />
+              </svg>
+              Online
+            </div>
+          </div>
+          <div
+            class="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-4 group-hover:translate-x-0 duration-300"
+          >
+            <a
+              class="p-2 text-dark-text/60 hover:text-primary transition-colors"
+              href="#"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-external-link h-5 w-5"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M15 3h6v6"
+                />
+                <path
+                  d="M10 14 21 3"
+                />
+                <path
+                  d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                />
+              </svg>
+            </a>
+          </div>
+        </div>
+        <div
+          class="group bg-card hover:bg-stone-50 rounded-xl p-6 border border-border-light hover:border-primary/30 transition-all duration-300 flex flex-col sm:flex-row gap-6 items-start sm:items-center shadow-sm hover:shadow-lg"
+        >
+          <div
+            class="flex-shrink-0 w-16 h-16 bg-light-background rounded-lg flex flex-col items-center justify-center border border-border-light text-center"
+          >
+            <span
+              class="text-xs text-dark-text/50 uppercase font-bold"
+            >
+              Dec
+            </span>
+            <span
+              class="text-lg font-bold text-dark-text"
+            >
+              2022
+            </span>
+          </div>
+          <div
+            class="flex-grow"
+          >
+            <div
+              class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-1"
+            >
+              <h3
+                class="text-lg font-bold text-dark-text group-hover:text-primary transition-colors"
+              >
+                From Monolith to Microservices: A Survival Guide
+              </h3>
+              <span
+                class="text-xs px-2 py-0.5 rounded border border-purple-500/30 text-purple-600 bg-purple-500/10"
+              >
+                Conference
+              </span>
+            </div>
+            <p
+              class="text-dark-text/80 font-medium mb-2"
+            >
+              Modern Web Conference
+            </p>
+            <div
+              class="flex items-center text-dark-text/50 text-sm"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-map-pin h-3.5 w-3.5 mr-1.5"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"
+                />
+                <circle
+                  cx="12"
+                  cy="10"
+                  r="3"
+                />
+              </svg>
+              Taipei, Taiwan
+            </div>
+          </div>
+          <div
+            class="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-4 group-hover:translate-x-0 duration-300"
+          >
+            <a
+              class="p-2 text-dark-text/60 hover:text-primary transition-colors"
+              href="#"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-external-link h-5 w-5"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M15 3h6v6"
+                />
+                <path
+                  d="M10 14 21 3"
+                />
+                <path
+                  d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+`;

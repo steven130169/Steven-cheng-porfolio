@@ -1,16 +1,16 @@
 import { Before, After, BeforeAll, AfterAll, setDefaultTimeout } from '@cucumber/cucumber';
-import { Browser, BrowserContext, Page, chromium } from '@playwright/test';
+import * as playwright from '@playwright/test'; // Import as namespace
 import { spawn, ChildProcess } from 'child_process';
 
 setDefaultTimeout(60 * 1000);
 
-let browser: Browser;
-let context: BrowserContext;
-let page: Page;
+let browser: playwright.Browser; // Use playwright.Browser
+let context: playwright.BrowserContext;
+let page: playwright.Page;
 let serverProcess: ChildProcess;
 
 export const pageFixture = {
-  page: undefined as unknown as Page,
+  page: undefined as unknown as playwright.Page, // Use playwright.Page
 };
 
 export const BASE_URL = 'http://localhost:3000';
@@ -23,10 +23,9 @@ BeforeAll(async function () {
     shell: true
   });
 
-  // Give the server some time to start
   await new Promise(resolve => setTimeout(resolve, 5000));
 
-  browser = await chromium.launch({ headless: true });
+  browser = await playwright.chromium.launch({ headless: true }); // Use playwright.chromium
 });
 
 Before(async function () {
@@ -48,7 +47,6 @@ AfterAll(async function () {
   if (serverProcess && serverProcess.pid) {
     console.log('Stopping development server...');
     try {
-      // Kill the process group
       process.kill(-serverProcess.pid);
     } catch (e) {
       // Ignore error if process is already dead

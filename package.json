@@ -13,7 +13,7 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:bdd": "NODE_OPTIONS=\"--loader ts-node/esm --no-warnings\" cucumber-js specs/**/*.feature --import tests/bdd-steps/**/*.ts --import tests/bdd-steps/hooks.ts",
+    "test:bdd": "cucumber-js",
     "lint": "eslint. --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {

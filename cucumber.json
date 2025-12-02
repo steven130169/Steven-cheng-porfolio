@@ -1,0 +1,8 @@
+{
+  "default": {
+    "paths": ["specs/**/*.feature"],
+    "import": ["tests/bdd-steps/**/*.ts", "tests/bdd-steps/hooks.ts"],
+    "format": ["progress"],
+    "publishQuiet": true
+  }
+}

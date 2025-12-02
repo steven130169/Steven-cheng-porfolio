@@ -1,5 +1,5 @@
 import { Given, When, Then } from '@cucumber/cucumber';
-import { expect } from '@playwright/test';
+import * as playwright from '@playwright/test'; // Import as namespace
 import { pageFixture } from './hooks.ts'; // Assuming hooks.ts will export pageFixture
 
 let page = pageFixture.page; // Initialize page within each step file for clarity
@@ -15,13 +15,13 @@ const sectionSelectorMap: { [key: string]: string } = {
 };
 
 Then('the page title should be {string}', async (expectedTitle: string) => {
-  await expect(pageFixture.page).toHaveTitle(expectedTitle);
+  await playwright.expect(pageFixture.page).toHaveTitle(expectedTitle);
 });
 
 Then('I should see the {string} section with text {string}', async (sectionName: string, text: string) => {
   const selector = sectionSelectorMap[sectionName] || `section#${sectionName.toLowerCase()}`;
-  await expect(pageFixture.page.locator(selector)).toBeVisible();
-  await expect(pageFixture.page.getByText(text)).toBeVisible();
+  await playwright.expect(pageFixture.page.locator(selector)).toBeVisible();
+  await playwright.expect(pageFixture.page.getByText(text)).toBeVisible();
 });
 
 When('I click the {string} link in the navbar', async (linkName: string) => {
@@ -29,9 +29,9 @@ When('I click the {string} link in the navbar', async (linkName: string) => {
 });
 
 Then('the URL should contain {string}', async (expectedHash: string) => {
-  await expect(pageFixture.page).toHaveURL(new RegExp(`.*${expectedHash}`));
+  await playwright.expect(pageFixture.page).toHaveURL(new RegExp(`.*${expectedHash}`));
 });
 
 Then('I should not see {string}', async (text: string) => {
-  await expect(pageFixture.page.getByText(text)).not.toBeVisible();
+  await playwright.expect(pageFixture.page.getByText(text)).not.toBeVisible();
 });

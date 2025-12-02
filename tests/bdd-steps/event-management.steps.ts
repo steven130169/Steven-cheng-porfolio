@@ -1,5 +1,5 @@
 import { Given, When, Then } from '@cucumber/cucumber';
-import { expect } from '@playwright/test';
+import * as playwright from '@playwright/test'; // Import as namespace
 import { pageFixture } from './hooks.ts';
 
 let page = pageFixture.page; // Initialize page within each step file for clarity
@@ -24,19 +24,19 @@ When('I submit the form', async () => {
 });
 
 Then('I should see {string} added to the event list', async (eventName: string) => {
-  await expect(pageFixture.page.getByText(eventName)).toBeVisible();
+  await playwright.expect(pageFixture.page.getByText(eventName)).toBeVisible();
 });
 
 Then('I should see the role {string} displayed for the new event', async (role: string) => {
-  await expect(pageFixture.page.getByText(role)).toBeVisible();
+  await playwright.expect(pageFixture.page.getByText(role)).toBeVisible();
 });
 
 Then('the event form should be closed', async () => {
-  await expect(pageFixture.page.getByRole('heading', { name: 'Add New Event' })).not.toBeVisible();
+  await playwright.expect(pageFixture.page.getByRole('heading', { name: 'Add New Event' })).not.toBeVisible();
 });
 
 Then('I should not see {string} in the event list', async (eventName: string) => {
-  await expect(pageFixture.page.getByText(eventName)).not.toBeVisible();
+  await playwright.expect(pageFixture.page.getByText(eventName)).not.toBeVisible();
 });
 
 Given('there are more than {int} events available', async (count: number) => {
@@ -57,26 +57,26 @@ When('I view the {string} section', async (sectionName: string) => {
 });
 
 Then('I should see exactly {int} events displayed', async (count: number) => {
-  await expect(pageFixture.page.locator('[data-testid="event-item"]')).toHaveCount(count);
+  await playwright.expect(pageFixture.page.locator('[data-testid="event-item"]')).toHaveCount(count);
 });
 
 Then('I should see a {string} button', async (buttonName: string) => {
-  await expect(pageFixture.page.getByRole('button', { name: buttonName })).toBeVisible();
+  await playwright.expect(pageFixture.page.getByRole('button', { name: buttonName })).toBeVisible();
 });
 
 Then('I should see a list of existing events', async () => {
   // Check if the grid container exists
-  await expect(pageFixture.page.locator('#event .grid')).toBeVisible();
+  await playwright.expect(pageFixture.page.locator('#event .grid')).toBeVisible();
   // Check if there are any event items
-  await expect(pageFixture.page.locator('[data-testid="event-item"]')).not.toHaveCount(0);
+  await playwright.expect(pageFixture.page.locator('[data-testid="event-item"]')).not.toHaveCount(0);
 });
 
 Then('I should see event details like {string}', async (text: string) => {
-  await expect(pageFixture.page.getByText(text)).toBeVisible();
+  await playwright.expect(pageFixture.page.getByText(text)).toBeVisible();
 });
 
 Then('I should not see the 4th event or subsequent events directly in the list', async () => {
   // Assuming we know the 4th event's title from the initial data
   // In Event.tsx, the 4th event is "Kubernetes Advanced Networking"
-  await expect(pageFixture.page.getByText('Kubernetes Advanced Networking')).not.toBeVisible();
+  await playwright.expect(pageFixture.page.getByText('Kubernetes Advanced Networking')).not.toBeVisible();
 });

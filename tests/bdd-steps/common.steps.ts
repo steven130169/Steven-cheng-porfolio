@@ -1,8 +1,8 @@
 import { Given, When, Then } from '@cucumber/cucumber';
-import { expect, Page, Locator } from '@playwright/test';
+import * as playwright from '@playwright/test'; // Import as namespace
 import { pageFixture } from './hooks.ts'; // Assuming a hooks.ts for page object
 
-let page: Page;
+let page: playwright.Page;
 
 const sectionSelectorMap: { [key: string]: string } = {
   'Navbar': 'nav',
@@ -43,11 +43,11 @@ When('I scroll to the {string} section', async (sectionName: string) => {
 // A generic "Then I should see {string}" step
 Then('I should see {string}', async (text: string) => {
   page = pageFixture.page;
-  await expect(page.getByText(text)).toBeVisible();
+  await playwright.expect(page.getByText(text)).toBeVisible();
 });
 
 Then('I should see the {string} section', async (sectionName: string) => {
   page = pageFixture.page;
   const selector = getSelector(sectionName);
-  await expect(page.locator(selector)).toBeVisible();
+  await playwright.expect(page.locator(selector)).toBeVisible();
 });

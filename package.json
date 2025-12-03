@@ -11,15 +11,21 @@
     "test:backend:unit": "npm run test -w backend",
     "test:e2e": "playwright test -c e2e/playwright.config.ts",
     "test:bdd": "TS_NODE_PROJECT=e2e/tsconfig.json cucumber-js -c e2e/cucumber.json",
-    "lint": "npm run lint -w frontend && npm run lint -w backend"
+    "lint": "npm run lint -w frontend && npm run lint -w backend",
+    "release": "release-it"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
     "@cucumber/cucumber": "^12.3.0",
     "@playwright/test": "^1.57.0",
+    "@release-it/conventional-changelog": "^10.0.2",
     "@types/node": "^24.10.1",
     "eslint": "^9.39.1",
+    "husky": "^9.1.7",
     "playwright": "^1.57.0",
     "playwright-bdd": "^8.4.2",
+    "release-it": "^19.0.6",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.0"
   }

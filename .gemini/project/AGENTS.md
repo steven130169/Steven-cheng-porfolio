@@ -138,3 +138,6 @@
 
 ## 7. 一般準則 (General Guidelines)
 *   **Always document architectural decisions in the `docs/adr` folder.**
+*   **記憶儲存位置**：所有專案相關記憶必須儲存在 `./.gemini/` 資料夾下。
+    *   **長期規則/角色設定/工作流**：寫入 `./.gemini/project/AGENTS.md`。
+    *   **待辦事項/短期進度/暫存記憶**：寫入 `./.gemini/todo/AGENTS.md`。

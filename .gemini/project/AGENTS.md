@@ -116,10 +116,14 @@
 
 ## 5. 工具指令 (Commands)
 
-* Unit/Integration: `npm run test:unit`
-* E2E: `npm run test:e2e`
-* E2E UI Mode: `npx playwright test --ui` (調試用)
-* Lint: `npm run lint`
+*   全部測試 (Unit): `npm run test` (同時執行前端與後端單元測試)
+*   前端單元測試: `npm run test:frontend:unit`
+*   後端單元測試: `npm run test:backend:unit`
+*   E2E 測試: `npm run test:e2e`
+*   E2E UI Mode: `npm run test:e2e:ui` (前端 playwright.config.ts 應該要提供)
+*   BDD 測試: `npm run test:bdd`
+*   全部 Lint: `npm run lint` (同時執行前端與後端 lint)
+
 
 ---
 

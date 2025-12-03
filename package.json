@@ -4,5 +4,23 @@
   "workspaces": [
     "frontend",
     "backend"
-  ]
+  ],
+  "scripts": {
+    "test": "npm run test:frontend:unit && npm run test:backend:unit",
+    "test:frontend:unit": "npm run test:unit -w frontend",
+    "test:backend:unit": "npm run test -w backend",
+    "test:e2e": "playwright test",
+    "test:bdd": "cucumber-js",
+    "lint": "npm run lint -w frontend && npm run lint -w backend"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^12.3.0",
+    "@playwright/test": "^1.57.0",
+    "@types/node": "^24.10.1",
+    "eslint": "^9.39.1",
+    "playwright": "^1.57.0",
+    "playwright-bdd": "^8.4.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.0"
+  }
 }

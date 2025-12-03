@@ -73,4 +73,23 @@ describe('Event', () => {
     expect(screen.getAllByTestId('event-item')).toHaveLength(3); 
     expect(screen.getByRole('button', { name: /View All Events/i })).toBeInTheDocument(); 
   });
+
+  it('does not display the "View All Events" button when there are 3 or fewer events', async () => {
+    // Mock fetch to return only 3 events
+    global.fetch = vi.fn((url, options: RequestInit | undefined) => {
+      if (url === '/api/events' && (!options || !options.method || options.method === 'GET')) {
+          return Promise.resolve({
+              ok: true,
+              json: () => Promise.resolve(mockEvents.slice(0, 3)), // Only 3 events
+          } as Response);
+      }
+      return Promise.reject(new Error(`Unknown URL: ${url}`));
+    });
+
+    render(<Event />);
+    await waitFor(() => expect(screen.queryByText('Loading events...')).not.toBeInTheDocument());
+    
+    expect(screen.getAllByTestId('event-item')).toHaveLength(3);
+    expect(screen.queryByRole('button', { name: /View All Events/i })).not.toBeInTheDocument();
+  });
 });

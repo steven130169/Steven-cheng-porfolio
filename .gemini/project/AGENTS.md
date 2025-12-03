@@ -95,49 +95,107 @@
 * **非同步行為處理**: 使用 `waitFor` 或 `findBy*`，**禁止**使用硬編碼的 sleep。
 
 ### 3. E2E 測試 (End-to-End) - Playwright
-* **核心原則**: 站在使用者角度驗證完整業務流程。
-* **配置**: `fullyParallel: true` 以提升速度。
-* **資料隔離**: 每個測試必須獨立。使用 `beforeEach` 重置環境或使用測試專用帳號。
-* **等待機制**:
-    * ❌ 禁止: `await page.waitForTimeout(3000)`
-    * ✅ 必須: `await page.waitForSelector(...)` 或 Web-first assertions (如 `toBeVisible()`)。
+
+*   **核心原則**: 站在使用者角度驗證完整業務流程。
+
+*   **配置**: `fullyParallel: true` 以提升速度。
+
+*   **資料隔離**: 每個測試必須獨立。使用 `beforeEach` 重置環境或使用測試專用帳號。
+
+*   **等待機制**:
+
+    *   ❌ 禁止: `await page.waitForTimeout(3000)`
+
+    *   ✅ 必須: `await page.waitForSelector(...)` 或 Web-first assertions (如 `toBeVisible()`)。
+
+
+
+### 4. 測試權責劃分 (Separation of Concerns) - 參閱 ADR 0006
+
+*   **BDD (Feature)**: 負責「業務驗收」。只要是 User Story、業務流程、驗收條件，請優先寫成 `.feature`。
+
+*   **Playwright Native (Spec)**: 負責「工程健康」。Smoke Test、純 UI 互動細節、系統穩定性檢查，使用 `.spec.ts`。
+
+*   **Rule**: 避免重複。如果 BDD 已經測了快樂路徑，Playwright Spec 就不需要再測一次相同的邏輯，除非是為了特定的技術驗證。
+
+
 
 ---
+
+
 
 ## 4. 絕對邊界 (Boundaries)
 
-* **Never** 在單元測試中發起真實的網絡請求 (Network Request)。
-* **Never** 在 Integration Test 中測試 React 的 state 或元件實例方法 (Implementation Details)。
-* **Never** 使用 `any` 類型來繞過 TypeScript 錯誤。
-* **Never** 刪除失敗的測試來讓 CI 通過，必須修復代碼。
-* **Never** 在 E2E 測試中使用真實的生產環境使用者數據。
+
+
+*   **Never** 在單元測試中發起真實的網絡請求 (Network Request)。
+
+*   **Never** 在 Integration Test 中測試 React 的 state 或元件實例方法 (Implementation Details)。
+
+*   **Never** 使用 `any` 類型來繞過 TypeScript 錯誤。
+
+*   **Never** 刪除失敗的測試來讓 CI 通過，必須修復代碼。
+
+*   **Never** 在 E2E 測試中使用真實的生產環境使用者數據。
+
+
 
 ---
+
+
 
 ## 5. 工具指令 (Commands)
 
+
+
 *   全部測試 (Unit): `npm run test` (同時執行前端與後端單元測試)
+
 *   前端單元測試: `npm run test:frontend:unit`
+
 *   後端單元測試: `npm run test:backend:unit`
-*   E2E 測試: `npm run test:e2e`
+
+*   E2E 測試: `npm run test:e2e` (包含 Playwright 原生測試與 BDD 測試)
+
+*   BDD 測試: `npm run test:bdd` (獨立運行 Feature 測試)
+
 *   E2E UI Mode: `npm run test:e2e:ui` (前端 playwright.config.ts 應該要提供)
+
 *   BDD 測試: `npm run test:bdd`
+
 *   全部 Lint: `npm run lint` (同時執行前端與後端 lint)
 
 
+
+
+
 ---
+
+
 
 ## 6. 語氣與風格 (Tone & Style)
 
+
+
 * **語言**：繁體中文（台灣）。
+
 * **態度**：
+
     * 在 Mode A (落地)：**包容且防禦性強**（"先讓它能跑，別管醜不醜"）。
+
     * 在 Mode B (開發)：**嚴格且具批判性**（"違反 TDD 流程，請先寫測試"）。
+
 * **關鍵詞**：「行為已鎖定」、「測試保護網」、「Red-Green-Refactor」、「Test Behavior, Not Implementation」。
+
 ---
 
+
+
 ## 7. 一般準則 (General Guidelines)
+
 *   **Always document architectural decisions in the `docs/adr` folder.**
+
+*   **Consult ADRs Regularly**: 在進行重大決策或架構調整前，務必先查閱 `docs/adr/` 下的 Architecture Decision Records，確保行動符合團隊已定下的架構規範。
+
 *   **記憶儲存位置**：所有專案相關記憶必須儲存在 `./.gemini/` 資料夾下。
     *   **長期規則/角色設定/工作流**：寫入 `./.gemini/project/AGENTS.md`。
     *   **待辦事項/短期進度/暫存記憶**：寫入 `./.gemini/todo/AGENTS.md`。

@@ -50,6 +50,9 @@ test.describe('Portfolio E2E Smoke Tests', () => {
   });
 
   test('should allow adding a new event via the form', async ({ page }) => {
+    const uniqueId = Date.now().toString() + Math.floor(Math.random() * 1000).toString();
+    const title = `Playwright E2E Workshop ${uniqueId}`;
+    
     await page.getByRole('link', { name: 'Event' }).first().click();
     
     // Wait for events to load
@@ -57,16 +60,18 @@ test.describe('Portfolio E2E Smoke Tests', () => {
 
     await page.getByRole('button', { name: 'Add Event' }).click();
 
-    await page.getByLabel('Title').fill('Playwright E2E Workshop');
+    await page.getByLabel('Title').fill(title);
     await page.getByLabel('Role').fill('Lead Instructor');
     await page.getByLabel('Date').fill('Jan 2026');
     await page.getByLabel('Description').fill('Learning E2E testing best practices.');
 
     await page.getByRole('button', { name: 'Save Event' }).click();
 
-    await expect(page.getByText('Playwright E2E Workshop')).toBeVisible();
-    await expect(page.getByText('Lead Instructor')).toBeVisible();
-    await expect(page.getByText('Jan 2026')).toBeVisible();
+    // Scope check to the specific card to avoid "Lead Instructor" duplicates from other parallel runs
+    const card = page.locator('[data-testid="event-item"]').filter({ hasText: title });
+    await expect(card).toBeVisible();
+    await expect(card.getByText('Lead Instructor')).toBeVisible();
+    await expect(card.getByText('Jan 2026')).toBeVisible();
   });
 
   test('should display a maximum of 3 events and a "View All Events" button', async ({ page, request }) => {

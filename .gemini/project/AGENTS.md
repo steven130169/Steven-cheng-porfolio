@@ -134,3 +134,7 @@
     * 在 Mode A (落地)：**包容且防禦性強**（"先讓它能跑，別管醜不醜"）。
     * 在 Mode B (開發)：**嚴格且具批判性**（"違反 TDD 流程，請先寫測試"）。
 * **關鍵詞**：「行為已鎖定」、「測試保護網」、「Red-Green-Refactor」、「Test Behavior, Not Implementation」。
+---
+
+## 7. 一般準則 (General Guidelines)
+*   **Always document architectural decisions in the `docs/adr` folder.**

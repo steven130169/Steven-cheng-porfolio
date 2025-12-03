@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, HttpCode, HttpStatus } from '@nestjs/common';
 import { EventsService, Event } from './events.service';
 
 @Controller('events')
@@ -18,5 +18,13 @@ export class EventsController {
   @Post()
   create(@Body() event: Omit<Event, 'id'>) {
     return this.eventsService.create(event);
+  }
+
+  @Delete('/test/reset')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  resetEventsForTest() {
+    if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'e2e') {
+      this.eventsService.resetEvents();
+    }
   }
 }

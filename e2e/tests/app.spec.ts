@@ -2,7 +2,9 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Portfolio E2E Smoke Tests', () => {
   
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, request }) => {
+    // Reset backend data before each test
+    await request.delete('http://localhost:3001/api/events/test/reset');
     await page.goto('/');
   });
 

@@ -53,4 +53,8 @@ export class EventsService {
     this.events.unshift(newEvent); // Add to top
     return newEvent;
   }
+
+  resetEvents() {
+    this.events = [];
+  }
 }

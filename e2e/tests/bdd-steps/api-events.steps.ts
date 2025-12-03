@@ -7,22 +7,30 @@ let apiContext: APIRequestContext;
 let response: any;
 let responseBody: any;
 
+// Store events added by Given steps for later retrieval
+const seededEvents: any[] = [];
+
 Given('the backend has the following events:', async function (dataTable) {
-  // In a real app with DB, we would insert data here.
-  // For now, we will assume the backend implementation respects this requirement statically.
-  console.log('Assuming backend is seeded with:', dataTable.hashes());
+  apiContext = await request.newContext({ baseURL: API_URL });
+  await apiContext.delete('events/test/reset'); // Ensure backend is clean
+  seededEvents.length = 0; // Clear previous seeds (client side)
+  for (const row of dataTable.hashes()) {
+    const eventData = { ...row, tags: ['test'], status: 'Upcoming', role: 'test' }; 
+    const res = await apiContext.post('events', { data: eventData });
+    const createdEvent = await res.json();
+    seededEvents.push(createdEvent);
+  }
 });
 
 Given('the backend has an event with ID {string} and title {string}', async function (id, title) {
-    console.log(`Assuming backend has event ${id} with title ${title}`);
+    apiContext = await request.newContext({ baseURL: API_URL });
+    // Ensure all required fields for Event interface are present
+    const eventData = { title, role: 'test', date: '2024-01-01', description: 'test', tags: ['test'], status: 'Upcoming' };
+    await apiContext.post('events', { data: eventData });
 });
 
 When('I make a GET request to {string}', async function (endpoint) {
-  apiContext = await request.newContext({
-    baseURL: API_URL,
-  });
-  // Playwright treats paths starting with '/' as relative to root, ignoring baseURL path.
-  // We remove the leading '/' to append it to the baseURL path (/api).
+  apiContext = await request.newContext({ baseURL: API_URL });
   const sanitizedEndpoint = endpoint.startsWith('/') ? endpoint.substring(1) : endpoint;
   
   response = await apiContext.get(sanitizedEndpoint);
@@ -47,11 +55,9 @@ Then('the first event title should be {string}', async function (title) {
 });
 
 Then('the response body should contain the event with title {string}', async function (title) {
-    // Assuming responseBody is a single object for this step
     expect(responseBody.title).toBe(title);
 });
 
 Then('the response body should contain an error message {string}', async function (message) {
     expect(responseBody.message).toBe(message);
-    // NestJS default 404 structure might involve 'message' or 'error'
 });

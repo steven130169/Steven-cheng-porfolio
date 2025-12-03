@@ -32,7 +32,7 @@ describe('EventsService', () => {
         date: '2024-01-01',
         description: 'Description',
         tags: ['New'],
-        status: 'Upcoming'
+        status: 'Upcoming',
       };
       const result = service.create(newEvent);
       expect(result).toHaveProperty('id');

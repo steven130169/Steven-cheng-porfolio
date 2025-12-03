@@ -16,12 +16,22 @@ export default defineConfig({
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
   },
-  webServer: {
-    command: 'npm run dev -w frontend',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-    cwd: path.resolve(__dirname, '..'), // Explicitly set cwd to the project root
-  },
+  webServer: [
+    {
+      command: 'npm run start:backend',
+      url: 'http://localhost:3001/api',
+      reuseExistingServer: !process.env.CI,
+      cwd: path.resolve(__dirname, '..'),
+      timeout: 120000,
+    },
+    {
+      command: 'npm run start:frontend',
+      url: 'http://localhost:3000',
+      reuseExistingServer: !process.env.CI,
+      cwd: path.resolve(__dirname, '..'),
+      timeout: 120000,
+    },
+  ],
   projects: [
     {
       name: 'chromium',

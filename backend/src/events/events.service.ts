@@ -20,7 +20,7 @@ export class EventsService {
       date: '2023-09-01',
       description: 'A tech conference',
       tags: ['Conference'],
-      status: 'Past'
+      status: 'Past',
     },
     {
       id: '2',
@@ -29,7 +29,7 @@ export class EventsService {
       date: '2023-10-15',
       description: 'Monthly gathering',
       tags: ['Meetup'],
-      status: 'Past'
+      status: 'Past',
     },
   ];
 
@@ -38,7 +38,7 @@ export class EventsService {
   }
 
   findOne(id: string): Event {
-    const event = this.events.find(e => e.id === id);
+    const event = this.events.find((e) => e.id === id);
     if (!event) {
       throw new NotFoundException('Event not found');
     }

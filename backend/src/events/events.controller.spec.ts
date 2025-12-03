@@ -49,7 +49,7 @@ describe('EventsController', () => {
             }),
             create: jest.fn().mockImplementation((dto: unknown) => ({
               id: '3',
-              ...(dto as object)
+              ...(dto as object),
             })),
           },
         },

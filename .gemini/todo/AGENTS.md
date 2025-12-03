@@ -22,3 +22,4 @@
   - 活動管理系統建立
   - 雲端基礎建設規劃
   - CICD建立規劃
+  - 在pre-commit 增加sonar-lint 掃描機制

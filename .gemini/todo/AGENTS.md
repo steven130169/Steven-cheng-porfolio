@@ -1,12 +1,16 @@
 ## Gemini Added Memories
-- User is deciding between Express and NestJS for the backend stack and has asked for a comparison of their pros and cons.
-- User chose NestJS for the backend stack.
-User is now asking for a comparison of Monorepo vs. Side-by-side project structures.
-- User chose Option A (public API, no authentication) for the API contract.
-User is ready to proceed to the implementation phase.
-- User paused the project restructuring to discuss dependency management.
-User is asking if dependencies can be shared between frontend and backend with the current "modified side-by-side" structure plan.
-- User agreed to use NPM Workspaces for dependency management.
-User is asking how to adjust testing strategies (Unit, E2E, BDD) for both frontend and backend in this new Monorepo structure.
-- User wants to isolate project-specific instructions.
-User wants to organize these files in separate folders while ensuring the agent can still read them.
+
+- User is deciding between Express and NestJS for the backend stack and has asked for a comparison of their pros and cons. (完成 - 決策已記錄於 ADR 0003)
+- User chose NestJS for the backend stack. (完成 - 決策已記錄於 ADR 0003)
+- User is now asking for a comparison of Monorepo vs. Side-by-side project structures. (完成 - 決策已記錄於 ADR 0002)
+- User chose Option A (public API, no authentication) for the API contract. (已決策，待實作)
+- User is ready to proceed to the implementation phase. (已討論，待確認下一步)
+- User paused the project restructuring to discuss dependency management. (完成 - NPM Workspaces 已確定)
+- User is asking if dependencies can be shared between frontend and backend with the current "modified side-by-side" structure plan. (完成 - NPM Workspaces 已確定)
+- User agreed to use NPM Workspaces for dependency management. (完成 - 決策已記錄於 ADR 0002)
+- User is asking how to adjust testing strategies (Unit, E2E, BDD) for both frontend and backend in this new Monorepo structure. (完成 - 決策已記錄於 ADR 0004)
+- User wants to isolate project-specific instructions. (完成 - 決策已記錄於 ADR 0005)
+- User wants to organize these files in separate folders while ensuring the agent can still read them. (完成 - 決策已記錄於 ADR 0005)
+- 已新增 ADR 檔案並 Push 到遠端倉庫。(完成)
+- 已將 ADR 文件撰寫準則新增至 `project/AGENTS.md`。(完成)
+- 已將記憶儲存準則新增至 `project/AGENTS.md`。(完成)

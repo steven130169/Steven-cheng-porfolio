@@ -17,7 +17,7 @@ export const BASE_URL = 'http://localhost:3000';
 
 BeforeAll(async function () {
   console.log('Starting development server...');
-  serverProcess = spawn('npm', ['run', 'dev'], {
+  serverProcess = spawn('npm', ['run', 'dev', '-w', 'frontend'], {
     stdio: 'ignore',
     detached: true,
     shell: true

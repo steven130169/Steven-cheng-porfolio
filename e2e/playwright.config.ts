@@ -1,4 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   testDir: './tests',
@@ -12,9 +17,10 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
-    command: 'npm run dev',
+    command: 'npm run dev -w frontend',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
+    cwd: path.resolve(__dirname, '..'), // Explicitly set cwd to the project root
   },
   projects: [
     {

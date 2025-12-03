@@ -4,10 +4,10 @@
       "ts-node/esm"
     ],
     "import": [
-      "tests/bdd-steps/**/*.ts"
+      "e2e/tests/bdd-steps/**/*.ts"
     ],
     "paths": [
-      "specs/**/*.feature"
+      "e2e/specs/**/*.feature"
     ]
   }
 }

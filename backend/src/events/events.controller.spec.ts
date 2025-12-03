@@ -17,14 +17,20 @@ describe('EventsController', () => {
               {
                 id: '1',
                 title: 'DevOps Days',
+                role: 'Org',
                 date: '2023-09-01',
                 description: 'A tech conference',
+                tags: [],
+                status: 'Past',
               },
               {
                 id: '2',
                 title: 'Tech Meetup',
+                role: 'Speaker',
                 date: '2023-10-15',
                 description: 'Monthly gathering',
+                tags: [],
+                status: 'Past',
               },
             ]),
             findOne: jest.fn().mockImplementation((id) => {
@@ -32,12 +38,19 @@ describe('EventsController', () => {
                 return {
                   id: '1',
                   title: 'DevOps Days',
+                  role: 'Org',
                   date: '2023-09-01',
                   description: 'A tech conference',
+                  tags: [],
+                  status: 'Past',
                 };
               }
               throw new NotFoundException('Event not found');
             }),
+            create: jest.fn().mockImplementation((dto: unknown) => ({
+              id: '3',
+              ...(dto as object)
+            })),
           },
         },
       ],
@@ -56,6 +69,22 @@ describe('EventsController', () => {
       const result = controller.findAll();
       expect(result).toHaveLength(2);
       expect(result[0].title).toBe('DevOps Days');
+    });
+  });
+
+  describe('create', () => {
+    it('should create an event', () => {
+      const dto = {
+        title: 'New',
+        role: 'Host',
+        date: '2024',
+        description: 'Desc',
+        tags: [],
+        status: 'Upcoming',
+      };
+      const result = controller.create(dto);
+      expect(result.id).toBe('3');
+      expect(result.title).toBe('New');
     });
   });
 

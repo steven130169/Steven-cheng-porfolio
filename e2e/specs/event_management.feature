@@ -10,7 +10,7 @@ Feature: Event Management System (活動管理系統)
 
   Scenario: View existing events list
     Then I should see a list of existing events
-    And I should see event details like "Cloud Native Taiwan Study Group"
+    And I should see event details like "DevOps Days"
 
   Scenario: Successfully add a new event
     When I click the "Add Event" button

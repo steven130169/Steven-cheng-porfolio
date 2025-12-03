@@ -21,6 +21,7 @@
     "@playwright/test": "^1.57.0",
     "@release-it/conventional-changelog": "^10.0.2",
     "@types/node": "^24.10.1",
+    "conventional-changelog-conventionalcommits": "^9.1.0",
     "eslint": "^9.39.1",
     "husky": "^9.1.7",
     "playwright": "^1.57.0",

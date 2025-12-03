@@ -10,7 +10,7 @@
     "test:frontend:unit": "npm run test:unit -w frontend",
     "test:backend:unit": "npm run test -w backend",
     "test:e2e": "playwright test -c e2e/playwright.config.ts",
-    "test:bdd": "TS_NODE_PROJECT=e2e/tsconfig.json cucumber-js -c e2e/cucumber.json",
+    "test:bdd": "cucumber-js",
     "lint": "npm run lint -w frontend && npm run lint -w backend",
     "release": "release-it",
     "start:frontend": "npm run dev -w frontend",

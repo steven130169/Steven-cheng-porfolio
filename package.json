@@ -14,7 +14,8 @@
     "lint": "npm run lint -w frontend && npm run lint -w backend",
     "release": "release-it",
     "start:frontend": "npm run dev -w frontend",
-    "start:backend": "npm run start:dev -w backend"
+    "start:backend": "npm run start:dev -w backend",
+    "dev": "concurrently \"npm run start:backend\" \"npm run start:frontend\" --names \"BACKEND,FRONTEND\" --prefix-colors \"blue,green\""
   },
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",
@@ -23,6 +24,7 @@
     "@playwright/test": "^1.57.0",
     "@release-it/conventional-changelog": "^10.0.2",
     "@types/node": "^24.10.1",
+    "concurrently": "^9.2.1",
     "conventional-changelog-conventionalcommits": "^9.1.0",
     "eslint": "^9.39.1",
     "husky": "^9.1.7",

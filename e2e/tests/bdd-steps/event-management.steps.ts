@@ -77,7 +77,7 @@ Then('I should see a list of existing events', async () => {
 });
 
 Then('I should see event details like {string}', async (text: string) => {
-  await playwright.expect(pageFixture.page.getByText(text)).toBeVisible();
+  await playwright.expect(pageFixture.page.getByText(text, { exact: true })).toBeVisible();
 });
 
 Then('I should not see the 4th event or subsequent events directly in the list', async () => {

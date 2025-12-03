@@ -7,24 +7,27 @@ let apiContext: APIRequestContext;
 let response: any;
 let responseBody: any;
 
-// Store events added by Given steps for later retrieval
-const seededEvents: any[] = [];
+const uniqueTag = `bdd-test-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+const seededTitles: string[] = [];
 
-Given('the backend has the following events:', async function (dataTable) {
+Given('the backend has seeded test events', async function () {
   apiContext = await request.newContext({ baseURL: API_URL });
-  await apiContext.delete('events/test/reset'); // Ensure backend is clean
-  seededEvents.length = 0; // Clear previous seeds (client side)
-  for (const row of dataTable.hashes()) {
-    const eventData = { ...row, tags: ['test'], status: 'Upcoming', role: 'test' }; 
+  seededTitles.length = 0;
+  
+  const eventsToSeed = [
+      { title: `DevOps Days ${uniqueTag}`, date: '2023-09-01', description: 'A tech conference' },
+      { title: `Tech Meetup ${uniqueTag}`, date: '2023-10-15', description: 'Monthly gathering' }
+  ];
+
+  for (const row of eventsToSeed) {
+    const eventData = { ...row, tags: [uniqueTag], status: 'Upcoming', role: 'test' }; 
     const res = await apiContext.post('events', { data: eventData });
-    const createdEvent = await res.json();
-    seededEvents.push(createdEvent);
+    seededTitles.push(eventData.title);
   }
 });
 
 Given('the backend has an event with ID {string} and title {string}', async function (id, title) {
     apiContext = await request.newContext({ baseURL: API_URL });
-    // Ensure all required fields for Event interface are present
     const eventData = { title, role: 'test', date: '2024-01-01', description: 'test', tags: ['test'], status: 'Upcoming' };
     await apiContext.post('events', { data: eventData });
 });
@@ -45,16 +48,19 @@ Then('the response status code should be {int}', async function (statusCode) {
   expect(response.status()).toBe(statusCode);
 });
 
-Then('the response body should contain {int} events', async function (count) {
+Then('the response body should contain the seeded events', async function () {
   expect(Array.isArray(responseBody)).toBeTruthy();
-  expect(responseBody.length).toBe(count);
-});
-
-Then('the first event title should be {string}', async function (title) {
-  expect(responseBody[0].title).toBe(title);
+  // Filter events by our unique tag
+  const myEvents = responseBody.filter((e: any) => e.tags && e.tags.includes(uniqueTag));
+  expect(myEvents.length).toBe(seededTitles.length);
+  // Verify titles match
+  const myTitles = myEvents.map((e: any) => e.title).sort();
+  const expectedTitles = [...seededTitles].sort();
+  expect(myTitles).toEqual(expectedTitles);
 });
 
 Then('the response body should contain the event with title {string}', async function (title) {
+    // For single event fetch, body is object
     expect(responseBody.title).toBe(title);
 });
 

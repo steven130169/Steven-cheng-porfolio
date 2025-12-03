@@ -20,7 +20,7 @@ BeforeAll(async function () {
   serverProcess = spawn('npm', ['run', 'dev', '-w', 'frontend'], {
     stdio: 'ignore',
     detached: true,
-    shell: true
+    shell: false
   });
 
   await new Promise(resolve => setTimeout(resolve, 5000));

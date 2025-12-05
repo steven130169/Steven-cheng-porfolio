@@ -18,7 +18,15 @@
 - 已完成 Frontend Event 組件與後端 API 的串接。(完成)
 - 已建立並固化 BDD 與 E2E 測試流程，支援數據隔離與並行執行。(完成)
 - 已優化開發體驗，新增 `npm run dev` 與修復 IDE 整合配置。(完成)
-- 待完成事項
+- 已生成專案 `README.md`。(完成)
+- 已根據使用者要求，提交 `README.md`、更新後的 ADRs 與基礎設施檔案。(完成)
+- User agreed to use GitHub Actions for CI/CD and a "Protected Feature Branch" Git Flow strategy (Single Main Branch). (完成 - 決策已記錄於 ADR 0009)
+- 已更新 ADR 0009 以明確說明採用 "Single Main Branch" 策略。(完成)
+
+- 待完成事項 (下次會從這裡繼續)
+  - **使用者行動**: 手動設定 GitHub Branch Protection Rules (在 GitHub Repo Settings 中設定 `main` 分支保護，禁止直接 push，要求 PR，並在 CI 建立後啟用 Status Checks)。
+  - **Agent 行動**: 建立 CI Pipeline (`.github/workflows/ci.yml`)。
+  - **Agent 行動**: 建立 Release Pipeline (`.github/workflows/release.yml`)。
   - 活動管理系統建立
   - 雲端基礎建設規劃
   - CICD建立規劃

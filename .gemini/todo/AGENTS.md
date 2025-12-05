@@ -22,12 +22,41 @@
 - 已根據使用者要求，提交 `README.md`、更新後的 ADRs 與基礎設施檔案。(完成)
 - User agreed to use GitHub Actions for CI/CD and a "Protected Feature Branch" Git Flow strategy (Single Main Branch). (完成 - 決策已記錄於 ADR 0009)
 - 已更新 ADR 0009 以明確說明採用 "Single Main Branch" 策略。(完成)
+- 已確立整體架構：Next.js (GCP Cloud Run) + Custom NestJS (GCP Cloud Run) + Firestore + 自建 CMS 模組 (Firestore-backed) (完成 - 決策已記錄於 ADR 0010)
 
-- 待完成事項 (下次會從這裡繼續)
-  - **使用者行動**: 手動設定 GitHub Branch Protection Rules (在 GitHub Repo Settings 中設定 `main` 分支保護，禁止直接 push，要求 PR，並在 CI 建立後啟用 Status Checks)。
-  - **Agent 行動**: 建立 CI Pipeline (`.github/workflows/ci.yml`)。
-  - **Agent 行動**: 建立 Release Pipeline (`.github/workflows/release.yml`)。
-  - 活動管理系統建立
-  - 雲端基礎建設規劃
-  - CICD建立規劃
-  - 在pre-commit 增加sonar-lint 掃描機制
+## 待辦事項 (下次會從這裡繼續)
+
+- **前端 Next.js 專案初始化** (取代 `frontend` 目錄)
+  - [ ] 在專案根目錄下，移除現有的 `frontend` 資料夾。
+  - [ ] 在相同位置，使用 `create-next-app` 初始化一個新的 Next.js 專案。
+  - [ ] 配置 Next.js 專案，使其支援 TypeScript。
+  - [ ] 將現有 `frontend` 中的 `App.tsx`、`index.tsx`、`components` 等核心 UI 程式碼，逐步遷移到新的 Next.js 專案中。
+  - [ ] 配置 Next.js 的 Dockerfile，使其能在 GCP Cloud Run 上運行。
+  - [ ] 更新 Terraform 配置，部署 Next.js 到 Cloud Run。
+- **Blog CMS 模組開發** (參考 ADR 0013)
+  - [ ] 設計 Firestore 中 Blog Post 的資料結構。
+  - [ ] 在 NestJS 後端建立 `BlogModule`，提供 CRUD API。
+  - [ ] 在 Next.js 前端開發 `/blog` 頁面顯示文章。
+  - [ ] 在 Next.js 前端開發 `/admin/blog` 頁面，提供文章編輯功能 (包含 Markdown Editor)。
+- **售票系統模組開發** (參考 ADR 0012)
+  - [ ] 設計 Firestore 中 Events, Tickets, Orders 的資料結構。
+  - [ ] 在 NestJS 後端建立 `EventModule`、`OrderModule`。
+  - [ ] 實作庫存管理 (Inventory Management) 服務，使用 Firestore Transaction。
+  - [ ] 實作訂單狀態機 (Order State Machine)。
+  - [ ] 整合第三方支付 (ECPay/Stripe) 流程。
+  - [ ] 開發 Next.js 前端頁面，提供選票、結帳功能。
+- **CRM 模組開發** (參考 ADR 0011)
+  - [ ] 設計 Firestore `customers` 資料結構。
+  - [ ] 在 NestJS 實作 `CustomerModule`。
+  - [ ] 實作「購票自動歸戶」邏輯。
+  - [ ] 實作 Admin UI 裡的「會員列表」與「標籤管理」。
+- **CI/CD Pipeline 完善**
+  - [ ] 更新 `.github/workflows/ci.yml`，包含 Next.js 的 Build 與 Lint。
+  - [ ] 創建 `.github/workflows/deploy.yml`，實現 Next.js 與 NestJS 到 Cloud Run 的自動部署。
+- **Terraform Infra 完善**
+  - [ ] 更新 `infra/main.tf` 以定義 Next.js 的 Cloud Run 服務。
+  - [ ] 確保 Terraform 可以部署所有服務。
+- **電子報模組 (Optional)**
+  - [ ] 設計 Firestore 中 Subscribers, Newsletters 的資料結構。
+  - [ ] 在 NestJS 後端建立 `NewsletterModule`，提供訂閱及發送功能。
+  - [ ] 整合 Email 發送服務 (例如 SendGrid)。

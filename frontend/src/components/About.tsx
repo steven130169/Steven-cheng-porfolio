@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import React from 'react';
 import { Cloud, GitBranch, Terminal, Shield } from 'lucide-react';
 

@@ -212,17 +212,17 @@ exports[`Hero > renders correctly 1`] = `
             <img
               alt="Steven Cheng portfolio image 1"
               class="absolute inset-0 w-full h-full object-cover  opacity-100"
-              src="/image/ddd.webp"
+              src="/images/ddd.webp"
             />
             <img
               alt="Steven Cheng portfolio image 2"
               class="absolute inset-0 w-full h-full object-cover  opacity-0"
-              src="/image/2023DevOpsDays-1.webp"
+              src="/images/2023DevOpsDays-1.webp"
             />
             <img
               alt="Steven Cheng portfolio image 3"
               class="absolute inset-0 w-full h-full object-cover  opacity-0"
-              src="/image/2023DevOpsDays-2.webp"
+              src="/images/2023DevOpsDays-2.webp"
             />
           </div>
           <div

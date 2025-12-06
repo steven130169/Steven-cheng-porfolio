@@ -23,16 +23,10 @@
 - User agreed to use GitHub Actions for CI/CD and a "Protected Feature Branch" Git Flow strategy (Single Main Branch). (完成 - 決策已記錄於 ADR 0009)
 - 已更新 ADR 0009 以明確說明採用 "Single Main Branch" 策略。(完成)
 - 已確立整體架構：Next.js (GCP Cloud Run) + Custom NestJS (GCP Cloud Run) + Firestore + 自建 CMS 模組 (Firestore-backed) (完成 - 決策已記錄於 ADR 0010)
+- 已完成前端遷移：Vite -> Next.js 14 (App Router)，包含所有組件、測試與 E2E 配置。(完成)
 
 ## 待辦事項 (下次會從這裡繼續)
 
-- **前端 Next.js 專案初始化** (取代 `frontend` 目錄)
-  - [ ] 在專案根目錄下，移除現有的 `frontend` 資料夾。
-  - [ ] 在相同位置，使用 `create-next-app` 初始化一個新的 Next.js 專案。
-  - [ ] 配置 Next.js 專案，使其支援 TypeScript。
-  - [ ] 將現有 `frontend` 中的 `App.tsx`、`index.tsx`、`components` 等核心 UI 程式碼，逐步遷移到新的 Next.js 專案中。
-  - [ ] 配置 Next.js 的 Dockerfile，使其能在 GCP Cloud Run 上運行。
-  - [ ] 更新 Terraform 配置，部署 Next.js 到 Cloud Run。
 - **Blog CMS 模組開發** (參考 ADR 0013)
   - [ ] 設計 Firestore 中 Blog Post 的資料結構。
   - [ ] 在 NestJS 後端建立 `BlogModule`，提供 CRUD API。

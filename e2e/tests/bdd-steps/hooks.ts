@@ -27,7 +27,7 @@ BeforeAll(async function () {
   frontendProcess = spawn('npm', ['run', 'start:frontend'], { stdio: 'ignore', shell: true, detached: true });
 
   console.log('Waiting for servers to stabilize...');
-  await new Promise(r => setTimeout(r, 15000)); // Give enough time for NestJS to build
+  await new Promise(r => setTimeout(r, 30000)); // Give enough time for NestJS to build
 
   console.log('Starting Playwright browser...');
   browser = await playwright.chromium.launch({ headless: true });

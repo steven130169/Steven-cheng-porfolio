@@ -7,9 +7,9 @@ const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
           <div>
-            <h2 className="text-3xl font-bold text-dark-text mb-6">Let's build something <br/> <span className="text-primary">amazing together.</span></h2>
+            <h2 className="text-3xl font-bold text-dark-text mb-6">Let&apos;s build something <br/> <span className="text-primary">amazing together.</span></h2>
             <p className="text-dark-text/70 max-w-md mb-8">
-              I'm always open to discussing product design work or partnership opportunities.
+              I&apos;m always open to discussing product design work or partnership opportunities.
             </p>
             <a 
                 href="mailto:steven@chiwencheng.com" 

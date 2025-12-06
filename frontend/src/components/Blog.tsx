@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React from 'react';
 import { ArrowRight, Clock, Mail } from 'lucide-react';
 import { BlogPost } from '../types';

@@ -1,10 +1,13 @@
+/* eslint-disable @next/next/no-img-element */
+'use client';
+
 import React, {useState, useEffect} from 'react';
 import {ArrowRight, AtSign, Cloud, Github, Linkedin} from 'lucide-react';
 
 const images = [
-    '/image/ddd.webp',
-    '/image/2023DevOpsDays-1.webp',
-    '/image/2023DevOpsDays-2.webp'
+    '/images/ddd.webp',
+    '/images/2023DevOpsDays-1.webp',
+    '/images/2023DevOpsDays-2.webp'
 ];
 
 const Hero: React.FC = () => {
@@ -50,7 +53,7 @@ const Hero: React.FC = () => {
                         </h1>
 
                         <p className="text-lg text-dark-text/70 max-w-xl leading-relaxed mx-auto lg:mx-0">
-                            I'm Steven (鄭棋文), a Senior Cloud Architect. I specialize in designing resilient cloud
+                            I&apos;m Steven (鄭棋文), a Senior Cloud Architect. I specialize in designing resilient cloud
                             infrastructures, optimizing DevOps workflows, and mastering CI/CD pipelines to deliver speed
                             and stability.
                         </p>

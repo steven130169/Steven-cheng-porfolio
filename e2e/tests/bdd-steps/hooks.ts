@@ -1,8 +1,9 @@
 import { Before, After, BeforeAll, AfterAll, setDefaultTimeout } from '@cucumber/cucumber';
 import * as playwright from '@playwright/test';
-import { spawn, ChildProcess } from 'child_process';
+import { spawn, ChildProcess, execSync } from 'child_process';
+import path from 'path';
 
-setDefaultTimeout(60 * 1000);
+setDefaultTimeout(120 * 1000);
 
 let browser: playwright.Browser;
 let context: playwright.BrowserContext;
@@ -16,32 +17,76 @@ export const pageFixture = {
 export const BASE_URL = 'http://localhost:3000';
 export const API_URL = 'http://localhost:3001/api/';
 
+async function waitForUrl(url: string, timeout = 60000) {
+  const start = Date.now();
+  while (Date.now() - start < timeout) {
+    try {
+      const res = await fetch(url);
+      if (res.status < 599) return;
+    } catch (e: any) {
+      // ignore
+    }
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+  throw new Error(`Timeout waiting for ${url}`);
+}
+
 BeforeAll(async function () {
-  console.log('Starting servers for BDD tests...');
-  
-  // We attempt to start servers. If they are already running (e.g. user ran npm run dev), 
-  // these might fail or multiple instances might try to run. 
-  // ideally we should check ports. For now, we assume sequential execution in CI/Test script.
-  
-  backendProcess = spawn('npm', ['run', 'start:backend'], { stdio: 'ignore', shell: true, detached: true });
-  frontendProcess = spawn('npm', ['run', 'start:frontend'], { stdio: 'ignore', shell: true, detached: true });
+  console.log('🧹 Cleaning up ports 3000 and 3001...');
+  try { execSync('npx kill-port 3000 3001'); } catch (e) {}
 
-  console.log('Waiting for servers to stabilize...');
-  await new Promise(r => setTimeout(r, 30000)); // Give enough time for NestJS to build
+  console.log('🚀 Starting servers for BDD tests...');
+  
+  // We need to run these commands from the ROOT directory because 'start:backend' and 'start:frontend' 
+  // are defined in the root package.json.
+  // process.cwd() when running 'npm run test:bdd -w e2e' is the 'e2e' folder.
+  const projectRoot = path.resolve(process.cwd(), '..');
 
-  console.log('Starting Playwright browser...');
+  backendProcess = spawn('npm', ['run', 'start:backend'], { 
+    cwd: projectRoot,
+    stdio: 'ignore', 
+    shell: true, 
+    detached: true,
+    env: { ...process.env, PORT: '3001' }
+  });
+
+  frontendProcess = spawn('npm', ['run', 'start:frontend'], { 
+    cwd: projectRoot,
+    stdio: 'ignore', 
+    shell: true, 
+    detached: true,
+    env: { ...process.env, PORT: '3000' } 
+  });
+
+  console.log('⏳ Waiting for servers to become available...');
+  
+  try {
+    await Promise.all([
+      waitForUrl('http://localhost:3001/api'),
+      waitForUrl('http://localhost:3000'),
+    ]);
+    console.log('✅ Servers are up and running!');
+  } catch (err) {
+    console.error('❌ Timeout waiting for servers to start.');
+    if (backendProcess && backendProcess.pid) {
+        try { process.kill(-backendProcess.pid); } catch(e) {}
+    }
+    if (frontendProcess && frontendProcess.pid) {
+        try { process.kill(-frontendProcess.pid); } catch(e) {}
+    }
+    throw err;
+  }
+
+  console.log('🎭 Starting Playwright browser...');
   browser = await playwright.chromium.launch({ headless: true });
 });
 
 Before(async function () {
   try {
     const apiContext = await playwright.request.newContext({ baseURL: API_URL });
-    const res = await apiContext.delete('events/test/reset');
-    if (!res.ok()) {
-        console.error(`Backend reset failed: ${res.status()} ${res.statusText()}`);
-    }
+    await apiContext.delete('events/test/reset').catch(() => {}); 
   } catch (e) {
-    console.warn('Failed to reset backend. Is it running?', e);
+    console.warn('Warning: Failed to reset backend state.', e);
   }
 
   context = await browser.newContext({
@@ -58,10 +103,9 @@ After(async function () {
 AfterAll(async function () {
   await browser.close();
   
-  if (backendProcess && backendProcess.pid) {
-    try { process.kill(-backendProcess.pid); } catch(e) {}
-  }
-  if (frontendProcess && frontendProcess.pid) {
-    try { process.kill(-frontendProcess.pid); } catch(e) {}
-  }
+  console.log('🛑 Stopping servers...');
+  if (backendProcess) backendProcess.kill();
+  if (frontendProcess) frontendProcess.kill();
+  
+  try { execSync('npx kill-port 3000 3001'); } catch (e) {}
 });

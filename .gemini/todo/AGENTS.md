@@ -6,7 +6,7 @@
 - User chose Option A (public API, no authentication) for the API contract. (完成 - Events API 已實作並通過測試)
 - User is ready to proceed to the implementation phase. (進行中 - 已完成 Events 模組實作)
 - User paused the project restructuring to discuss dependency management. (完成 - NPM Workspaces 已確定)
-- User is asking if dependencies can be shared between frontend and backend with the current "modified side-by-side" structure plan. (完成 - NPM Workspaces 已確定)
+- User is asking if dependencies can be shared between frontend and backend with the current "modified side-by-side" structure plan. (完成 - NPM Work策已記錄於 ADR 0002)
 - User agreed to use NPM Workspaces for dependency management. (完成 - 決策已記錄於 ADR 0002)
 - User is asking how to adjust testing strategies (Unit, E2E, BDD) for both frontend and backend in this new Monorepo structure. (完成 - 決策已記錄於 ADR 0004)
 - User wants to isolate project-specific instructions. (完成 - 決策已記錄於 ADR 0005)
@@ -54,3 +54,8 @@
   - [ ] 設計 Firestore 中 Subscribers, Newsletters 的資料結構。
   - [ ] 在 NestJS 後端建立 `NewsletterModule`，提供訂閱及發送功能。
   - [ ] 整合 Email 發送服務 (例如 SendGrid)。
+- **修復 BDD 測試基礎設施** (Technical Debt)
+  - [ ] 診斷 `npm run test:bdd` 在 `hooks.ts` 中無法啟動 Next.js 伺服器的根本原因。
+  - [ ] 實作可靠的伺服器啟動和等待機制（例如使用 `wait-on` 套件）。
+  - [ ] 重新啟用 `npm run test:bdd` 腳本。
+  - [ ] 更新 `.husky/pre-push` 確保 BDD 測試在推送前運行。

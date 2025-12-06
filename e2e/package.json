@@ -5,5 +5,9 @@
   "type": "module",
   "scripts": {
     "test:bdd": "TS_NODE_PROJECT=tsconfig.json cucumber-js -c cucumber.json"
+  },
+  "devDependencies": {
+    "kill-port": "^2.0.1",
+    "wait-on": "^9.0.3"
   }
 }

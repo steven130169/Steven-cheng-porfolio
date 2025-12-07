@@ -28,3 +28,7 @@ playwright-report/
 test-results/
 .gemini/*.orig
 .gemini/settings.json
+
+# Terraform specific
+infra/.terraform/
+infra/.terraform.lock.hcl

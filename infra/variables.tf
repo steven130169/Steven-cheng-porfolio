@@ -9,10 +9,16 @@ variable "region" {
   default     = "asia-east1" # 預設台灣 (或您偏好的區域)
 }
 
-variable "service_name" {
-  description = "The name of the Cloud Run service"
+variable "backend_service_name" {
+  description = "The name of the Backend Cloud Run service"
   type        = string
   default     = "portfolio-backend"
+}
+
+variable "frontend_service_name" {
+  description = "The name of the Frontend Cloud Run service"
+  type        = string
+  default     = "portfolio-frontend"
 }
 
 variable "repository_id" {

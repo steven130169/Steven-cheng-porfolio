@@ -18,7 +18,7 @@ resource "google_project_service" "artifact_registry_api" {
 resource "google_artifact_registry_repository" "repo" {
   location      = var.region
   repository_id = var.repository_id
-  description   = "Docker repository for Portfolio Backend"
+  description   = "Docker repository for Portfolio"
   format        = "DOCKER"
 
   depends_on = [google_project_service.artifact_registry_api]
@@ -37,9 +37,9 @@ resource "google_firestore_database" "database" {
   depends_on = [google_project_service.firestore_api]
 }
 
-# 4. Cloud Run v2 Service
-resource "google_cloud_run_v2_service" "default" {
-  name     = var.service_name
+# 4. Backend Cloud Run Service
+resource "google_cloud_run_v2_service" "backend" {
+  name     = var.backend_service_name
   location = var.region
   ingress  = "INGRESS_TRAFFIC_ALL"
 
@@ -48,8 +48,7 @@ resource "google_cloud_run_v2_service" "default" {
 
   template {
     containers {
-      # 這裡先用一個 placeholder image，之後 CI/CD 會換成真正的 Image
-      # 這是 Terraform + CI/CD 雞生蛋問題的標準解法
+      # Placeholder image, CI/CD will deploy the real one
       image = "us-docker.pkg.dev/cloudrun/container/hello"
       
       resources {
@@ -59,7 +58,6 @@ resource "google_cloud_run_v2_service" "default" {
         }
       }
 
-      # 環境變數 (從 List 變 Set 的部分，Terraform 6.x 自動處理)
       env {
         name  = "GCP_PROJECT_ID"
         value = var.project_id
@@ -75,10 +73,53 @@ resource "google_cloud_run_v2_service" "default" {
   depends_on = [google_project_service.run_api]
 }
 
-# 5. 公開存取權限 (Public Access)
-resource "google_cloud_run_service_iam_member" "public_access" {
-  location = google_cloud_run_v2_service.default.location
-  service  = google_cloud_run_v2_service.default.name
+# 5. Frontend Cloud Run Service
+resource "google_cloud_run_v2_service" "frontend" {
+  name     = var.frontend_service_name
+  location = var.region
+  ingress  = "INGRESS_TRAFFIC_ALL"
+
+  deletion_protection = false
+
+  template {
+    containers {
+      # Placeholder image
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+      
+      ports {
+        container_port = 3000
+      }
+
+      resources {
+        limits = {
+          cpu    = "1000m"
+          memory = "512Mi"
+        }
+      }
+
+      # Inject Backend URL into Frontend
+      env {
+        name  = "NEXT_PUBLIC_API_URL"
+        value = google_cloud_run_v2_service.backend.uri
+      }
+    }
+  }
+
+  depends_on = [google_project_service.run_api]
+}
+
+# 6. Backend Public Access
+resource "google_cloud_run_service_iam_member" "backend_public_access" {
+  location = google_cloud_run_v2_service.backend.location
+  service  = google_cloud_run_v2_service.backend.name
+  role     = "roles/run.invoker"
+  member   = "allUsers"
+}
+
+# 7. Frontend Public Access
+resource "google_cloud_run_service_iam_member" "frontend_public_access" {
+  location = google_cloud_run_v2_service.frontend.location
+  service  = google_cloud_run_v2_service.frontend.name
   role     = "roles/run.invoker"
   member   = "allUsers"
 }

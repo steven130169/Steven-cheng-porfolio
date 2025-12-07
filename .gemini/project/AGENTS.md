@@ -225,10 +225,9 @@
 ## 7. 一般準則 (General Guidelines)
 
 *   **Always document architectural decisions in the `docs/adr` folder.**
-
 *   **Consult ADRs Regularly**: 在進行重大決策或架構調整前，務必先查閱 `docs/adr/` 下的 Architecture Decision Records，確保行動符合團隊已定下的架構規範。
 *   **ADR First**: 所有關於架構的討論與決策完成後，都必須先撰寫 ADR，並在 ADR 獲得接受 (Accepted) 後，才能進行相關的程式碼修改。
-
+*   **修改規則**: 在沒有經過我的同意，請勿修改npm script，尤其是npm run test相關的command。
 *   **記憶儲存位置**：所有專案相關記憶必須儲存在 `./.gemini/` 資料夾下。
     *   **長期規則/角色設定/工作流**：寫入 `./.gemini/project/AGENTS.md`。
     *   **待辦事項/短期進度/暫存記憶**：寫入 `./.gemini/todo/AGENTS.md`。

@@ -37,43 +37,7 @@ resource "google_firestore_database" "database" {
   depends_on = [google_project_service.firestore_api]
 }
 
-# 4. Backend Cloud Run Service
-resource "google_cloud_run_v2_service" "backend" {
-  name     = var.backend_service_name
-  location = var.region
-  ingress  = "INGRESS_TRAFFIC_ALL"
-
-  # 開發便利性：允許 Terraform 刪除重建
-  deletion_protection = false
-
-  template {
-    containers {
-      # Placeholder image, CI/CD will deploy the real one
-      image = "us-docker.pkg.dev/cloudrun/container/hello"
-      
-      resources {
-        limits = {
-          cpu    = "1000m"
-          memory = "512Mi"
-        }
-      }
-
-      env {
-        name  = "GCP_PROJECT_ID"
-        value = var.project_id
-      }
-      
-      env {
-        name = "FIRESTORE_DB_NAME"
-        value = google_firestore_database.database.name
-      }
-    }
-  }
-
-  depends_on = [google_project_service.run_api]
-}
-
-# 5. Frontend Cloud Run Service
+# 4. Frontend Cloud Run Service (as Monolith)
 resource "google_cloud_run_v2_service" "frontend" {
   name     = var.frontend_service_name
   location = var.region
@@ -97,10 +61,14 @@ resource "google_cloud_run_v2_service" "frontend" {
         }
       }
 
-      # Inject Backend URL into Frontend
+      # Inject Firestore DB Name
       env {
-        name  = "NEXT_PUBLIC_API_URL"
-        value = google_cloud_run_v2_service.backend.uri
+        name = "FIRESTORE_DB_NAME"
+        value = google_firestore_database.database.name
+      }
+      env {
+        name  = "GCP_PROJECT_ID"
+        value = var.project_id
       }
     }
   }
@@ -108,15 +76,7 @@ resource "google_cloud_run_v2_service" "frontend" {
   depends_on = [google_project_service.run_api]
 }
 
-# 6. Backend Public Access
-resource "google_cloud_run_service_iam_member" "backend_public_access" {
-  location = google_cloud_run_v2_service.backend.location
-  service  = google_cloud_run_v2_service.backend.name
-  role     = "roles/run.invoker"
-  member   = "allUsers"
-}
-
-# 7. Frontend Public Access
+# 5. Frontend Public Access
 resource "google_cloud_run_service_iam_member" "frontend_public_access" {
   location = google_cloud_run_v2_service.frontend.location
   service  = google_cloud_run_v2_service.frontend.name

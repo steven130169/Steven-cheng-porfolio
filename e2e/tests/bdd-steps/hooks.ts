@@ -7,15 +7,14 @@ setDefaultTimeout(120 * 1000);
 
 let browser: playwright.Browser;
 let context: playwright.BrowserContext;
-let backendProcess: ChildProcess | undefined;
-let frontendProcess: ChildProcess | undefined;
+let frontendProcess: ChildProcess | undefined; // Only frontend process now
 
 export const pageFixture = {
   page: undefined as unknown as playwright.Page,
 };
 
 export const BASE_URL = 'http://localhost:3000';
-export const API_URL = 'http://localhost:3001/api/';
+export const API_URL = 'http://localhost:3000/api/'; // API is now part of frontend monolith
 
 async function waitForUrl(url: string, timeout = 60000) {
   const start = Date.now();
@@ -32,24 +31,14 @@ async function waitForUrl(url: string, timeout = 60000) {
 }
 
 BeforeAll(async function () {
-  console.log('🧹 Cleaning up ports 3000 and 3001...');
-  try { execSync('npx kill-port 3000 3001'); } catch (e) {}
+  console.log('🧹 Cleaning up port 3000...');
+  try { execSync('npx kill-port 3000'); } catch (e) {} // Only cleanup frontend port
 
-  console.log('🚀 Starting servers for BDD tests...');
+  console.log('🚀 Starting Next.js Monolith for BDD tests...');
   
-  // We need to run these commands from the ROOT directory because 'start:backend' and 'start:frontend' 
-  // are defined in the root package.json.
-  // process.cwd() when running 'npm run test:bdd -w e2e' is the 'e2e' folder.
   const projectRoot = path.resolve(process.cwd(), '..');
 
-  backendProcess = spawn('npm', ['run', 'start:backend'], { 
-    cwd: projectRoot,
-    stdio: 'ignore', 
-    shell: true, 
-    detached: true,
-    env: { ...process.env, PORT: '3001' }
-  });
-
+  // Only start Frontend (Monolith)
   frontendProcess = spawn('npm', ['run', 'start:frontend'], { 
     cwd: projectRoot,
     stdio: 'ignore', 
@@ -58,19 +47,13 @@ BeforeAll(async function () {
     env: { ...process.env, PORT: '3000' } 
   });
 
-  console.log('⏳ Waiting for servers to become available...');
+  console.log('⏳ Waiting for Next.js Monolith to become available...');
   
   try {
-    await Promise.all([
-      waitForUrl('http://localhost:3001/api'),
-      waitForUrl('http://localhost:3000'),
-    ]);
-    console.log('✅ Servers are up and running!');
+    await waitForUrl('http://localhost:3000'); // Only wait for frontend
+    console.log('✅ Next.js Monolith is up and running!');
   } catch (err) {
-    console.error('❌ Timeout waiting for servers to start.');
-    if (backendProcess && backendProcess.pid) {
-        try { process.kill(-backendProcess.pid); } catch(e) {}
-    }
+    console.error('❌ Timeout waiting for Next.js Monolith to start.');
     if (frontendProcess && frontendProcess.pid) {
         try { process.kill(-frontendProcess.pid); } catch(e) {}
     }
@@ -82,12 +65,9 @@ BeforeAll(async function () {
 });
 
 Before(async function () {
-  try {
-    const apiContext = await playwright.request.newContext({ baseURL: API_URL });
-    await apiContext.delete('events/test/reset').catch(() => {}); 
-  } catch (e) {
-    console.warn('Warning: Failed to reset backend state.', e);
-  }
+  // No separate backend to reset now. Reset logic needs to be moved to Next.js API route / server action if needed.
+  // For now, E2E/BDD will operate without a clean backend state for each scenario.
+  // This will be re-addressed when implementing Next.js API routes/Server Actions for data.
 
   context = await browser.newContext({
     baseURL: BASE_URL,
@@ -103,9 +83,10 @@ After(async function () {
 AfterAll(async function () {
   await browser.close();
   
-  console.log('🛑 Stopping servers...');
-  if (backendProcess) backendProcess.kill();
-  if (frontendProcess) frontendProcess.kill();
+  console.log('🛑 Stopping Next.js Monolith...');
+  if (frontendProcess && frontendProcess.pid) {
+    try { process.kill(-frontendProcess.pid); } catch(e) {}
+  }
   
-  try { execSync('npx kill-port 3000 3001'); } catch (e) {}
+  try { execSync('npx kill-port 3000'); } catch (e) {} // Only kill frontend port
 });

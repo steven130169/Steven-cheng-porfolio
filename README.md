@@ -4,25 +4,20 @@ This repository hosts the source code for Steven Cheng's personal portfolio webs
 
 ## 🏗 Architecture & Tech Stack
 
-The project follows a **Monorepo** structure managed by **NPM Workspaces**, dividing the application into distinct domains. 
+The project follows a **Monorepo** structure managed by **NPM Workspaces**.
 
-**Key Architecture Decision**: We utilize a unified **Google Cloud Platform (GCP)** stack with **Next.js (SSR)** and **NestJS**, both running on **Cloud Run** and backed by **Firestore**.
+**Key Architecture Decision**: We utilize a unified **Google Cloud Platform (GCP)** stack with a **Next.js Monolith** acting as both frontend and backend, running on **Cloud Run** and backed by **Firestore**. This approach emphasizes unified development and simplified deployment.
 
-### Frontend (`/frontend` -> migrating to Next.js)
-- **Framework**: [Next.js](https://nextjs.org/) (App Router)
+### Next.js Monolith (`/frontend`)
+- **Framework**: [Next.js](https://nextjs.org/) (App Router, Full Stack)
 - **Rendering**: Server-Side Rendering (SSR) for SEO.
 - **Deployment**: Dockerized on **GCP Cloud Run**.
-- **Language**: TypeScript
-
-### Backend (`/backend`)
-- **Framework**: [NestJS](https://nestjs.com/)
 - **Database**: [Google Cloud Firestore](https://firebase.google.com/docs/firestore) (NoSQL).
-- **Key Modules**: 
-  - **Events**: Custom ticketing engine (Inventory, Orders).
-  - **Blog**: Custom Headless CMS for instant publishing.
-  - **CRM**: Lightweight customer relationship management.
+- **Core Logic**:
+  - **Presentation Layer**: `frontend/src/app/` (Next.js Pages, Components, API Routes).
+  - **Business Logic Layer**: `frontend/src/server/` (Modules for Events, Blog, CRM, DB access).
 - **Language**: TypeScript
-- **Testing**: Jest
+- **Testing**: Vitest (for frontend components and server modules)
 
 ### E2E & BDD (`/e2e`)
 - **Framework**: [Playwright](https://playwright.dev/)
@@ -46,7 +41,7 @@ We maintain a comprehensive history of all architectural decisions in `docs/adr`
 | [ADR-0007](docs/adr/0007-select-gcp-cloud-run-and-firestore.md) | Select GCP Cloud Run and Firestore | Accepted | 2025-12-05 |
 | [ADR-0008](docs/adr/0008-establish-implementation-strategy-gcp.md) | Establish Implementation Strategy (GCP) | Accepted | 2025-12-05 |
 | [ADR-0009](docs/adr/0009-adopt-github-actions-and-safe-git-flow.md) | Adopt GitHub Actions and Safe Git Flow | Accepted | 2025-12-05 |
-| [ADR-0010](docs/adr/0010-unified-tech-stack-infrastructure.md) | **Unified Tech Stack & Infrastructure (GCP + NoSQL)** | Accepted | 2025-12-06 |
+| [ADR-0010](docs/adr/0010-unified-tech-stack-infrastructure.md) | **Unified Tech Stack & Infrastructure (Next.js Monolith)** | Accepted | 2025-12-07 |
 | [ADR-0011](docs/adr/0011-integrate-crm-marketing-module.md) | **Integrate Lightweight CRM & Marketing Module** | Accepted | 2025-12-06 |
 | [ADR-0012](docs/adr/0012-event-ticketing-commerce-strategy.md) | **Event Ticketing & Commerce Engine Strategy** | Accepted | 2025-12-06 |
 | [ADR-0013](docs/adr/0013-blog-content-management-strategy.md) | **Blog Content Management Strategy (Custom CMS)** | Accepted | 2025-12-06 |
@@ -75,17 +70,15 @@ We maintain a comprehensive history of all architectural decisions in `docs/adr`
 
 ### Development
 
-To start both the **Frontend** and **Backend** servers concurrently:
+To start the **Next.js Monolith** server:
 
 ```bash
 npm run dev
 ```
-- **Frontend**: http://localhost:3000 (Next.js)
-- **Backend**: http://localhost:3001 (NestJS) *(Port may vary based on config)*
+- **Monolith**: http://localhost:3000 (Next.js)
 
-You can also run them individually:
+You can also run it individually:
 - `npm run start:frontend`
-- `npm run start:backend`
 
 ---
 
@@ -96,8 +89,7 @@ We adhere to a strict **Test Behavior, Not Implementation** philosophy.
 | Test Type | Command | Description |
 | :--- | :--- | :--- |
 | **All Tests** | `npm run test` | Runs Unit, E2E, and BDD tests sequentially. |
-| **Frontend Unit** | `npm run test:frontend:unit` | Vitest tests for UI components and logic. |
-| **Backend Unit** | `npm run test:backend:unit` | Jest tests for API services and controllers. |
+| **Frontend Unit** | `npm run test:frontend:unit` | Vitest tests for UI components and server modules. |
 | **E2E (Smoke)** | `npm run test:e2e` | Playwright spec files for system stability & smoke tests. |
 | **BDD (Features)** | `npm run test:bdd` | Cucumber feature files for business acceptance. |
 
@@ -107,8 +99,10 @@ We adhere to a strict **Test Behavior, Not Implementation** philosophy.
 
 ```
 Steven-cheng-porfolio/
-├── backend/            # NestJS Backend Application
-├── frontend/           # Next.js Frontend Application (Migrating)
+├── frontend/           # Next.js Monolith Application (Frontend + Backend Logic)
+│   └── src/
+│       ├── app/        # Next.js App Router (UI & API Routes)
+│       └── server/     # Custom Server Logic (Modules, DB, Services, Repositories)
 ├── e2e/                # Playwright & Cucumber Tests
 ├── docs/
 │   └── adr/            # Architecture Decision Records

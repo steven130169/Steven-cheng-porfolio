@@ -18,14 +18,7 @@ export default defineConfig({
   },
   webServer: [
     {
-      command: 'npm run start:backend',
-      url: 'http://localhost:3001/api',
-      reuseExistingServer: !process.env.CI,
-      cwd: path.resolve(__dirname, '..'),
-      timeout: 120000,
-    },
-    {
-      command: 'npm run start:frontend',
+      command: 'npm run start:frontend', // Only start frontend
       url: 'http://localhost:3000',
       reuseExistingServer: !process.env.CI,
       cwd: path.resolve(__dirname, '..'),

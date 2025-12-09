@@ -6,8 +6,6 @@ on:
       - '**' # Trigger on push to any branch
     tags-ignore:
       - 'v*' # Do not run CI on version tags (Release Workflow handles these)
-  pull_request:
-    branches: [ main ] # Only run on PRs targeting main
 
 jobs:
   lint-and-unit:

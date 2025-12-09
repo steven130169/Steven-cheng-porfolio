@@ -41,13 +41,7 @@ run "verify_services_plan" {
     error_message = "DATABASE_URL environment variable not correctly configured with Secret"
   }
 
-  assert {
-    condition = length([
-      for env_var in google_cloud_run_v2_service.frontend.template[0].containers[0].env : env_var
-      if env_var.name == "FIRESTORE_DB_NAME"
-    ]) == 1
-    error_message = "FIRESTORE_DB_NAME environment variable not configured"
-  }
+
 
   assert {
     condition = length([

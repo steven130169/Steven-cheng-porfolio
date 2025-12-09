@@ -26,3 +26,9 @@ variable "repository_id" {
   type        = string
   default     = "portfolio-repo"
 }
+
+variable "ci_cd_service_account" {
+  description = "The email of the Service Account used for CI/CD (GitHub Actions)"
+  type        = string
+  default     = "" # Optional, if empty, IAM binding won't be created (we can use count)
+}

@@ -106,3 +106,12 @@ resource "google_cloud_run_service_iam_member" "frontend_public_access" {
   role     = "roles/run.invoker"
   member   = "allUsers"
 }
+
+# 6. CI/CD Permissions
+resource "google_artifact_registry_repository_iam_member" "docker_pusher" {
+  project    = var.project_id
+  location   = var.region
+  repository = google_artifact_registry_repository.repo.name
+  role       = "roles/artifactregistry.writer"
+  member     = "serviceAccount:${var.ci_cd_service_account}"
+}

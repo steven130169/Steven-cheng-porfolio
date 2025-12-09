@@ -82,8 +82,8 @@ resource "google_cloud_run_v2_service" "frontend" {
     service_account = google_service_account.frontend_sa.email
 
     containers {
-      # Placeholder image
-      image = "us-docker.pkg.dev/cloudrun/container/hello"
+      # Use variable for image, default is placeholder
+      image = var.frontend_image
       
       ports {
         container_port = 3000

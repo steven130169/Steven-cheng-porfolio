@@ -5,6 +5,7 @@ variables {
   region                = "asia-east1"
   frontend_service_name = "test-frontend"
   repository_id         = "test-repo"
+  ci_cd_service_account = "ci-cd-sa@example.com"
 }
 
 provider "google" {
@@ -41,13 +42,17 @@ run "verify_services_plan" {
     error_message = "DATABASE_URL environment variable not correctly configured with Secret"
   }
 
-
-
   assert {
     condition = length([
       for env_var in google_cloud_run_v2_service.frontend.template[0].containers[0].env : env_var
       if env_var.name == "GCP_PROJECT_ID"
     ]) == 1
     error_message = "GCP_PROJECT_ID environment variable not configured"
+  }
+
+  # Verify IAM Binding for CI/CD
+  assert {
+    condition     = google_artifact_registry_repository_iam_member.docker_pusher[0].member == "serviceAccount:ci-cd-sa@example.com"
+    error_message = "CI/CD SA Artifact Registry IAM not configured correctly"
   }
 }

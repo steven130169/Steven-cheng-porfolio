@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.3](///compare/v0.1.2...v0.1.3) (2025-12-09)
+
+### Bug Fixes
+
+* **ci:** setup docker buildx for caching support 87eb589
+
 ## [0.1.2](///compare/v0.1.1...v0.1.2) (2025-12-09)
 
 ### Bug Fixes

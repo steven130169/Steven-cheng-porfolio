@@ -26,6 +26,21 @@ run "verify_services_plan" {
     error_message = "Frontend should listen on port 3000"
   }
 
+  # Verify Secret Creation
+  assert {
+    condition     = google_secret_manager_secret.neon_db_url.secret_id == "neon-database-url"
+    error_message = "Secret ID mismatch"
+  }
+
+  # Verify DATABASE_URL is injected via Secret
+  assert {
+    condition = length([
+      for env_var in google_cloud_run_v2_service.frontend.template[0].containers[0].env : env_var
+      if env_var.name == "DATABASE_URL" && env_var.value_source[0].secret_key_ref[0].secret == google_secret_manager_secret.neon_db_url.secret_id
+    ]) == 1
+    error_message = "DATABASE_URL environment variable not correctly configured with Secret"
+  }
+
   assert {
     condition = length([
       for env_var in google_cloud_run_v2_service.frontend.template[0].containers[0].env : env_var

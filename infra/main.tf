@@ -14,6 +14,11 @@ resource "google_project_service" "artifact_registry_api" {
   disable_on_destroy = false
 }
 
+resource "google_project_service" "secretmanager_api" {
+  service            = "secretmanager.googleapis.com"
+  disable_on_destroy = false
+}
+
 # 2. Artifact Registry (存放 Docker Images)
 resource "google_artifact_registry_repository" "repo" {
   location      = var.region
@@ -37,7 +42,27 @@ resource "google_firestore_database" "database" {
   depends_on = [google_project_service.firestore_api]
 }
 
-# 4. Frontend Cloud Run Service (as Monolith)
+# 4. Security & Secrets
+resource "google_service_account" "frontend_sa" {
+  account_id   = "portfolio-frontend-sa"
+  display_name = "Service Account for Portfolio Frontend"
+}
+
+resource "google_secret_manager_secret" "neon_db_url" {
+  secret_id = "neon-database-url"
+  replication {
+    auto {}
+  }
+  depends_on = [google_project_service.secretmanager_api]
+}
+
+resource "google_secret_manager_secret_iam_member" "frontend_access_secret" {
+  secret_id = google_secret_manager_secret.neon_db_url.id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.frontend_sa.email}"
+}
+
+# 5. Frontend Cloud Run Service (as Monolith)
 resource "google_cloud_run_v2_service" "frontend" {
   name     = var.frontend_service_name
   location = var.region
@@ -46,6 +71,8 @@ resource "google_cloud_run_v2_service" "frontend" {
   deletion_protection = false
 
   template {
+    service_account = google_service_account.frontend_sa.email
+
     containers {
       # Placeholder image
       image = "us-docker.pkg.dev/cloudrun/container/hello"
@@ -61,7 +88,17 @@ resource "google_cloud_run_v2_service" "frontend" {
         }
       }
 
-      # Inject Firestore DB Name
+      # Environment Variables
+      env {
+        name = "DATABASE_URL"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.neon_db_url.secret_id
+            version = "latest"
+          }
+        }
+      }
+
       env {
         name = "FIRESTORE_DB_NAME"
         value = google_firestore_database.database.name
@@ -76,7 +113,7 @@ resource "google_cloud_run_v2_service" "frontend" {
   depends_on = [google_project_service.run_api]
 }
 
-# 5. Frontend Public Access
+# 6. Frontend Public Access
 resource "google_cloud_run_service_iam_member" "frontend_public_access" {
   location = google_cloud_run_v2_service.frontend.location
   service  = google_cloud_run_v2_service.frontend.name

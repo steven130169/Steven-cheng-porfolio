@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](///compare/v0.1.1...v0.1.2) (2025-12-09)
+
+### Bug Fixes
+
+* **ci:** explicitly trigger deploy workflow after release 14c4993
+* **ci:** remove pull_request trigger to avoid duplicate runs ada4151
+
 ## [0.1.1](///compare/v0.1.0...v0.1.1) (2025-12-09)
 
 ### Bug Fixes

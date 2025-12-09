@@ -27,6 +27,7 @@
 - 已完成 Node.js 版本限制與 Dockerfile 更新至 Node 24 (完成)
 - 已完成 Terraform Infra 配置更新與測試 (完成)
 - 已完成 Next.js Monolith 架構轉換 (移除 backend，更新所有相關文件與配置)。(完成)
+- 已完成整合 Neon DB 與 Drizzle ORM 配置 (完成)
 
 ## 待辦事項 (下次會從這裡繼續)
 
@@ -42,29 +43,27 @@
   - [ ] 將 `terraform test -chdir=infra` (Terraform Test) 整合到 CI/CD。
 
 - **Blog CMS 模組開發** (參考 ADR 0013)
-  - [ ] 設計 Firestore 中 Blog Post 的資料結構。
+  - [ ] 設計 Postgres Schema (Blog Post)。
   - [ ] 在 `frontend/src/server/modules/blog` 中，建立 `blog.service.ts` 和 `blog.repository.ts`。
-  - [ ] 在 `frontend/src/server/db` 中，建立 Firestore 連接配置。
-  - [ ] 在 `frontend/src/app/api/blog` 中，建立 CRUD API routes。
   - [ ] 在 Next.js 前端開發 `/blog` 頁面顯示文章。
   - [ ] 在 Next.js 前端開發 `/admin/blog` 頁面，提供文章編輯功能 (使用 **TipTap**)。
 
 - **售票系統模組開發** (參考 ADR 0012)
-  - [ ] 設計 Firestore 中 Events, Tickets, Orders 的資料結構。
+  - [ ] 設計 Postgres Schema (Events, Tickets, Orders)。
   - [ ] 在 `frontend/src/server/modules/events` 中，建立 `events.service.ts` 和 `events.repository.ts`。
-  - [ ] 實作庫存管理 (Inventory Management) 服務，使用 Firestore Transaction。
+  - [ ] 實作庫存管理 (Inventory Management) - 使用 SQL Transaction。
   - [ ] 實作訂單狀態機 (Order State Machine)。
   - [ ] 整合第三方支付 (ECPay/Stripe) 流程。
   - [ ] 開發 Next.js 前端頁面，提供選票、結帳功能。
 
 - **CRM 模組開發** (參考 ADR 0011)
-  - [ ] 設計 Firestore `customers` 資料結構。
+  - [ ] 設計 Postgres Schema (Customers)。
   - [ ] 在 `frontend/src/server/modules/crm` 中，建立 `crm.service.ts`。
   - [ ] 實作「購票自動歸戶」邏輯。
   - [ ] 實作 Admin UI 裡的「會員列表」與「標籤管理」。
 
 - **電子報模組 (Optional)**
-  - [ ] 設計 Firestore 中 Subscribers, Newsletters 的資料結構。
+  - [ ] 設計 Postgres Schema (Newsletters)。
   - [ ] 在 `frontend/src/server/modules/newsletter` 中，建立 `newsletter.service.ts`。
   - [ ] 整合 Email 發送服務 (例如 SendGrid)。
 

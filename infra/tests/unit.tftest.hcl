@@ -8,9 +8,9 @@ variables {
 }
 
 provider "google" {
-  project = "test-project-id" # Must match project_id from variables
-  region  = "asia-east1"   # Must match region from variables
-  access_token = "dummy-token" # Provide a dummy token for the test
+  project      = "test-project-id" # Must match project_id from variables
+  region       = "asia-east1"      # Must match region from variables
+  access_token = "dummy-token"     # Provide a dummy token for the test
 }
 
 run "verify_services_plan" {

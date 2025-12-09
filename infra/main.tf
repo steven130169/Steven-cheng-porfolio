@@ -84,7 +84,7 @@ resource "google_cloud_run_v2_service" "frontend" {
     containers {
       # Use variable for image, default is placeholder
       image = var.frontend_image
-      
+
       ports {
         container_port = 3000
       }
@@ -108,7 +108,7 @@ resource "google_cloud_run_v2_service" "frontend" {
       }
 
       env {
-        name = "FIRESTORE_DB_NAME"
+        name  = "FIRESTORE_DB_NAME"
         value = google_firestore_database.database.name
       }
       env {

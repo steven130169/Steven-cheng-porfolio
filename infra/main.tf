@@ -1,3 +1,11 @@
+# GCS Backend for Terraform State
+terraform {
+  backend "gcs" {
+    bucket = "gen-lang-client-0548141875-tfstate"
+    prefix = "terraform/state" # Optional: prefix to organize state files
+  }
+}
+
 # 1. 啟用必要的 APIs
 resource "google_project_service" "run_api" {
   service            = "run.googleapis.com"
@@ -11,6 +19,11 @@ resource "google_project_service" "firestore_api" {
 
 resource "google_project_service" "artifact_registry_api" {
   service            = "artifactregistry.googleapis.com"
+  disable_on_destroy = false
+}
+
+resource "google_project_service" "secretmanager_api" {
+  service            = "secretmanager.googleapis.com"
   disable_on_destroy = false
 }
 
@@ -37,43 +50,27 @@ resource "google_firestore_database" "database" {
   depends_on = [google_project_service.firestore_api]
 }
 
-# 4. Backend Cloud Run Service
-resource "google_cloud_run_v2_service" "backend" {
-  name     = var.backend_service_name
-  location = var.region
-  ingress  = "INGRESS_TRAFFIC_ALL"
-
-  # 開發便利性：允許 Terraform 刪除重建
-  deletion_protection = false
-
-  template {
-    containers {
-      # Placeholder image, CI/CD will deploy the real one
-      image = "us-docker.pkg.dev/cloudrun/container/hello"
-      
-      resources {
-        limits = {
-          cpu    = "1000m"
-          memory = "512Mi"
-        }
-      }
-
-      env {
-        name  = "GCP_PROJECT_ID"
-        value = var.project_id
-      }
-      
-      env {
-        name = "FIRESTORE_DB_NAME"
-        value = google_firestore_database.database.name
-      }
-    }
-  }
-
-  depends_on = [google_project_service.run_api]
+# 4. Security & Secrets
+resource "google_service_account" "frontend_sa" {
+  account_id   = "portfolio-frontend-sa"
+  display_name = "Service Account for Portfolio Frontend"
 }
 
-# 5. Frontend Cloud Run Service
+resource "google_secret_manager_secret" "neon_db_url" {
+  secret_id = "neon-database-url"
+  replication {
+    auto {}
+  }
+  depends_on = [google_project_service.secretmanager_api]
+}
+
+resource "google_secret_manager_secret_iam_member" "frontend_access_secret" {
+  secret_id = google_secret_manager_secret.neon_db_url.id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.frontend_sa.email}"
+}
+
+# 5. Frontend Cloud Run Service (as Monolith)
 resource "google_cloud_run_v2_service" "frontend" {
   name     = var.frontend_service_name
   location = var.region
@@ -82,6 +79,8 @@ resource "google_cloud_run_v2_service" "frontend" {
   deletion_protection = false
 
   template {
+    service_account = google_service_account.frontend_sa.email
+
     containers {
       # Placeholder image
       image = "us-docker.pkg.dev/cloudrun/container/hello"
@@ -97,10 +96,24 @@ resource "google_cloud_run_v2_service" "frontend" {
         }
       }
 
-      # Inject Backend URL into Frontend
+      # Environment Variables
       env {
-        name  = "NEXT_PUBLIC_API_URL"
-        value = google_cloud_run_v2_service.backend.uri
+        name = "DATABASE_URL"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.neon_db_url.secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "FIRESTORE_DB_NAME"
+        value = google_firestore_database.database.name
+      }
+      env {
+        name  = "GCP_PROJECT_ID"
+        value = var.project_id
       }
     }
   }
@@ -108,15 +121,7 @@ resource "google_cloud_run_v2_service" "frontend" {
   depends_on = [google_project_service.run_api]
 }
 
-# 6. Backend Public Access
-resource "google_cloud_run_service_iam_member" "backend_public_access" {
-  location = google_cloud_run_v2_service.backend.location
-  service  = google_cloud_run_v2_service.backend.name
-  role     = "roles/run.invoker"
-  member   = "allUsers"
-}
-
-# 7. Frontend Public Access
+# 6. Frontend Public Access
 resource "google_cloud_run_service_iam_member" "frontend_public_access" {
   location = google_cloud_run_v2_service.frontend.location
   service  = google_cloud_run_v2_service.frontend.name

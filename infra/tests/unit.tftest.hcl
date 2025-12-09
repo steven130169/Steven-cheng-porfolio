@@ -3,7 +3,6 @@
 variables {
   project_id            = "test-project-id" # Dummy project ID for testing
   region                = "asia-east1"
-  backend_service_name  = "test-backend"
   frontend_service_name = "test-frontend"
   repository_id         = "test-repo"
 }
@@ -18,11 +17,6 @@ run "verify_services_plan" {
   command = plan
 
   assert {
-    condition     = google_cloud_run_v2_service.backend.name == "test-backend"
-    error_message = "Backend service name mismatch"
-  }
-
-  assert {
     condition     = google_cloud_run_v2_service.frontend.name == "test-frontend"
     error_message = "Frontend service name mismatch"
   }
@@ -32,12 +26,19 @@ run "verify_services_plan" {
     error_message = "Frontend should listen on port 3000"
   }
 
-  # Only assert that the NEXT_PUBLIC_API_URL environment variable name exists
   assert {
     condition = length([
       for env_var in google_cloud_run_v2_service.frontend.template[0].containers[0].env : env_var
-      if env_var.name == "NEXT_PUBLIC_API_URL"
+      if env_var.name == "FIRESTORE_DB_NAME"
     ]) == 1
-    error_message = "NEXT_PUBLIC_API_URL environment variable name not correctly configured"
+    error_message = "FIRESTORE_DB_NAME environment variable not configured"
+  }
+
+  assert {
+    condition = length([
+      for env_var in google_cloud_run_v2_service.frontend.template[0].containers[0].env : env_var
+      if env_var.name == "GCP_PROJECT_ID"
+    ]) == 1
+    error_message = "GCP_PROJECT_ID environment variable not configured"
   }
 }

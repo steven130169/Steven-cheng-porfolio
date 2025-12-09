@@ -37,3 +37,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }} # Pass PAT to release-it
         run: npm run release -- --ci
+
+      - name: Trigger Deploy
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        run: gh workflow run deploy.yml --ref main

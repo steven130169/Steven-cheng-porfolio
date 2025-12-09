@@ -1,0 +1,99 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '**' # Trigger on push to any branch
+    tags-ignore:
+      - 'v*' # Do not run CI on version tags (Release Workflow handles these)
+  pull_request:
+    branches: [ main ] # Only run on PRs targeting main
+
+jobs:
+  lint-and-unit:
+    name: Lint & Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint -w frontend
+
+      - name: Type Check
+        run: npm run build -w frontend
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy" # Mock for build time
+
+      - name: Unit Tests
+        run: npm run test:frontend:unit
+
+  e2e-tests:
+    name: E2E & BDD Tests
+    runs-on: ubuntu-latest
+    needs: lint-and-unit # Run after lint/unit to save minutes if they fail
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Run E2E Tests
+        run: npm run test:e2e
+        env:
+          CI: true
+          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
+
+      - name: Run BDD Tests
+        run: npm run test:bdd
+        env:
+          CI: true
+          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
+
+      - name: Upload Playwright Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: e2e/playwright-report/
+          retention-days: 30
+
+  infra-tests:
+    name: Terraform Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.14.1" # Align with local environment
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive infra/
+
+      - name: Terraform Init (No Backend)
+        run: terraform init -backend=false
+        working-directory: infra
+
+      - name: Terraform Test
+        run: terraform test
+        working-directory: infra

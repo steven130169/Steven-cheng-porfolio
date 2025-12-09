@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.1](///compare/v0.1.0...v0.1.1) (2025-12-09)
+
+### Bug Fixes
+
+* **ci:** enable manual trigger for deploy workflow 5da8fbb
+
 ## 0.1.0 (2025-12-09)
 
 ### Features

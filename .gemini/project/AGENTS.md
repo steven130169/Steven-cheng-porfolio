@@ -223,3 +223,16 @@
 * **記憶儲存位置**：所有專案相關記憶必須儲存在 `./.gemini/` 資料夾下。
     * **長期規則/角色設定/工作流**：寫入 `./.gemini/project/AGENTS.md`。
     * **待辦事項/短期進度/暫存記憶**：寫入 `./.gemini/todo/AGENTS.md`。
+
+---
+
+## 8. Git Flow Protocol
+
+Strict adherence to Feature Branch Workflow is mandatory.
+
+1.  **Branch Check**: Before starting ANY code modification, run `git status` to verify current branch.
+2.  **Feature Branch**: NEVER commit directly to `main` or `master`.
+    *   Create a new branch: `git checkout -b feature/<descriptive-name>` (e.g., `feature/neon-setup`, `feature/blog-cms`).
+3.  **Commit**: Commit changes to the feature branch.
+4.  **Push**: `git push origin feature/<name>`.
+5.  **Merge Request**: Inform the user to review and merge via PR. (Or assume user will handle the merge).

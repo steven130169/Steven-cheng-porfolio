@@ -1,67 +1,53 @@
 # Unified Tech Stack & Infrastructure Strategy (Next.js Monolith)
 
 * Status: Accepted
-* Date: 2025-12-07 (Updated)
+* Date: 2025-12-08 (Updated)
 * Deciders: Steven Cheng, Context 7 Agent
 
 ## Context and Problem Statement
 The project requires a scalable platform for a Portfolio, Blog, and Event Ticketing system. 
-Initially, a split architecture (Next.js Frontend + NestJS Backend) was chosen. However, maintaining two separate services, two Dockerfiles, and handling API proxying adds unnecessary complexity for a single-developer project. The user desires "Maximum Development Speed" and "Low Maintenance". 
-A key concern with moving to a Next.js Monolith is the potential for "Spaghetti Code" due to the lack of strict architectural patterns found in NestJS.
+Initially, a split architecture (Next.js Frontend + NestJS Backend) was chosen. However, maintaining two separate services adds unnecessary complexity. The user desires "Maximum Development Speed" and "Low Maintenance". 
+Also, the database choice was revisited. While Firestore (NoSQL) is cheap, it lacks relational capabilities needed for complex ticketing logic. The user found **Neon (Serverless Postgres)** which offers pay-as-you-go pricing and full SQL support.
 
 ## Decision Drivers
-*   **Development Velocity**: Need to iterate quickly without context switching between frontend and backend repos.
-*   **Simplicity**: Single deployment pipeline, single Dockerfile.
-*   **Type Safety**: Easier to share types between client and server in a single codebase.
-*   **Interactivity**: Rich UI requirements (TipTap editor, Ticketing) favor a React-centric approach.
-*   **Maintainability**: Must avoid the "unstructured mess" common in large Next.js apps.
+*   **Development Velocity**: Need to iterate quickly without context switching.
+*   **Simplicity**: Single deployment pipeline.
+*   **Relational Data**: Ticketing systems (Inventory, Orders, Users) benefit greatly from SQL ACID transactions and relations.
+*   **Cost**: Must be pay-as-you-go (Serverless).
 
 ## Considered Options
 
-### Option 1: Next.js (Client) + NestJS (API) [Previous Choice]
-*   **Pros**: Strong separation of concerns, strict backend architecture (DI, Modules).
-*   **Cons**: Double boilerplate, CORS/Proxy issues, duplicated DTOs, higher cloud cost (2 services).
-*   **Outcome**: **Discarded**. The overhead outweighs the benefits for this scale.
+### Architecture
+*   **Option 1**: Next.js + NestJS (Discarded).
+*   **Option 2**: Next.js Monolith (Selected).
 
-### Option 2: NestJS + Handlebars (SSR)
-*   **Pros**: Very simple mentally.
-*   **Cons**: Poor support for modern interactive UIs (React components like TipTap).
-*   **Outcome**: **Discarded**.
-
-### Option 3: Next.js Monolith (Full Stack) [Selected]
-*   **Pros**: Unified codebase, Server Actions, direct DB access in Server Components, zero-latency data fetching.
-*   **Cons**: Risk of poor code structure if not managed.
-*   **Outcome**: **Selected**, with strict architectural guidelines.
+### Database
+*   **Option A**: Firestore (NoSQL)
+    *   Pros: Easy to start, JSON-like.
+    *   Cons: No joins, complex inventory locking.
+*   **Option B**: **Neon (Serverless Postgres)** (Selected)
+    *   Pros: Full SQL, Scale-to-Zero, Branching, standard ORM support.
+    *   Cons: Connection pooling needed (but Neon handles this well).
 
 ## Decision Outcome
-Chosen option: **Option 3: Next.js Monolith**.
+Chosen option: **Next.js Monolith + Neon (Postgres)**.
 
-**Architecture Pattern**: To mitigate the "messy code" risk, we will adopt a **Modular Service Layer** pattern within Next.js, mimicking NestJS structure:
-
+**Architecture Pattern**:
 ```
 frontend/src/
-├── app/                    # Presentation Layer (Next.js Routing & UI)
-│   ├── api/                # REST Endpoints (if needed)
-│   └── (pages)/            # React Server/Client Components
-├── server/                 # Business Logic Layer (The "Backend")
-│   ├── db/                 # Database Connection (Firestore)
+├── app/                    # Presentation Layer
+├── server/                 # Business Logic Layer
+│   ├── db/                 # Drizzle ORM / Prisma Setup
+│   │   └── schema.ts       # DB Schema
 │   ├── modules/            # Domain Modules
-│   │   ├── events/
-│   │   │   ├── events.service.ts      # Logic & Validation
-│   │   │   ├── events.repository.ts   # DB Access
-│   │   │   └── events.types.ts        # DTOs
-│   │   └── blog/
-│   └── utils/
 ```
 
 **Golden Rules**:
-1.  **Separation**: `app/` components NEVER import `firestore` directly. They MUST call `server/modules/*/service`.
-2.  **Services**: Pure TypeScript classes/functions containing business logic.
-3.  **Repositories**: Handle direct DB queries.
-4.  **Server Actions**: Used as the primary way to invoke Services from Client Components.
+1.  **Separation**: `app/` components NEVER import DB directly. They MUST call `server/modules/*/service`.
+2.  **ORM**: Use **Drizzle ORM** (or Prisma) for type-safe DB access.
+3.  **Server Actions**: Used as the primary way to invoke Services from Client Components.
 
 ## Consequences
-*   **Good, because**: Deployment is simplified to a single Cloud Run service.
-*   **Good, because**: Latency is reduced (no internal HTTP calls between front/back).
-*   **Good, because**: We rely on strict folder structure instead of framework boilerplate to maintain order.
-*   **Bad, because**: We lose NestJS's built-in Dependency Injection and Decorators (e.g., `@Cron`, `@WebSocketGateway`). We must implement these manually if needed.
+*   **Good, because**: We get the power of SQL without the fixed cost of Cloud SQL.
+*   **Good, because**: Relational data modeling is more natural for this domain.
+*   **Bad, because**: We need to manage DB migrations (`drizzle-kit push` or `prisma migrate`).

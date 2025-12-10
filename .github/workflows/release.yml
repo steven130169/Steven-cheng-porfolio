@@ -41,4 +41,4 @@ jobs:
       - name: Trigger Deploy
         env:
           GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-        run: gh workflow run deploy.yml --ref main
+        run: gh workflow run app-deploy.yml --ref main

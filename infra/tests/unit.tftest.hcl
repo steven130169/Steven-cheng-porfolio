@@ -5,7 +5,6 @@ variables {
   region                = "asia-east1"
   frontend_service_name = "test-frontend"
   repository_id         = "test-repo"
-  ci_cd_service_account = "ci-cd-sa@example.com"
 }
 
 provider "google" {
@@ -50,9 +49,30 @@ run "verify_services_plan" {
     error_message = "GCP_PROJECT_ID environment variable not configured"
   }
 
-  # Verify IAM Binding for CI/CD
+  # Check Service Accounts
   assert {
-    condition     = google_artifact_registry_repository_iam_member.docker_pusher[0].member == "serviceAccount:ci-cd-sa@example.com"
-    error_message = "CI/CD SA Artifact Registry IAM not configured correctly"
+    condition     = google_service_account.runtime_sa.account_id == "portfolio-frontend-runtime"
+    error_message = "Runtime SA account_id mismatch"
+  }
+
+  assert {
+    condition     = google_service_account.app_deployer_sa.account_id == "portfolio-app-deployer"
+    error_message = "App Deployer SA account_id mismatch"
+  }
+
+  # Check IAM for App Deployer
+  assert {
+    condition     = google_artifact_registry_repository_iam_member.app_deployer_pusher.role == "roles/artifactregistry.writer"
+    error_message = "App Deployer should be Artifact Registry Writer"
+  }
+
+  assert {
+    condition     = google_project_iam_member.app_deployer_run_dev.role == "roles/run.developer"
+    error_message = "App Deployer should be Cloud Run Developer"
+  }
+
+  assert {
+    condition     = google_service_account_iam_member.app_deployer_act_as_runtime.role == "roles/iam.serviceAccountUser"
+    error_message = "App Deployer should be Service Account User"
   }
 }

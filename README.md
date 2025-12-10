@@ -45,6 +45,7 @@ We maintain a comprehensive history of all architectural decisions in `docs/adr`
 | [ADR-0011](docs/adr/0011-integrate-crm-marketing-module.md) | **Integrate Lightweight CRM & Marketing Module** | Accepted | 2025-12-06 |
 | [ADR-0012](docs/adr/0012-event-ticketing-commerce-strategy.md) | **Event Ticketing & Commerce Engine Strategy** | Accepted | 2025-12-06 |
 | [ADR-0013](docs/adr/0013-blog-content-management-strategy.md) | **Blog Content Management Strategy (Custom CMS)** | Accepted | 2025-12-06 |
+| [ADR-0014](docs/adr/0014-separate-cicd-pipelines-and-service-accounts.md) | **Separate CI/CD Pipelines and Service Accounts** | Accepted | 2025-12-09 |
 
 ---
 

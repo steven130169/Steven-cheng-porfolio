@@ -1,0 +1,38 @@
+name: Infra Deploy
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'infra/**'
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION: asia-east1
+
+jobs:
+  deploy-infra:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Uses High Privilege Infra Deployer Key
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_INFRA_DEPLOYER_KEY }}'
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.14.1"
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: infra
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -var="project_id=${{ env.PROJECT_ID }}"
+        working-directory: infra

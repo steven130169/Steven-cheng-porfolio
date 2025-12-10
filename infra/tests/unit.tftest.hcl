@@ -52,7 +52,7 @@ run "verify_services_plan" {
 
   # Verify IAM Binding for CI/CD
   assert {
-    condition     = google_artifact_registry_repository_iam_member.docker_pusher.member == "serviceAccount:ci-cd-sa@example.com"
+    condition     = google_artifact_registry_repository_iam_member.docker_pusher[0].member == "serviceAccount:ci-cd-sa@example.com"
     error_message = "CI/CD SA Artifact Registry IAM not configured correctly"
   }
 }

@@ -1,0 +1,56 @@
+name: Infra CD
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch: {}
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  # Terraform State Bucket is configured in infra/main.tf backend block
+
+jobs:
+  check-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      infra_changed: ${{ steps.filter.outputs.infra }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            infra:
+              - 'infra/**'
+
+  deploy-infra:
+    name: Deploy Infrastructure
+    needs: check-changes
+    if: needs.check-changes.outputs.infra_changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}' # Admin SA
+          # Future: Switch to specific Infra Admin SA Key/WIF
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.14.1"
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: infra
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: infra
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -input=false -var="project_id=${{ env.PROJECT_ID }}"
+        working-directory: infra

@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.0](///compare/v0.1.4...v0.2.0) (2025-12-11)
+
+### Features
+
+* **ci:** implement chained release pipeline with separate infra and app workflows ed655fe
+* **infra:** split CI/CD service accounts and pipelines 56fe2d2
+
+### Bug Fixes
+
+* **ci:** restrict app-deploy trigger to push events only dbae215
+
 ## [0.1.4](///compare/v0.1.3...v0.1.4) (2025-12-10)
 
 ### Bug Fixes

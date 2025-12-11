@@ -22,7 +22,7 @@ resource "google_project_service" "secretmanager_api" {
   disable_on_destroy = false
 }
 
-# 2. Artifact Registry (存放 Docker Images)
+# 2. Artifact Registry
 resource "google_artifact_registry_repository" "repo" {
   location      = var.region
   repository_id = var.repository_id
@@ -33,11 +33,44 @@ resource "google_artifact_registry_repository" "repo" {
 }
 
 # 3. Security & Secrets
-resource "google_service_account" "frontend_sa" {
-  account_id   = "portfolio-frontend-sa"
-  display_name = "Service Account for Portfolio Frontend"
+
+# 3.1. Runtime Service Account (Identity of Cloud Run)
+resource "google_service_account" "runtime_sa" {
+  account_id   = "portfolio-frontend-runtime"
+  display_name = "Runtime SA for Portfolio Frontend"
 }
 
+# 3.2. App Deployer Service Account (For app-deploy.yml)
+resource "google_service_account" "app_deployer_sa" {
+  account_id   = "portfolio-app-deployer"
+  display_name = "CI/CD App Deployer SA"
+}
+
+# 3.3. IAM for App Deployer
+# Allow pushing images
+resource "google_artifact_registry_repository_iam_member" "app_deployer_pusher" {
+  project    = var.project_id
+  location   = var.region
+  repository = google_artifact_registry_repository.repo.name
+  role       = "roles/artifactregistry.writer"
+  member     = "serviceAccount:${google_service_account.app_deployer_sa.email}"
+}
+
+# Allow deploying Cloud Run
+resource "google_project_iam_member" "app_deployer_run_dev" {
+  project = var.project_id
+  role    = "roles/run.developer"
+  member  = "serviceAccount:${google_service_account.app_deployer_sa.email}"
+}
+
+# Allow Deployer to act as Runtime SA
+resource "google_service_account_iam_member" "app_deployer_act_as_runtime" {
+  service_account_id = google_service_account.runtime_sa.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${google_service_account.app_deployer_sa.email}"
+}
+
+# 3.4. Secrets
 resource "google_secret_manager_secret" "neon_db_url" {
   secret_id = "neon-database-url"
   replication {
@@ -46,10 +79,11 @@ resource "google_secret_manager_secret" "neon_db_url" {
   depends_on = [google_project_service.secretmanager_api]
 }
 
-resource "google_secret_manager_secret_iam_member" "frontend_access_secret" {
+# Grant Runtime SA access to Secret
+resource "google_secret_manager_secret_iam_member" "runtime_access_secret" {
   secret_id = google_secret_manager_secret.neon_db_url.id
   role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${google_service_account.frontend_sa.email}"
+  member    = "serviceAccount:${google_service_account.runtime_sa.email}"
 }
 
 # 4. Frontend Cloud Run Service (as Monolith)
@@ -61,7 +95,7 @@ resource "google_cloud_run_v2_service" "frontend" {
   deletion_protection = false
 
   template {
-    service_account = google_service_account.frontend_sa.email
+    service_account = google_service_account.runtime_sa.email
 
     containers {
       # Use variable for image, default is placeholder
@@ -96,6 +130,14 @@ resource "google_cloud_run_v2_service" "frontend" {
     }
   }
 
+  lifecycle {
+    ignore_changes = [
+      client,
+      client_version,
+      template[0].containers[0].image
+    ]
+  }
+
   depends_on = [google_project_service.run_api]
 }
 
@@ -105,14 +147,4 @@ resource "google_cloud_run_service_iam_member" "frontend_public_access" {
   service  = google_cloud_run_v2_service.frontend.name
   role     = "roles/run.invoker"
   member   = "allUsers"
-}
-
-# 6. CI/CD Permissions
-resource "google_artifact_registry_repository_iam_member" "docker_pusher" {
-  count      = var.ci_cd_service_account != "" ? 1 : 0
-  project    = var.project_id
-  location   = var.region
-  repository = google_artifact_registry_repository.repo.name
-  role       = "roles/artifactregistry.writer"
-  member     = "serviceAccount:${var.ci_cd_service_account}"
 }

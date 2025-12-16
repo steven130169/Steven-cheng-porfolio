@@ -1,9 +1,7 @@
 name: Infra CD
 
 on:
-  push:
-    tags:
-      - 'v*'
+
   workflow_dispatch: {}
 
 env:

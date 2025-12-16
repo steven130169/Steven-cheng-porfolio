@@ -9,7 +9,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    if: "!startsWith(github.event.head_commit.message, 'chore(release):')"
+
     permissions:
       contents: write
 
@@ -41,4 +41,4 @@ jobs:
       - name: Trigger Deploy
         env:
           GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-        run: gh workflow run deploy.yml --ref main
+        run: gh workflow run infra-deploy.yml --ref main

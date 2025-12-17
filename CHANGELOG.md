@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.0](///compare/v0.2.3...v0.3.0) (2025-12-17)
+
+### Features
+
+* **ci:** chain release and infra deploy workflows d231938
+
 ## [0.2.3](///compare/v0.2.2...v0.2.3) (2025-12-17)
 
 ### Bug Fixes

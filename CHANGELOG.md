@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.3](///compare/v0.2.2...v0.2.3) (2025-12-17)
+
+### Bug Fixes
+
+* **ci:** allow manual trigger for app deploy workflow c37dfe3
+
 ## [0.2.2](///compare/v0.2.1...v0.2.2) (2025-12-16)
 
 ### Bug Fixes

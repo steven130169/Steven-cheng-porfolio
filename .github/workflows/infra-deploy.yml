@@ -12,25 +12,10 @@ env:
   # Terraform State Bucket is configured in infra/main.tf backend block
 
 jobs:
-  check-changes:
-    runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
-    outputs:
-      infra_changed: ${{ steps.filter.outputs.infra }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            infra:
-              - 'infra/**'
-
   deploy-infra:
     name: Deploy Infrastructure
-    needs: check-changes
-    if: needs.check-changes.outputs.infra_changed == 'true'
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     steps:
       - uses: actions/checkout@v4
 

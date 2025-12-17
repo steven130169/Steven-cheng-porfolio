@@ -1,14 +1,19 @@
 name: Release
 
 on:
-  push:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
     branches:
       - main
+  workflow_dispatch: {}
 
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
 
     permissions:
       contents: write
@@ -37,8 +42,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }} # Pass PAT to release-it
         run: npm run release -- --ci
-
-      - name: Trigger Deploy
-        env:
-          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-        run: gh workflow run infra-deploy.yml --ref main

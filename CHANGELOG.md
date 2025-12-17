@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.2](///compare/v0.2.1...v0.2.2) (2025-12-16)
+
+### Bug Fixes
+
+* **ci:** remove release loop check to rely on skip-ci or idempotent release 9fbafac
+
 ## [0.2.1](///compare/v0.2.0...v0.2.1) (2025-12-16)
 
 ## [0.2.0](///compare/v0.1.4...v0.2.0) (2025-12-11)

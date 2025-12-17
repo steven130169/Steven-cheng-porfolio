@@ -18,7 +18,7 @@ jobs:
   deploy-app:
     name: Build & Deploy App
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     steps:
       - uses: actions/checkout@v4
         with:

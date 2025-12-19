@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.4.3](///compare/v0.4.2...v0.4.3) (2025-12-19)
+
+### Bug Fixes
+
+* **ci:** pass github_repo_id to terraform apply 231215f
+* **infra:** add explicit attribute condition and user mapping cb58f09
+* **infra:** align WIF mapping with Google Docs e650f7c
+* **infra:** use immutable repository_id for WIF security 84cbff7
+
 ## [0.4.2](///compare/v0.4.1...v0.4.2) (2025-12-19)
 
 ### Bug Fixes

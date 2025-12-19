@@ -1,10 +1,10 @@
 # infra/tests/wif.tftest.hcl
 
 variables {
-  project_id    = "test-project-id"
-  region        = "asia-east1"
-  repository_id = "test-repo"
-  github_repo   = "steven130169/Steven-cheng-porfolio"
+  project_id     = "test-project-id"
+  region         = "asia-east1"
+  repository_id  = "test-repo"
+  github_repo    = "steven130169/Steven-cheng-porfolio"
   github_repo_id = "12345678"
 }
 

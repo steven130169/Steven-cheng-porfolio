@@ -44,8 +44,8 @@ run "verify_wif_resources" {
   }
 
   assert {
-    condition     = google_iam_workload_identity_pool_provider.github_provider.attribute_mapping["attribute.actor"] == "assertion.actor"
-    error_message = "WIF Provider actor mapping mismatch"
+    condition     = google_iam_workload_identity_pool_provider.github_provider.attribute_mapping["attribute.owner"] == "assertion.repository_owner"
+    error_message = "WIF Provider owner mapping mismatch"
   }
 
   assert {

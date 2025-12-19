@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.5.0](///compare/v0.4.3...v0.5.0) (2025-12-19)
+
+### Features
+
+* **ci:** switch to Workload Identity Federation (WIF) for all deploys e2e2388
+
 ## [0.4.3](///compare/v0.4.2...v0.4.3) (2025-12-19)
 
 ### Bug Fixes

@@ -34,8 +34,18 @@ run "verify_wif_resources" {
   }
 
   assert {
+    condition     = google_iam_workload_identity_pool_provider.github_provider.attribute_condition == "assertion.repository == '${var.github_repo}'"
+    error_message = "WIF Provider attribute condition mismatch"
+  }
+
+  assert {
     condition     = google_iam_workload_identity_pool_provider.github_provider.attribute_mapping["google.subject"] == "assertion.sub"
     error_message = "WIF Provider attribute mapping mismatch"
+  }
+
+  assert {
+    condition     = google_iam_workload_identity_pool_provider.github_provider.attribute_mapping["attribute.actor"] == "assertion.actor"
+    error_message = "WIF Provider actor mapping mismatch"
   }
 
   assert {

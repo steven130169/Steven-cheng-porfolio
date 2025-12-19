@@ -1,11 +1,9 @@
-
-
-output "frontend_url" {
-  description = "The URL of the Frontend Cloud Run service"
-  value       = google_cloud_run_v2_service.frontend.uri
+output "workload_identity_provider" {
+  description = "The Workload Identity Provider resource name"
+  value       = google_iam_workload_identity_pool_provider.github_provider.name
 }
 
-output "artifact_registry_repo" {
-  description = "The full path of the Artifact Registry repository"
-  value       = "${var.region}-docker.pkg.dev/${var.project_id}/${var.repository_id}"
+output "service_account_email" {
+  description = "The App Deployer Service Account Email"
+  value       = google_service_account.app_deployer_sa.email
 }

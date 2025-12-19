@@ -5,6 +5,7 @@ variables {
   region                = "asia-east1"
   frontend_service_name = "test-frontend"
   repository_id         = "test-repo"
+  github_repo           = "test-owner/test-repo"
 }
 
 provider "google" {

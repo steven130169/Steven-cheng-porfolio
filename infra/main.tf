@@ -148,3 +148,44 @@ resource "google_cloud_run_service_iam_member" "frontend_public_access" {
   role     = "roles/run.invoker"
   member   = "allUsers"
 }
+
+# 6. Workload Identity Federation (WIF)
+
+resource "google_project_service" "iamcredentials_api" {
+  service            = "iamcredentials.googleapis.com"
+  disable_on_destroy = false
+}
+
+resource "google_iam_workload_identity_pool" "github_pool" {
+  workload_identity_pool_id = "github-pool"
+  display_name              = "GitHub Actions Pool"
+  description               = "Identity pool for GitHub Actions"
+}
+
+resource "google_iam_workload_identity_pool_provider" "github_provider" {
+  workload_identity_pool_id          = google_iam_workload_identity_pool.github_pool.workload_identity_pool_id
+  workload_identity_pool_provider_id = "github-provider"
+  display_name                       = "GitHub Actions Provider"
+  description                        = "OIDC Identity Provider for GitHub Actions"
+
+  attribute_mapping = {
+    "google.subject"       = "assertion.sub"
+    "attribute.actor"      = "assertion.actor"
+    "attribute.repository" = "assertion.repository"
+  }
+
+  oidc {
+    issuer_uri = "https://token.actions.githubusercontent.com"
+  }
+}
+
+# 7. Grant WIF Access to Service Accounts
+
+# Allow GitHub Actions (via WIF) to impersonate the App Deployer SA
+resource "google_service_account_iam_member" "app_deployer_wif" {
+  service_account_id = google_service_account.app_deployer_sa.name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_pool.name}/attribute.repository/${var.github_repo}"
+
+  depends_on = [google_project_service.iamcredentials_api]
+}

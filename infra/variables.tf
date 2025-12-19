@@ -10,9 +10,14 @@ variable "region" {
 }
 
 variable "frontend_service_name" {
-  description = "The name of the Frontend Cloud Run service"
+  description = "Cloud Run Service Name"
   type        = string
   default     = "portfolio-frontend"
+}
+
+variable "github_repo" {
+  description = "GitHub Repository (owner/repo) for WIF"
+  type        = string
 }
 
 variable "frontend_image" {

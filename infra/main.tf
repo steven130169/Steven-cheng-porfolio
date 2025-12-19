@@ -164,13 +164,12 @@ resource "google_iam_workload_identity_pool" "github_pool" {
 
 resource "google_iam_workload_identity_pool_provider" "github_provider" {
   workload_identity_pool_id          = google_iam_workload_identity_pool.github_pool.workload_identity_pool_id
-  workload_identity_pool_provider_id = "github-provider"
+  workload_identity_pool_provider_id = "github-provider-actions"
   display_name                       = "GitHub Actions Provider"
   description                        = "OIDC Identity Provider for GitHub Actions"
 
   attribute_mapping = {
     "google.subject"       = "assertion.sub"
-    "attribute.actor"      = "assertion.actor"
     "attribute.repository" = "assertion.repository"
   }
 
@@ -187,5 +186,8 @@ resource "google_service_account_iam_member" "app_deployer_wif" {
   role               = "roles/iam.workloadIdentityUser"
   member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_pool.name}/attribute.repository/${var.github_repo}"
 
-  depends_on = [google_project_service.iamcredentials_api]
+  depends_on = [
+    google_project_service.iamcredentials_api,
+    google_iam_workload_identity_pool_provider.github_provider
+  ]
 }

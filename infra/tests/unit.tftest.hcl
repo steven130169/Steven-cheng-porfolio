@@ -6,6 +6,7 @@ variables {
   frontend_service_name = "test-frontend"
   repository_id         = "test-repo"
   github_repo           = "test-owner/test-repo"
+  github_repo_id        = "12345678"
 }
 
 provider "google" {

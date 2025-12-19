@@ -5,6 +5,7 @@ variables {
   region        = "asia-east1"
   repository_id = "test-repo"
   github_repo   = "steven130169/Steven-cheng-porfolio"
+  github_repo_id = "12345678"
 }
 
 provider "google" {
@@ -34,7 +35,7 @@ run "verify_wif_resources" {
   }
 
   assert {
-    condition     = google_iam_workload_identity_pool_provider.github_provider.attribute_condition == "assertion.repository == '${var.github_repo}'"
+    condition     = google_iam_workload_identity_pool_provider.github_provider.attribute_condition == "assertion.repository_id == '${var.github_repo_id}'"
     error_message = "WIF Provider attribute condition mismatch"
   }
 

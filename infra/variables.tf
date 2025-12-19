@@ -20,6 +20,11 @@ variable "github_repo" {
   type        = string
 }
 
+variable "github_repo_id" {
+  description = "GitHub Repository ID (numeric) for WIF security"
+  type        = string
+}
+
 variable "frontend_image" {
   description = "The Docker image URL for the frontend service"
   type        = string

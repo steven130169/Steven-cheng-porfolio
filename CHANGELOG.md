@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.0](///compare/v0.3.1...v0.4.0) (2025-12-19)
+
+### Features
+
+* **infra:** implement workload identity federation resources 10c3e14
+
 ## [0.3.1](///compare/v0.3.0...v0.3.1) (2025-12-17)
 
 ## [0.3.0](///compare/v0.2.3...v0.3.0) (2025-12-17)

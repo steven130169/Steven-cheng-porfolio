@@ -168,9 +168,13 @@ resource "google_iam_workload_identity_pool_provider" "github_provider" {
   display_name                       = "GitHub Actions Provider"
   description                        = "OIDC Identity Provider for GitHub Actions"
 
+  attribute_condition = "assertion.repository_id == '${var.github_repo_id}'"
+
   attribute_mapping = {
-    "google.subject"       = "assertion.sub"
-    "attribute.repository" = "assertion.repository"
+    "google.subject"          = "assertion.sub"
+    "attribute.repository"    = "assertion.repository"
+    "attribute.owner"         = "assertion.repository_owner"
+    "attribute.repository_id" = "assertion.repository_id"
   }
 
   oidc {

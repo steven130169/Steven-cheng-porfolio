@@ -7,6 +7,10 @@ on:
       - completed
   workflow_dispatch: {}
 
+permissions:
+  contents: read
+  id-token: write
+
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   # Terraform State Bucket is configured in infra/main.tf backend block

@@ -39,5 +39,5 @@ jobs:
         working-directory: infra
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve -input=false -var="project_id=${{ env.PROJECT_ID }}"
+        run: terraform apply -auto-approve -input=false -var="project_id=${{ env.PROJECT_ID }}" -var="github_repo=${{ github.repository }}"
         working-directory: infra

@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.1](///compare/v0.4.0...v0.4.1) (2025-12-19)
+
+### Bug Fixes
+
+* **ci:** pass required github_repo variable to terraform 7afb7fb
+
 ## [0.4.0](///compare/v0.3.1...v0.4.0) (2025-12-19)
 
 ### Features

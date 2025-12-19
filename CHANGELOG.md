@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.5.1](///compare/v0.5.0...v0.5.1) (2025-12-19)
+
+### Bug Fixes
+
+* **ci:** add id-token write permission for WIF auth b8daca5
+
 ## [0.5.0](///compare/v0.4.3...v0.5.0) (2025-12-19)
 
 ### Features

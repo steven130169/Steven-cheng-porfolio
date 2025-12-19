@@ -22,8 +22,8 @@ jobs:
       - id: 'auth'
         uses: 'google-github-actions/auth@v2'
         with:
-          credentials_json: '${{ secrets.GCP_SA_KEY_INFRA_ADMIN }}' # Admin SA
-          # Future: Switch to specific Infra Admin SA Key/WIF
+          workload_identity_provider: '${{ secrets.WIF_PROVIDER }}'
+          service_account: 'terraform-admin-sa@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com'
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3

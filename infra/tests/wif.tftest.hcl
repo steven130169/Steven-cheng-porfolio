@@ -29,7 +29,7 @@ run "verify_wif_resources" {
 
   # 2. WIF Provider
   assert {
-    condition     = google_iam_workload_identity_pool_provider.github_provider.workload_identity_pool_provider_id == "github-provider"
+    condition     = google_iam_workload_identity_pool_provider.github_provider.workload_identity_pool_provider_id == "github-provider-actions"
     error_message = "WIF Provider ID mismatch"
   }
 

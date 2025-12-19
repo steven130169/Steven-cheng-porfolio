@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.2](///compare/v0.4.1...v0.4.2) (2025-12-19)
+
+### Bug Fixes
+
+* **infra:** rename WIF provider to avoid conflict and add dependency fdd433a
+
 ## [0.4.1](///compare/v0.4.0...v0.4.1) (2025-12-19)
 
 ### Bug Fixes

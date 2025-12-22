@@ -34,6 +34,8 @@ description: Core Constitution - Role, Boundaries & Style
 * **Never** 使用 `any` 類型來繞過 TypeScript 錯誤
 * **Never** 刪除失敗的測試來讓 pre-commit 通過
 * **Never** 在 E2E 測試中使用真實的生產環境數據
+* **Never** 直接在主工作區 (`main` repo) 切換 feature 分支進行開發 (必須使用 `git worktree`)
+* **Never** 讓多個 Agent 同時操作同一個工作目錄
 
 ---
 

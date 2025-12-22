@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.5.2](///compare/v0.5.1...v0.5.2) (2025-12-22)
+
+### Bug Fixes
+
+* **ci:** update release token in GitHub Actions workflow e849075
+
 ## [0.5.1](///compare/v0.5.0...v0.5.1) (2025-12-19)
 
 ### Bug Fixes

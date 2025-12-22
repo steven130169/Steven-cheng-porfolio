@@ -22,7 +22,7 @@ Chosen option: **Option 1**.
 
 **Reasoning**:
 1.  **Vendure Inspiration**: We will adopt Vendure's proven domain models (`ProductVariant` for tickets, `OrderState` machine) but implement them in NestJS to run on Firestore.
-2.  **Firestore Transactions**: We will use Firestore's ACID transactions to handle the critical "Inventory Check & Lock" logic, ensuring data consistency equivalent to SQL.
+2.  **PostgreSQL Transactions**: We will use SQL's ACID transactions (via Neon DB) to handle the critical "Inventory Check & Lock" logic, ensuring data consistency. (Modified per [ADR 0015](0015-adopt-neon-db-and-drizzle-orm.md))
 3.  **Cost & Control**: Avoids monthly SaaS fees (Shopify) and SQL database costs (Vendure).
 
 ## Detailed Design

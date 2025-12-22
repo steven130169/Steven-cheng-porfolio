@@ -1,6 +1,6 @@
 # Select GCP Cloud Run and Firestore for Commercial Operations
 
-* Status: Accepted
+* Status: Superseded by [ADR 0015](0015-adopt-neon-db-and-drizzle-orm.md)
 * Date: 2025-12-04
 * Deciders: Steven Cheng, Gemini Agent
 

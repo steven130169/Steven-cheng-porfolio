@@ -25,6 +25,10 @@ dist-ssr
 
 coverage/
 playwright-report/
+
+# Reference projects / vendor snapshots (do not commit)
+docs/references/
+
 test-results/
 .gemini/*.orig
 .gemini/settings.json

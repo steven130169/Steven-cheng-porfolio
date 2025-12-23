@@ -12,11 +12,11 @@ description: Waterfall Phase 1 - Requirements Analysis (需求分析)
 2. Create Requirements Document
    ```bash
    mkdir -p docs/specs
-   touch docs/specs/requirements.md
+   touch docs/specs/FEATURE_NAME-requirements.md
    ```
 
 3. Document Requirements
-   I will create/update `docs/specs/requirements.md` with:
+   I will create/update `docs/specs/FEATURE_NAME-requirements.md` with:
    - User Stories
    - Acceptance Criteria
    - Non-functional requirements

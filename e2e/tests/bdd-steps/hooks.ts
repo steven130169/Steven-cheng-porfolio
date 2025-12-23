@@ -1,7 +1,8 @@
 import { Before, After, BeforeAll, AfterAll, setDefaultTimeout } from '@cucumber/cucumber';
 import * as playwright from '@playwright/test';
-import { spawn, ChildProcess, execSync } from 'child_process';
+import { spawn, ChildProcess } from 'child_process';
 import path from 'path';
+import net from 'net';
 
 setDefaultTimeout(120 * 1000);
 
@@ -30,32 +31,60 @@ async function waitForUrl(url: string, timeout = 60000) {
   throw new Error(`Timeout waiting for ${url}`);
 }
 
+async function ensurePortFree(port: number, host = '127.0.0.1') {
+  // If we can bind to the port, it's free.
+  // If not, something is listening; fail fast with a clear error.
+  await new Promise<void>((resolve, reject) => {
+    const server = net.createServer();
+
+    server.once('error', (err: any) => {
+      if (err?.code === 'EADDRINUSE') {
+        reject(
+          new Error(
+            `Port ${port} is already in use. Please stop the process using it and re-run the tests.`
+          )
+        );
+      } else {
+        reject(err);
+      }
+    });
+
+    server.once('listening', () => {
+      server.close(() => resolve());
+    });
+
+    server.listen(port, host);
+  });
+}
+
 BeforeAll(async function () {
-  console.log('🧹 Cleaning up port 3000...');
-  try { execSync('npx kill-port 3000'); } catch (e) {} // Only cleanup frontend port
+  console.log('🧹 Checking port 3000...');
+  await ensurePortFree(3000);
 
   console.log('🚀 Starting Next.js Monolith for BDD tests...');
-  
+
   const projectRoot = path.resolve(process.cwd(), '..');
 
   // Only start Frontend (Monolith)
-  frontendProcess = spawn('npm', ['run', 'start:frontend'], { 
+  frontendProcess = spawn('npm', ['run', 'start:frontend'], {
     cwd: projectRoot,
-    stdio: 'ignore', 
-    shell: true, 
+    stdio: 'ignore',
+    shell: true,
     detached: true,
-    env: { ...process.env, PORT: '3000' } 
+    env: { ...process.env, PORT: '3000' },
   });
 
   console.log('⏳ Waiting for Next.js Monolith to become available...');
-  
+
   try {
     await waitForUrl('http://localhost:3000'); // Only wait for frontend
     console.log('✅ Next.js Monolith is up and running!');
   } catch (err) {
     console.error('❌ Timeout waiting for Next.js Monolith to start.');
     if (frontendProcess && frontendProcess.pid) {
-        try { process.kill(-frontendProcess.pid); } catch(e) {}
+      try {
+        process.kill(-frontendProcess.pid);
+      } catch (e) {}
     }
     throw err;
   }
@@ -82,11 +111,11 @@ After(async function () {
 
 AfterAll(async function () {
   await browser.close();
-  
+
   console.log('🛑 Stopping Next.js Monolith...');
   if (frontendProcess && frontendProcess.pid) {
-    try { process.kill(-frontendProcess.pid); } catch(e) {}
+    try {
+      process.kill(-frontendProcess.pid);
+    } catch (e) {}
   }
-  
-  try { execSync('npx kill-port 3000'); } catch (e) {} // Only kill frontend port
 });

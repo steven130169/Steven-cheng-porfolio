@@ -9,7 +9,15 @@ description: Waterfall Phase 2 - System Design (系統設計)
 1. Review Requirements
    // turbo
    ```bash
-   cat specs/requirements.md
+   # 找到本專案的需求規格檔（依 repo 而定）
+   # 例：docs/specs/*requirements*.md 或 docs/specs/*.md
+   ls docs/specs/ || true
+
+   # 或用關鍵字搜尋（例如 ticketing/requirements）
+   rg -n "requirements|user stories|acceptance criteria" docs || true
+
+   # 最後再開啟/檢視你要當作 Phase 2 基準的需求文件
+   # cat <REQUIREMENTS_SPEC_PATH>
    ```
 
 2. Review Existing ADRs
@@ -24,7 +32,7 @@ description: Waterfall Phase 2 - System Design (系統設計)
 
 3. Create Design Document / New ADR
    I will create an ADR or design document based on requirements.
-   
+
    If creating a new ADR:
    ```bash
    # 複製 Template (如果不使用 Template 則直接建立)
@@ -38,8 +46,8 @@ description: Waterfall Phase 2 - System Design (系統設計)
    - **References** (如果有推翻舊決策)
 
 4. Complete Gherkin Scenarios (Given/When/Then)
-   I will add detailed steps to `.feature` files:
-   
+   I will add detailed steps to `.feature` files under `e2e/specs/`.
+
    ```gherkin
    Scenario: Create a new blog post
      Given I am logged in as admin
@@ -50,7 +58,7 @@ description: Waterfall Phase 2 - System Design (系統設計)
 5. Review Gate
    User, 請審閱：
    - 設計文件 / 新增的 ADR
-   - `e2e/features/*.feature` (完整 Given/When/Then)
-   
+   - `e2e/specs/*.feature` (完整 Given/When/Then)
+
    **您必須明確說「設計批准」才能進入 Phase 3 (實作)。**
    ⚠️ 進入下一階段後，設計將被凍結。

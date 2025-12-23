@@ -55,12 +55,8 @@ Then(
 );
 
 // --- Ticket types ---
-Given(
-  'the event has an enabled ticket type {string} with price {int} and allocation {int}',
-  async (_ticketTypeName: string, _price: number, _allocation: number) => {
-    // Stub: create ticket type in Phase 3.
-  }
-);
+// NOTE: The step "the event has an enabled ticket type {string} with price {int} and allocation {int}"
+// is defined in event-ticketing.steps.ts and shared across both feature files
 
 Given('the event has no enabled ticket types', async () => {
   // Stub: ensure no enabled ticket types in Phase 3.

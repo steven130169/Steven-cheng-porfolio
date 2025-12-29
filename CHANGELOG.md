@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.0](https://github.com/steven130169/Steven-cheng-porfolio/compare/v0.5.2...v0.6.0) (2025-12-29)
+
+### Features
+
+* implement Neon DB and Drizzle ORM architecture ([1ed7fa7](https://github.com/steven130169/Steven-cheng-porfolio/commit/1ed7fa79be437c546b15f0cae1151f337544cfb8))
+
 ## [0.5.2](///compare/v0.5.1...v0.5.2) (2025-12-22)
 
 ### Bug Fixes

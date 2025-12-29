@@ -1,6 +1,5 @@
 ---
-trigger: always_on
-description: Core Constitution - Role, Boundaries & Style
+apply: always
 ---
 
 # Core Rules - Code Stabilization & Refactoring Partner

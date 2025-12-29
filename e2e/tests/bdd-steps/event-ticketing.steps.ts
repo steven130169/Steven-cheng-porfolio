@@ -1,23 +1,63 @@
 import { Given, When, Then } from '@cucumber/cucumber';
+import { pageFixture } from './hooks';
 
 /**
- * Phase 2 (Design):
- * Customer ticketing step stubs for feature discovery and step resolution.
- * Phase 3 (Implementation) will replace these with real UI/API interactions.
+ * Event Ticketing BDD Steps
+ * Uses Playwright route mocking to intercept API calls
  */
+
+// Store mock data in World context
+interface EventData {
+  id: string;
+  title: string;
+  totalCapacity: number;
+  status: string;
+  ticketTypes: Array<{
+    name: string;
+    price: number;
+    allocation: number | null;
+  }>;
+}
+
+export let mockEventData: EventData | null = null;
 
 // --- Data setup ---
 Given(
   'an event {string} exists with total capacity {int} and status {string}',
-  async (_eventTitle: string, _totalCapacity: number, _status: string) => {
-    // Stub: seed published event in Phase 3.
+  async (eventTitle: string, totalCapacity: number, status: string) => {
+    mockEventData = {
+      id: '1',
+      title: eventTitle,
+      totalCapacity,
+      status,
+      ticketTypes: [],
+    };
+  }
+);
+
+Given(
+  'the event has an enabled ticket type {string} with price {int} and allocation {int}',
+  async (ticketTypeName: string, price: number, allocation: number) => {
+    if (mockEventData) {
+      mockEventData.ticketTypes.push({
+        name: ticketTypeName,
+        price,
+        allocation,
+      });
+    }
   }
 );
 
 Given(
   'the event has an enabled ticket type {string} with price {int} and no allocation',
-  async (_ticketTypeName: string, _price: number) => {
-    // Stub: seed ticket type without allocation in Phase 3.
+  async (ticketTypeName: string, price: number) => {
+    if (mockEventData) {
+      mockEventData.ticketTypes.push({
+        name: ticketTypeName,
+        price,
+        allocation: null,
+      });
+    }
   }
 );
 
@@ -44,7 +84,38 @@ Given(
 
 // --- Browse / view ---
 When('I browse events', async () => {
-  // Stub: navigate to events browse page in Phase 3.
+  const page = pageFixture.page;
+
+  // Mock the /api/events endpoint
+  await page.route('**/api/events', async (route) => {
+    if (route.request().method() === 'GET') {
+      const events = mockEventData ? [
+        {
+          id: mockEventData.id,
+          title: mockEventData.title,
+          role: 'Conference',
+          date: '2025',
+          description: `A ${mockEventData.status.toLowerCase()} event with ${mockEventData.totalCapacity} capacity`,
+          tags: ['Tech'],
+          status: mockEventData.status,
+        }
+      ] : [];
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(events),
+      });
+    } else {
+      await route.continue();
+    }
+  });
+
+  // Navigate to homepage which contains the events section
+  await page.goto('/');
+
+  // Wait for the events section to be visible
+  await page.locator('#event').waitFor({ state: 'visible' });
 });
 
 When('I view the event {string}', async (_eventTitle: string) => {

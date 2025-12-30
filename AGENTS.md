@@ -11,6 +11,7 @@
 - **Fullstack**: Next.js / React
 - **E2E Testing**: Playwright, Cucumber (BDD)
 - **Infrastructure**: Terraform (GCP)
+- **Database**: PostgreSQL Neon Serverless PostgreSQL
 - **Language**: TypeScript
 - **Runtime**: Node.js >= 24.0.0
 

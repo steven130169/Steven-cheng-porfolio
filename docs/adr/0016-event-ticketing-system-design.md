@@ -9,14 +9,15 @@ We have an approved requirements spec for the Event Ticketing System:
 - `docs/specs/event-ticketing-requirements.md`
 
 Existing architectural decisions include:
-- **ADR 0003**: Backend uses **NestJS**.
+- **ADR 0003 / 0017**: Backend uses **Next.js Fullstack** (Server Actions/API Routes) instead of NestJS.
 - **ADR 0015**: Data store uses **Neon (PostgreSQL)** with **Drizzle ORM**.
+- **ADR 0018**: Payment provider is **PayUni** (Taiwan).
 - **ADR 0007 / 0010 / 0012**: Prior Firestore-related details are superseded by ADR 0015.
 
-This ADR defines the MVP system design: architecture, schema, API contracts, component breakdown, and how we will enforce inventory correctness (no overselling) using reservations.
+This ADR defines the MVP system design: architecture, schema, Server Actions, component breakdown, and how we will enforce inventory correctness (no overselling) using reservations.
 
 ## Decision
-Implement the Event Ticketing System as a small set of NestJS modules (Events, TicketTypes, Reservations, Orders, Payments) backed by Neon Postgres.
+Implement the Event Ticketing System using **Next.js Fullstack** (App Router, Server Actions) backed by Neon Postgres.
 
 Key invariants:
 1. **Single event total capacity X** caps the total number of sold + reserved tickets across all ticket types.
@@ -27,28 +28,26 @@ Key invariants:
 ## Architecture Overview
 
 ### Runtime components
-- **Frontend (Next.js)**
+- **Frontend & Backend (Next.js)**
   - Admin UI: create event, configure capacity, add/edit ticket types, publish.
   - Customer UI: browse events, select ticket type, reserve, pay.
-
-- **Backend (NestJS)**
-  - REST API used by frontend.
-  - Signed webhook endpoint(s) for payment provider.
+  - **Server Actions**: used for mutations (create event, reserve ticket, etc.).
+  - **API Routes**: used for webhooks (e.g., Stripe) and potentially public APIs.
 
 - **Database (Neon Postgres)**
   - Stores events, ticket types, reservations, orders.
 
-### Module breakdown (NestJS)
-- `EventsModule`
+### Logical breakdown (Next.js Server Actions)
+- `actions/events.ts`
   - create/update/publish events
-- `TicketTypesModule`
+- `actions/ticket-types.ts`
   - CRUD ticket types, validate allocation rules
-- `ReservationsModule`
-  - create reservation, expire reservations, compute availability
-- `OrdersModule`
+- `actions/reservations.ts`
+  - create reservation, compute availability
+- `actions/orders.ts`
   - create order after payment success, state transitions
-- `PaymentsModule`
-  - create payment session/intention, handle webhooks
+- `actions/payments.ts`
+  - create payment session/intention (PayUni), handle webhooks
 - (Optional) `AdminAuthModule`
   - single-admin auth guard
 
@@ -180,10 +179,10 @@ In a single DB transaction:
 
 ### Payment APIs
 - `POST /payments/reservations/:reservationId/session`
-  - Creates payment session/intent
+  - Creates PayUni payment session
 
-- `POST /webhooks/payments`
-  - Verifies signature
+- `POST /webhooks/payuni`
+  - Verifies PayUni signature
   - On success: creates order + consumes reservation
 
 ## Component Breakdown

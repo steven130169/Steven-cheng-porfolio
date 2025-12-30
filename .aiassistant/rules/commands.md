@@ -1,6 +1,5 @@
 ---
-trigger: manual
-description: Command Reference (npm scripts)
+apply: always
 ---
 
 # Command Reference
@@ -10,7 +9,6 @@ description: Command Reference (npm scripts)
 |---------|-------------|
 | `npm run test` | All unit tests (frontend + backend) |
 | `npm run test:frontend:unit` | Frontend unit tests only |
-| `npm run test:backend:unit` | Backend unit tests only |
 | `npm run test:e2e` | E2E + BDD tests |
 | `npm run test:bdd` | BDD tests only |
 | `npm run test:e2e:ui` | Playwright UI mode |
@@ -19,4 +17,3 @@ description: Command Reference (npm scripts)
 | Command | Description |
 |---------|-------------|
 | `npm run lint` | All linting |
-| `npm run dev` | Start dev server |

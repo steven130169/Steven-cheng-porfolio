@@ -1,7 +1,5 @@
 ---
-trigger: model_decision
-glob: "**/*.test.ts,**/*.spec.ts,**/*.feature"
-description: Testing Standards (Unit, Integration, E2E)
+apply: always
 ---
 
 # Testing Standards & Patterns

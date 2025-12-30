@@ -1,26 +1,35 @@
 ---
-name: requirements analysis
-description: Waterfall Phase 1 - Requirements Analysis (需求分析)
+name: Requirements Analysis Strategic Level
 ---
-
-# Phase 1: Requirements Analysis
-
-## Gate: 必須完成需求文件才能進入下一階段
-
-1. Gather Requirements
-   User, 請描述您的需求。我會幫您整理成正式的需求文件。
-
-2. Create Requirements Document
+1. Create Requirements Document
    ```bash
-   mkdir -p docs/specs
-   touch docs/specs/FEATURE_NAME-requirements.md
+   mkdir -p docs/requirements
+   touch docs/requirements/vision.md
    ```
+2. Document Product Vision
+   I will create/update `docs/requirements/vision.md` with my answers to the following questions:
+   - What problem does this product solve?
+   - Why should we build this product?
+   - What are the key features of this product?
 
-3. Document Requirements
-   I will create/update `docs/specs/FEATURE_NAME-requirements.md` with:
-   - User Stories
-   - Acceptance Criteria
-   - Non-functional requirements
+---
+name: Requirements Analysis Tactical Level
+---
+1. Read product vision
+   I will read `docs/requirements/vision.md` to understand the problem that this product solves.
+2. Create Epic Backlog
+   3. I will 
+      ```bash
+      ls docs/requirements/
+      touch docs/requirements/PRODUCT_VISION.md
+      ```
+      I will create a list of requirements in `docs/specs/requirements.md` with the following format:
+      ```markdown
+      - [ ] As a [persona],
+2. Create Product Backlog
+   I will create a list of requirements in `docs/specs/requirements.md` with the following format:
+   ```markdown
+   - [ ] As a [persona], I [want to], [so that] 
 
 4. Create Gherkin Feature Files (框架)
    ```bash

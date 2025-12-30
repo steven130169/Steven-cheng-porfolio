@@ -1,4 +1,5 @@
 ---
+name: system-design
 description: Waterfall Phase 2 - System Design (系統設計)
 ---
 
@@ -35,7 +36,7 @@ description: Waterfall Phase 2 - System Design (系統設計)
 
    If creating a new ADR:
    ```bash
-   # 複製 Template (如果不使用 Template 則直接建立)
+   # 複製 Template 
    cp docs/adr/TEMPLATE.md docs/adr/xxxx-new-decision.md
    ```
    **內容包含**：
@@ -45,20 +46,9 @@ description: Waterfall Phase 2 - System Design (系統設計)
    - Component breakdown
    - **References** (如果有推翻舊決策)
 
-4. Complete Gherkin Scenarios (Given/When/Then)
-   I will add detailed steps to `.feature` files under `e2e/specs/`.
-
-   ```gherkin
-   Scenario: Create a new blog post
-     Given I am logged in as admin
-     When I fill in the title "My First Post"
-     ...
-   ```
-
 5. Review Gate
    User, 請審閱：
    - 設計文件 / 新增的 ADR
-   - `e2e/specs/*.feature` (完整 Given/When/Then)
 
    **您必須明確說「設計批准」才能進入 Phase 3 (實作)。**
    ⚠️ 進入下一階段後，設計將被凍結。

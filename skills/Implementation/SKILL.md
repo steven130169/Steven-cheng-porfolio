@@ -1,18 +1,19 @@
 ---
-description: Waterfall Phase 3 - Implementation (實作)
+description: Implementation (實作)
 ---
 
-# Phase 3: Implementation
-
-## Prerequisite: Phase 2 系統設計已完成並批准
-
-1. Review Design
-   // turbo
+# Implementation
+## 
+1. Review Requirements and get user stories
    ```bash
-   cat docs/specs/requirements.md
+   ls docs/requirements/
+   ```
+2. create and update gherkin files
+   ```bash
+   ls e2e/specs/
    ```
 
-2. Implementation Rules
+3. Implementation Rules
    **嚴格禁止**：
    - ❌ 修改需求文件
    - ❌ 修改設計文件
@@ -23,7 +24,7 @@ description: Waterfall Phase 3 - Implementation (實作)
    - ✅ 遵循 TDD (先寫測試)
    - ✅ 每個功能都要有對應的測試
 
-3. Implement BDD Step Definitions
+4. Implement BDD Step Definitions
    為 `.feature` 檔案建立可執行的 Step Definitions：
    ```bash
    ls e2e/features/*.feature
@@ -43,16 +44,16 @@ description: Waterfall Phase 3 - Implementation (實作)
    });
    ```
 
-4. Implement Business Logic
+5. Implement Business Logic
    按照設計文件實作核心功能代碼。
 
-5. Unit Tests
+6. Unit Tests
    // turbo
    ```bash
    npm run test
    ```
 
-6. Review Gate
+7. Review Gate
    User, 實作階段完成。
    - [ ] BDD Step Definitions 已建立
    - [ ] 業務邏輯已實作

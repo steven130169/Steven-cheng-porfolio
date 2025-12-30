@@ -23,12 +23,5 @@
 
 ## Development Skills
 All development skills are listed below, please check `skills` folder for detailed instructions.
-1. Requirements Analysis follows this skill`skills/requirements-analysis/SKILL.md`.
-2. System Design (ADRs & Gherkin Specs) follows this skill`skills/system-design/SKILL.md`.
-3. Architecture (Terraform) follows this skill`skills/infrastructure/SKILL.md`.
-3. Implementation (BDD Steps -> Coding & Unit Tests) follows this skill`skills/implementation/SKILL.md`.
-4. Testing (E2E / BDD)follows this skill`skills/system-test/SKILL.md`..
-5. Deployment (CI/CD) follows this skill`skills/deliver/SKILL.md`.
-6. Operation follows this skill`skills/operation/SKILL.md`.
 
 ## Repository Structure

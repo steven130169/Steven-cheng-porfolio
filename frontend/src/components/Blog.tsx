@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import React from 'react';
 import { ArrowRight, Clock, Mail } from 'lucide-react';
-import { BlogPost } from '../types';
+import { BlogPost } from '@/types';
 
 const posts: BlogPost[] = [
   {
@@ -49,28 +49,28 @@ const Blog: React.FC = () => {
               Deep dives into Cloud Architecture, DevOps patterns, and Engineering culture.
             </p>
           </div>
-          <a href="#" className="flex items-center text-primary hover:text-orange-700 transition-colors font-medium group">
+          <button type="button" className="flex items-center text-primary hover:text-orange-700 transition-colors font-medium group">
             View all articles <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-          </a>
+          </button>
         </div>
 
         {/* Magazine Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-20">
-          
+
           {/* Featured Post (Left 2/3) */}
           <div className="lg:col-span-2 group cursor-pointer">
             <div className="relative rounded-2xl overflow-hidden mb-6 border border-border-light shadow-sm group-hover:shadow-xl transition-all">
-              <img 
-                src={featuredPost.imageUrl} 
-                alt={featuredPost.title} 
-                className="w-full h-[400px] object-cover group-hover:scale-105 transition-transform duration-700"
+              <img
+                src={featuredPost.imageUrl}
+                alt={featuredPost.title}
+                className="w-full h-100 object-cover group-hover:scale-105 transition-transform duration-700"
               />
               <div className="absolute top-4 left-4">
                 <span className="px-3 py-1 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-full">
                   {featuredPost.category}
                 </span>
               </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"></div>
+              <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/40 to-transparent"></div>
               <div className="absolute bottom-0 left-0 p-8">
                  <div className="flex items-center text-white/80 text-sm mb-3 space-x-4">
                     <span className="flex items-center"><Clock className="h-4 w-4 mr-1.5" /> {featuredPost.readTime}</span>
@@ -124,9 +124,9 @@ const Blog: React.FC = () => {
             </div>
             <div className="w-full md:w-auto flex-1 max-w-md">
                 <form className="flex flex-col sm:flex-row gap-3">
-                    <input 
-                        type="email" 
-                        placeholder="Enter your email" 
+                    <input
+                        type="email"
+                        placeholder="Enter your email"
                         className="flex-1 bg-white border border-border-light text-dark-text placeholder-dark-text/40 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                     />
                     <button className="px-6 py-3 bg-primary hover:bg-orange-700 text-white font-medium rounded-lg transition-colors whitespace-nowrap shadow-lg shadow-primary/30">

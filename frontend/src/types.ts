@@ -7,10 +7,12 @@ export interface SpeakingEngagement {
   type: 'Conference' | 'Meetup' | 'Podcast';
 }
 
+export type EventRole = 'Organizer' | 'Host' | 'Instructor' | 'Speaker';
+
 export interface EventItem {
   id: string;
   title: string;
-  role: 'Organizer' | 'Host' | 'Instructor' | 'Speaker';
+  role: EventRole;
   description: string;
   date: string;
   tags: string[];

@@ -12,17 +12,21 @@ const mockEvents = [
   { id: '4', title: 'Event 4', role: 'Role 4', date: '2023', description: 'Desc 4', tags: [], status: 'Upcoming' },
 ];
 
+// Constants
+const API_EVENTS_URL = '/api/events';
+const LOADING_TEXT = 'Loading events...';
+
 describe('Event', () => {
   beforeEach(() => {
     global.fetch = vi.fn((url, options: RequestInit | undefined) => {
-        if (url === '/api/events' && (!options || !options.method || options.method === 'GET')) {
+        if (url === API_EVENTS_URL && (!options || !options.method || options.method === 'GET')) {
             return Promise.resolve({
                 ok: true,
                 json: () => Promise.resolve(mockEvents),
             } as Response);
         }
-        if (url === '/api/events' && options.method === 'POST') {
-             const body = JSON.parse(options.body as string);
+        if (url === API_EVENTS_URL && options.method === 'POST') {
+             const body = JSON.parse(options.body as string) as unknown;
              return Promise.resolve({
                 ok: true,
                 json: () => Promise.resolve({ ...body, id: '999', tags: ['New'], status: 'Upcoming' }),
@@ -39,15 +43,15 @@ describe('Event', () => {
   it('renders correctly', async () => {
     const { container } = render(<Event />);
     // Wait for loading to disappear
-    await waitFor(() => expect(screen.queryByText('Loading events...')).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText(LOADING_TEXT)).not.toBeInTheDocument());
     expect(container).toBeInTheDocument();
   });
 
   it('allows adding a new event', async () => {
     render(<Event />);
     const user = userEvent.setup();
-    
-    await waitFor(() => expect(screen.queryByText('Loading events...')).not.toBeInTheDocument());
+
+    await waitFor(() => expect(screen.queryByText(LOADING_TEXT)).not.toBeInTheDocument());
 
     const addButton = screen.getByRole('button', { name: /add event/i });
     await user.click(addButton);
@@ -68,7 +72,7 @@ describe('Event', () => {
 
   it('displays a maximum of 3 events', async () => {
     render(<Event />);
-    await waitFor(() => expect(screen.queryByText('Loading events...')).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText(LOADING_TEXT)).not.toBeInTheDocument());
 
     expect(screen.getAllByTestId('event-item')).toHaveLength(3); 
     expect(screen.getByRole('button', { name: /View All Events/i })).toBeInTheDocument(); 
@@ -77,7 +81,7 @@ describe('Event', () => {
   it('does not display the "View All Events" button when there are 3 or fewer events', async () => {
     // Mock fetch to return only 3 events
     global.fetch = vi.fn((url, options: RequestInit | undefined) => {
-      if (url === '/api/events' && (!options || !options.method || options.method === 'GET')) {
+      if (url === API_EVENTS_URL && (!options || !options.method || options.method === 'GET')) {
           return Promise.resolve({
               ok: true,
               json: () => Promise.resolve(mockEvents.slice(0, 3)), // Only 3 events
@@ -87,7 +91,7 @@ describe('Event', () => {
     });
 
     render(<Event />);
-    await waitFor(() => expect(screen.queryByText('Loading events...')).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText(LOADING_TEXT)).not.toBeInTheDocument());
     
     expect(screen.getAllByTestId('event-item')).toHaveLength(3);
     expect(screen.queryByRole('button', { name: /View All Events/i })).not.toBeInTheDocument();

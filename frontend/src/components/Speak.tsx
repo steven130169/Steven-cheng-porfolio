@@ -1,6 +1,12 @@
 import React from 'react';
 import { Mic, MapPin, ExternalLink } from 'lucide-react';
-import { SpeakingEngagement } from '../types';
+import { SpeakingEngagement } from '@/types';
+
+const typeStyles: Record<string, string> = {
+  Conference: 'border-purple-500/30 text-purple-600 bg-purple-500/10',
+  Podcast: 'border-orange-500/30 text-orange-600 bg-orange-500/10',
+  default: 'border-blue-500/30 text-blue-600 bg-blue-500/10',
+};
 
 const talks: SpeakingEngagement[] = [
   {
@@ -52,19 +58,15 @@ const Speak: React.FC = () => {
         <div className="space-y-6">
           {talks.map((talk) => (
             <div key={talk.id} className="group bg-card hover:bg-stone-50 rounded-xl p-6 border border-border-light hover:border-primary/30 transition-all duration-300 flex flex-col sm:flex-row gap-6 items-start sm:items-center shadow-sm hover:shadow-lg">
-              <div className="flex-shrink-0 w-16 h-16 bg-light-background rounded-lg flex flex-col items-center justify-center border border-border-light text-center">
+              <div className="shrink-0 w-16 h-16 bg-light-background rounded-lg flex flex-col items-center justify-center border border-border-light text-center">
                 <span className="text-xs text-dark-text/50 uppercase font-bold">{talk.date.split(' ')[0]}</span>
                 <span className="text-lg font-bold text-dark-text">{talk.date.split(' ')[1]}</span>
               </div>
-              
-              <div className="flex-grow">
+
+              <div className="grow">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-1">
                     <h3 className="text-lg font-bold text-dark-text group-hover:text-primary transition-colors">{talk.title}</h3>
-                    <span className={`text-xs px-2 py-0.5 rounded border ${
-                        talk.type === 'Conference' ? 'border-purple-500/30 text-purple-600 bg-purple-500/10' :
-                        talk.type === 'Podcast' ? 'border-orange-500/30 text-orange-600 bg-orange-500/10' :
-                        'border-blue-500/30 text-blue-600 bg-blue-500/10'
-                    }`}>
+                    <span className={`text-xs px-2 py-0.5 rounded border ${typeStyles[talk.type] || typeStyles.default}`}>
                         {talk.type}
                     </span>
                 </div>
@@ -75,10 +77,10 @@ const Speak: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-4 group-hover:translate-x-0 duration-300">
-                  <a href="#" className="p-2 text-dark-text/60 hover:text-primary transition-colors">
+              <div className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-4 group-hover:translate-x-0 duration-300">
+                  <button type="button" className="p-2 text-dark-text/60 hover:text-primary transition-colors" aria-label="View talk details">
                       <ExternalLink className="h-5 w-5" />
-                  </a>
+                  </button>
               </div>
             </div>
           ))}

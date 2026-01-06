@@ -1,5 +1,7 @@
 ---
 apply: on-demand
+name: repo-review
+description: "提供系統化的專案全面檢視流程，協助識別程式碼品質、安全性、測試覆蓋率及文件完整性等方面的改進空間，確保專案符合最佳實踐與規範標準。"
 trigger: "當使用者說「檢視 repo」、「檢查專案」、「audit」、「review codebase」或需要全面檢查專案狀態時"
 ---
 

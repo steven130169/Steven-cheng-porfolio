@@ -1,6 +1,8 @@
 ---
 apply: on-demand
+name: develop
 trigger: "當使用者說「開始開發」、「進入開發模式」或已完成 feature-start 準備進入實作階段時"
+description: "引導使用者遵循 TDD 流程進行功能開發，確保每個功能都有完整的測試覆蓋，並符合專案的程式碼品質標準。"
 ---
 
 # Develop Mode - 開發模式

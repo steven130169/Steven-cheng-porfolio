@@ -1,5 +1,7 @@
 ---
 apply: on-demand
+name: stabilize
+description: "引導使用者完成穩定化模式的步驟，確保功能在整合環境中穩定運作，所有測試通過，程式碼品質符合標準，準備進入 Code Review 與部署階段。"
 trigger: "當使用者說「穩定化」、「進入穩定化模式」或已完成功能開發準備進行整合測試時"
 ---
 

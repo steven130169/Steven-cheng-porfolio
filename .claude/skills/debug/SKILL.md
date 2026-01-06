@@ -1,6 +1,8 @@
 ---
 apply: on-demand
+name: debug
 trigger: "當使用者說「除錯」、「Debug」、「出現錯誤」或需要診斷與修復問題時"
+description: "提供系統化的除錯流程與步驟，協助診斷、識別並修復程式碼中的問題，確保修復後不會引入新的問題。"
 ---
 
 # Debug Mode - 除錯模式

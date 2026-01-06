@@ -1,6 +1,8 @@
 ---
 apply: on-demand
+name: feature-start
 trigger: "當使用者說「開始新功能」、「啟動功能開發」或明確要求開始開發新的 feature 時"
+description: "引導使用者完成新功能開發的啟動流程，包括需求確認、技術設計評估、建立功能分支及開發計畫，確保每個功能開發都符合專案規範與安全原則。"
 ---
 
 # Feature Start - 功能開發啟動流程

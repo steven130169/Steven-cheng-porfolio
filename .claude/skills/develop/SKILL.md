@@ -77,16 +77,31 @@ describe('BlogService', () => {
 - [ ] 測試失敗原因符合預期（因為功能尚未實作）
 
 **執行測試指令：**
+**✨ 優先使用 Wallaby.js（智能測試執行）：**
+
+Wallaby.js 提供即時測試回饋，自動偵測程式碼變更並執行相關測試。
+
 ```bash
-# Unit Tests
+# 啟動 Wallaby.js（推薦）
+# Wallaby 會自動執行測試並在 IDE 中顯示即時結果
+# 使用 MCP 工具查詢 Wallaby 狀態和結果
+```
+
+**備選：使用 Vitest CLI（手動測試執行）：**
+```bash
+# 執行所有 Unit Tests
 npm test
 
-# 特定檔案
+# 執行特定檔案
 npm test -- blog.service.spec.ts
 
-# Watch mode
+# Watch mode（檔案變更時自動重新執行）
 npm test -- --watch
 ```
+
+**何時使用 Wallaby vs Vitest CLI：**
+- **優先使用 Wallaby**：日常開發、TDD 循環、需要即時回饋
+- **使用 Vitest CLI**：CI/CD 環境、需要完整測試報告、Wallaby 不可用時
 
 ---
 
@@ -241,6 +256,15 @@ git commit -m "feat!: change blog API response structure"
 ## 執行指令參考
 
 ### 測試相關
+
+**✨ 優先使用 Wallaby.js：**
+```bash
+# 透過 MCP 工具與 Wallaby.js 互動
+# Wallaby 提供即時測試執行、覆蓋率視覺化、智能測試選擇
+# 自動偵測檔案變更並執行相關測試
+```
+
+**Vitest CLI（傳統方式）：**
 ```bash
 # 執行所有測試
 npm test

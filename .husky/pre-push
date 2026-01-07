@@ -1,2 +1,2 @@
 npm run test:e2e
-npm run test:bdd
+ADMIN_API_KEY=test-admin-key npm run test:bdd

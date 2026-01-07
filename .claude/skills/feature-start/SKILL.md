@@ -1,8 +1,7 @@
 ---
-apply: on-demand
 name: feature-start
-trigger: "當使用者說「開始新功能」、「啟動功能開發」或明確要求開始開發新的 feature 時"
-description: "引導使用者完成新功能開發的啟動流程，包括需求確認、技術設計評估、建立功能分支及開發計畫，確保每個功能開發都符合專案規範與安全原則。"
+description: "引導新功能開發啟動：需求確認、技術設計、分支建立、Gherkin 模板產生。觸發：「開始新功能」、「啟動功能開發」、「feature start」。輸出：feature branch、gherkin 模板、TODO 清單。(project)"
+allowed-tools: Read, Grep, Glob, Write, Bash(git:*), AskUserQuestion, TodoWrite
 ---
 
 # Feature Start - 功能開發啟動流程
@@ -90,7 +89,62 @@ git checkout -b feature/<feature-name>
 
 ---
 
-### Step 4: 建立開發計畫
+### Step 4: 產生 Gherkin 模板
+
+**執行動作：**
+建立 Gherkin feature 檔案，儲存路徑：`e2e/specs/<feature-name>.feature`
+
+```bash
+# 確保 e2e/specs 資料夾存在
+mkdir -p e2e/specs
+
+# 建立 feature 檔案
+touch e2e/specs/<feature-name>.feature
+```
+
+**Gherkin 模板內容：**
+```gherkin
+Feature: <功能名稱>
+  作為 <角色>
+  我想要 <功能>
+  以便 <價值>
+
+  Scenario: <第一個場景>
+    Given <前置條件>
+    When <執行動作>
+    Then <預期結果>
+
+  # TODO: 補充更多 scenarios
+```
+
+**範例：**
+```gherkin
+# e2e/specs/blog-post-editor.feature
+Feature: 部落格文章編輯器
+  作為 部落格作者
+  我想要 編輯和發布文章
+  以便 分享技術知識給讀者
+
+  Scenario: 成功建立新文章
+    Given 我已登入管理後台
+    When 我建立一篇新文章，標題為 "TypeScript 最佳實踐"
+    And 我輸入文章內容並點擊發布
+    Then 文章應該出現在文章列表中
+    And 文章狀態應該為 "已發布"
+
+  # TODO: 補充編輯、刪除、草稿儲存等 scenarios
+```
+
+**檢查清單：**
+- [ ] `e2e/specs/` 資料夾已建立
+- [ ] Gherkin feature 檔案已建立（檔名對應分支名稱）
+- [ ] Feature 描述已填寫（作為...我想要...以便...）
+- [ ] 至少包含 1 個 Scenario
+- [ ] Scenario 使用 Given-When-Then 格式
+
+---
+
+### Step 5: 建立開發計畫
 
 **執行動作：**
 建立 TODO 清單文件，儲存路徑：`docs/todos/<feature-name>.md`
@@ -159,7 +213,7 @@ touch docs/todos/<feature-name>.md
 
 ---
 
-### Step 5: 安全與規範檢查
+### Step 6: 安全與規範檢查
 
 **執行動作：**
 在開始開發前，確認以遵循 `core.md` 的規範：
@@ -186,6 +240,7 @@ touch docs/todos/<feature-name>.md
 - ✅ 功能需求已明確定義
 - ✅ 技術設計已評估
 - ✅ 功能分支已建立
+- ✅ Gherkin 模板已產生（`e2e/specs/<feature-name>.feature`）
 - ✅ 開發計畫（TODO）已建立
 - ✅ 已確認遵循 `core.md` 的安全規範
 
@@ -193,11 +248,13 @@ touch docs/todos/<feature-name>.md
 
 ## 下一步
 
-完成 Feature Start 後，進入 **Develop Mode**（開發模式）：
-- 遵循 TDD 流程
-- 撰寫測試先行
-- 實作功能邏輯
-- 確保所有測試通過
+完成 Feature Start 後，執行 `/develop` skill 開始 TDD 開發流程：
+- 讀取 Gherkin 案例並進入 Plan Mode 規劃單元測試
+- 啟動 Wallaby 即時測試監控
+- 遵循 Red-Green-Refactor TDD 流程
+- 撰寫測試先行，實作功能邏輯
+- 反覆執行重構迴圈確保程式碼品質
+- Commit 並 Push 符合 commitlint 規範
 
 ---
 

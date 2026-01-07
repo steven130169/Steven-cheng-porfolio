@@ -318,7 +318,7 @@ npm run test:e2e -- --debug
 ```
 
 **範例：修復 API 錯誤**
-```typescript
+```text
 // Step 1: 撰寫測試重現問題
 describe('BlogService', () => {
   it('should handle null title gracefully', async () => {
@@ -595,19 +595,19 @@ gcloud run services describe portfolio-frontend \
 ## 除錯工具清單
 
 ### 前端除錯
-- **Chrome DevTools** - Console、Network、Sources、React DevTools
+- **Chrome DevTools** – Console、Network、Sources、React DevTools
 - **React DevTools** - Component tree、Props、State
 - **Redux DevTools** - State management debugging（如使用 Redux）
 
 ### 後端除錯
-- **Node.js Debugger** - VS Code built-in debugger
+- **Node.js Debugger** – VS Code built-in debugger
 - **Log 分析** - Cloud Run logs、GCP Logs Explorer
 - **Postman/Insomnia** - API 測試
 
 ### 測試除錯
 - **Playwright Inspector** - `npm run test:e2e -- --debug`
 - **Playwright UI Mode** - `npm run test:e2e -- --ui`
-- **Test Coverage Report** - 識別未測試的程式碼
+- **Test Coverage Report** – 識別未測試的程式碼
 
 ### 基礎設施除錯
 - **Terraform Plan** - 預覽基礎設施變更

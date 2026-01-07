@@ -21,7 +21,6 @@
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
-    "@cucumber/cucumber": "^12.3.0",
     "@playwright/test": "^1.57.0",
     "@release-it/conventional-changelog": "^10.0.2",
     "@types/node": "^24.10.1",

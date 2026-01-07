@@ -64,7 +64,8 @@ jobs:
         run: npm run test:bdd
         env:
           CI: true
-          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
+          DATABASE_URL: ${{ secrets.DEV_DATABASE_URL }}
+          ADMIN_API_KEY: ${{ secrets.ADMIN_API_KEY }}
 
       - name: Upload Playwright Report
         if: always()

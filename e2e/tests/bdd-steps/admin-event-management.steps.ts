@@ -26,7 +26,8 @@ Then(
   async (eventTitle: string, status: string) => {
     const event = pageFixture.createdEvent;
     
-    expect(event.title).toBe(eventTitle);
+    // Verify using original title (stored during creation)
+    expect(event.title).toContain(eventTitle);
     expect(event.status).toBe(status);
   }
 );
@@ -135,8 +136,11 @@ When(
   async (title: string, totalCapacity: number) => {
     const page = pageFixture.page;
     
+    // Make title unique by adding timestamp to avoid duplicate slug errors
+    const uniqueTitle = `${title} ${Date.now()}`;
+    
     const response = await page.request.post('/api/admin/events', {
-      data: { title, totalCapacity },
+      data: { title: uniqueTitle, totalCapacity },
       headers: {
         'Authorization': `Bearer ${process.env.ADMIN_API_KEY || 'test-admin-key'}`
       }
@@ -149,6 +153,8 @@ When(
     
     expect(response.ok()).toBeTruthy();
     pageFixture.createdEvent = await response.json();
+    // Store original title for assertions
+    pageFixture.createdEvent.originalTitle = title;
   }
 );
 

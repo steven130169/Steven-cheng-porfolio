@@ -417,7 +417,7 @@ npm run test:bdd -w e2e -- --name "<scenario name>"
 - ✅ **所有 BDD step definitions 實作完成（無 stub）**
 - ✅ Gherkin scenario 可執行並通過
 - ✅ Step definitions 有適當的 assertions
-- ✅ Git commit & push 成功
+- ✅ Git commit & Git push 兩者皆成功
 
 ---
 

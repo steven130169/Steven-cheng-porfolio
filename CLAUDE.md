@@ -75,6 +75,233 @@ npm run lint -w frontend         # ESLint
 
 **Type Checking**: Run `npm run build` - Next.js build performs TypeScript compilation, catching type errors.
 
+## Tool Usage & JetBrains MCP Integration
+
+This project **mandates JetBrains MCP tools** for all file operations, code analysis, and refactoring tasks. These tools leverage the IDE's indexing and static analysis engine, providing superior performance and accuracy compared to CLI commands.
+
+### Core Principles
+
+1. **Always use JetBrains MCP first** - Only fall back to Claude Code built-in tools or CLI when MCP tools are unavailable
+2. **Never use CLI for file operations** - Violates Claude Code best practices and wastes resources
+3. **Leverage IDE intelligence** - MCP tools understand code semantics, not just text patterns
+
+### Tool Priority Matrix
+
+| Task | Priority 1 (Use First) | Priority 2 (Fallback) | Never Use |
+|------|----------------------|---------------------|-----------|
+| **List directory structure** | `mcp__jetbrains__list_directory_tree` | - | `tree`, `ls -R` |
+| **Find files by pattern** | `mcp__jetbrains__find_files_by_glob` | `Glob` | `find` |
+| **Find files by name** | `mcp__jetbrains__find_files_by_name_keyword` | - | `find`, `ls` |
+| **Read file content** | `mcp__jetbrains__get_file_text_by_path` | `Read` | `cat`, `head`, `tail` |
+| **Create new file** | `mcp__jetbrains__create_new_file` | `Write` | `echo >`, `cat <<EOF` |
+| **Replace text** | `mcp__jetbrains__replace_text_in_file` | `Edit` | `sed`, `awk` |
+| **Rename symbols** | `mcp__jetbrains__rename_refactoring` | - | `replace_text_in_file`, `sed` |
+| **Search code** | `mcp__jetbrains__search_in_files_by_text` | `Grep` | `grep`, `rg` |
+| **Search by regex** | `mcp__jetbrains__search_in_files_by_regex` | `Grep` | `grep -E`, `rg` |
+| **Get symbol info** | `mcp__jetbrains__get_symbol_info` | - | Manual documentation lookup |
+| **Check file problems** | `mcp__jetbrains__get_file_problems` | - | `tsc`, `eslint` directly |
+| **Format code** | `mcp__jetbrains__reformat_file` | - | `prettier`, `eslint --fix` |
+
+### When to Use Each Tool
+
+#### Project Navigation
+```typescript
+// ✅ CORRECT: Explore directory structure
+mcp__jetbrains__list_directory_tree({
+    directoryPath: 'frontend/src/server',
+    maxDepth: 3,
+    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
+});
+
+// ✅ CORRECT: Find files by pattern
+mcp__jetbrains__find_files_by_glob({
+    globPattern: '**/__tests__/**/*.test.ts',
+    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
+});
+
+// ✅ CORRECT: Find files by name (ultra-fast, uses IDE index)
+mcp__jetbrains__find_files_by_name_keyword({
+    nameKeyword: 'order',
+    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
+});
+
+// ❌ WRONG: Using CLI
+Bash({ command: 'tree frontend/src/server' });
+Bash({ command: 'find . -name "*.test.ts"' });
+```
+
+#### File Operations
+```typescript
+// ✅ CORRECT: Read file with truncation control
+mcp__jetbrains__get_file_text_by_path({
+    pathInProject: 'frontend/src/server/services/order.ts',
+    maxLinesCount: 100,
+    truncateMode: 'MIDDLE',
+    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
+});
+
+// ✅ CORRECT: Create new file with safety
+mcp__jetbrains__create_new_file({
+    pathInProject: 'frontend/src/server/services/payment.ts',
+    text: 'export function processPayment() { ... }',
+    overwrite: false,
+    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
+});
+
+// ❌ WRONG: Using CLI
+Bash({ command: 'cat frontend/src/server/services/order.ts' });
+Bash({ command: 'echo "export function..." > payment.ts' });
+```
+
+#### Code Modification
+
+**Text Modification vs Code Refactoring**:
+
+| Operation Type | Tool | Use Cases |
+|---------------|------|-----------|
+| **Text-only changes** | `replace_text_in_file` | Log messages, comments, JSDoc, string literals |
+| **Code refactoring** | `rename_refactoring` | Variable names, function names, class names |
+
+```typescript
+// ✅ CORRECT: Text modification (comments, strings)
+mcp__jetbrains__replace_text_in_file({
+    pathInProject: 'frontend/src/server/services/order.ts',
+    oldText: 'console.log("Order created")',
+    newText: 'console.log("Order created successfully")',
+    replaceAll: true,
+    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
+});
+
+// ✅ CORRECT: Symbol refactoring (updates ALL references across project)
+mcp__jetbrains__rename_refactoring({
+    pathInProject: 'frontend/src/server/services/order.ts',
+    symbolName: 'processOrder',
+    newName: 'createOrder',
+    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
+});
+
+// ❌ WRONG: Using replace_text for code symbols (misses cross-file references)
+mcp__jetbrains__replace_text_in_file({
+    pathInProject: 'frontend/src/server/services/order.ts',
+    oldText: 'processOrder',
+    newText: 'createOrder',
+    replaceAll: true  // Only replaces in ONE file, breaks code!
+});
+```
+
+#### Code Search & Analysis
+```typescript
+// ✅ CORRECT: Search using IDE index (10x faster)
+mcp__jetbrains__search_in_files_by_text({
+    searchText: 'createOrder',
+    caseSensitive: true,
+    fileMask: '*.ts',
+    directoryToSearch: 'frontend/src',
+    maxUsageCount: 50,
+    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
+});
+
+// ✅ CORRECT: Regex search with context highlighting
+mcp__jetbrains__search_in_files_by_regex({
+    regexPattern: 'function\\s+\\w+Order',
+    caseSensitive: false,
+    fileMask: '*.ts',
+    maxUsageCount: 100,
+    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
+});
+
+// ✅ CORRECT: Get symbol documentation (like Cmd+J in IDE)
+mcp__jetbrains__get_symbol_info({
+    filePath: 'frontend/src/server/services/order.ts',
+    line: 42,
+    column: 10,
+    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
+});
+
+// ❌ WRONG: Using CLI grep
+Bash({ command: 'grep -r "createOrder" frontend/src' });
+```
+
+#### Code Quality & Refactoring
+```typescript
+// ✅ CORRECT: Check file problems (errors + warnings)
+mcp__jetbrains__get_file_problems({
+    filePath: 'frontend/src/server/services/order.ts',
+    errorsOnly: false,
+    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
+});
+
+// ✅ CORRECT: Format file according to project style
+mcp__jetbrains__reformat_file({
+    path: 'frontend/src/server/services/order.ts',
+    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
+});
+
+// ❌ WRONG: Running formatters directly
+Bash({ command: 'prettier --write frontend/src/server/services/order.ts' });
+Bash({ command: 'eslint --fix frontend/src/server/services/order.ts' });
+```
+
+### Project-Specific Configuration
+
+**Project Path**: Always include in MCP tool calls:
+```typescript
+projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
+```
+
+**Workspace Awareness**:
+- This is an NPM Workspaces monorepo
+- File paths are relative to project root
+- Main workspaces: `frontend/`, `e2e/`
+
+### Performance Guidelines
+
+**JetBrains MCP Performance Advantages**:
+- `find_files_by_name_keyword`: ~50ms (IDE index) vs ~500ms (CLI find)
+- `search_in_files_by_text`: ~100ms (IDE index) vs ~800ms (grep)
+- Automatic exclusion of `node_modules/`, `.git/`, `.next/` (no manual filtering needed)
+
+### Common Workflows
+
+**Refactoring Loop** (TDD Refactor Phase):
+```typescript
+// 1. Check problems
+const problems = await mcp__jetbrains__get_file_problems(file, false);
+
+// 2. Fix issues (repeat until clean)
+while (problems.problems.length > 0) {
+    // Fix each problem...
+    problems = await mcp__jetbrains__get_file_problems(file, false);
+}
+
+// 3. Rename symbols if needed
+await mcp__jetbrains__rename_refactoring(file, 'oldName', 'newName');
+
+// 4. Format code
+await mcp__jetbrains__reformat_file(file);
+
+// 5. Verify with ESLint
+Bash({ command: 'npm run lint -w frontend' });
+```
+
+**Symbol Exploration**:
+```typescript
+// 1. Search for symbol usage
+const usage = await mcp__jetbrains__search_in_files_by_text({
+    searchText: 'createOrder',
+    fileMask: '*.ts',
+    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
+});
+
+// 2. Get detailed documentation
+const info = await mcp__jetbrains__get_symbol_info({
+    filePath: 'frontend/src/server/services/order.ts',
+    line: 42,
+    column: 10,
+    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
+});
+```
+
 ## Critical Development Constraints
 
 These constraints are enforced from `.aiassistant/rules/core.md` (the project constitution):

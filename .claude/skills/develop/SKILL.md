@@ -2,7 +2,6 @@
 name: develop
 description: "嚴謹 TDD 流程：讀取 gherkin（e2e/specs/*.feature）→ Plan mode 規劃測試 → 啟動 Wallaby → Red-Green-Refactor 迴圈 → 重構（JetBrains MCP: get_file_problems, reformat_file, ESLint）→ commit（commitlint）。整合 Wallaby MCP 即時監控。觸發：「開始開發」、「進入開發模式」、「TDD」。(project)"
 allowed-tools: Read, Write, Edit, Bash(git:*), Bash(npm:*), TodoWrite, mcp__wallaby__*, mcp__jetbrains__*, EnterPlanMode
-model: sonnet
 ---
 
 # Develop Skill - 嚴謹 TDD 工作流程

@@ -59,6 +59,11 @@ async function ensurePortFree(port: number, host = '127.0.0.1') {
 }
 
 BeforeAll(async function () {
+  // Set test API key for admin endpoints (used by middleware)
+  if (!process.env.ADMIN_API_KEY) {
+    process.env.ADMIN_API_KEY = 'test-admin-key';
+  }
+
   console.log('🧹 Checking port 3000...');
   await ensurePortFree(3000);
 
@@ -72,7 +77,7 @@ BeforeAll(async function () {
     stdio: 'ignore',
     shell: true,
     detached: true,
-    env: { ...process.env, PORT: '3000' },
+    env: { ...process.env, PORT: '3000', ADMIN_API_KEY: process.env.ADMIN_API_KEY },
   });
 
   console.log('⏳ Waiting for Next.js Monolith to become available...');

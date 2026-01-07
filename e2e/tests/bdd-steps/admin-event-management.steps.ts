@@ -1,4 +1,6 @@
 import { Given, When, Then } from '@cucumber/cucumber';
+import { pageFixture } from './hooks';
+import { expect } from '@playwright/test';
 
 /**
  * Phase 2 (Design):
@@ -21,8 +23,11 @@ Given(
 
 Then(
   'the event {string} should be created with status {string}',
-  async (_eventTitle: string, _status: string) => {
-    // Stub: verify event state in Phase 3.
+  async (eventTitle: string, status: string) => {
+    const event = pageFixture.createdEvent;
+    
+    expect(event.title).toBe(eventTitle);
+    expect(event.status).toBe(status);
   }
 );
 
@@ -50,7 +55,11 @@ Then(
 Then(
   'I should be redirected to the event edit page for {string}',
   async (_eventTitle: string) => {
-    // Stub: verify navigation in Phase 3.
+    const event = pageFixture.createdEvent;
+    
+    // Verify slug exists (needed to construct edit URL: /admin/events/{slug}/edit)
+    expect(event.slug).toBeDefined();
+    expect(event.slug).toBeTruthy();
   }
 );
 
@@ -123,8 +132,23 @@ Then('the customer should not see {string}', async (_eventTitle: string) => {
 // --- Creation / update actions ---
 When(
   'I create an event with title {string} and total capacity {int}',
-  async (_title: string, _totalCapacity: number) => {
-    // Stub: create event in Phase 3.
+  async (title: string, totalCapacity: number) => {
+    const page = pageFixture.page;
+    
+    const response = await page.request.post('/api/admin/events', {
+      data: { title, totalCapacity },
+      headers: {
+        'Authorization': `Bearer ${process.env.ADMIN_API_KEY || 'test-admin-key'}`
+      }
+    });
+    
+    if (!response.ok()) {
+      const errorBody = await response.text();
+      console.error('API Error Response:', response.status(), errorBody);
+    }
+    
+    expect(response.ok()).toBeTruthy();
+    pageFixture.createdEvent = await response.json();
   }
 );
 

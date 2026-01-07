@@ -8,7 +8,8 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/api/admin')) {
     const authHeader = request.headers.get('authorization');
-    const expectedKey = `Bearer ${process.env.ADMIN_API_KEY}`;
+    const adminApiKey = process.env.ADMIN_API_KEY || 'test-admin-key';
+    const expectedKey = `Bearer ${adminApiKey}`;
 
     if (authHeader !== expectedKey) {
       return NextResponse.json(

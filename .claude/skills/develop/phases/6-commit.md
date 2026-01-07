@@ -391,4 +391,8 @@ Commit 成功後：
 
 ### 選項 4: 結束 Develop Skill
 - 如果所有 scenarios 完成
-- 準備進入 Code Review
+- 執行 
+```bash
+git push
+```
+- 結束 develop skill session

@@ -13,9 +13,14 @@
 
 ### 1. 列出所有 Gherkin 檔案
 
-```bash
-ls e2e/specs/*.feature
-```
+   ```json
+   {
+  "tool": "find_files_by_glob",
+  "arguments": {
+    "pattern": "e2e/specs/*.feature"
+  }
+}
+   ```
 
 ### 2. 讀取目標 Scenario
 
@@ -157,10 +162,15 @@ Feature: 活動票務系統
 **執行步驟**:
 
 1. **找出對應的 steps 檔案**:
-   ```bash
-   # 找出與 feature 對應的 steps 檔案
-   ls e2e/tests/bdd-steps/*.steps.ts
+      ```json
+   {
+   "tool": "find_files_by_glob",
+      "arguments": {
+         "pattern": "e2e/tests/bdd-steps/*.steps.ts"
+      }
+   }
    ```
+
 
 2. **檢查 stub 實作**:
       ```json

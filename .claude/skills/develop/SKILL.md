@@ -32,15 +32,22 @@ allowed-tools: Read, Write, Edit, Bash(git:*), Bash(npm:*), TodoWrite, mcp__wall
 **執行步驟**:
 
 1. 列出所有 gherkin 檔案:
-   ```bash
-   ls e2e/specs/*.feature
+   ```json
+   {
+   "tool": "find_files_by_glob",
+      "arguments": {
+         "pattern": "e2e/specs/*.feature"
+      }
+   }
    ```
 
 2. 讀取未完成的 gherkin 案例（查找 `# TODO` 或未實作的 scenarios）
 
 3. **進入 Plan Mode** 分析該 scenario:
    ```
-   /plan
+
+/plan
+
    ```
 
 4. 在 plan mode 中:
@@ -331,7 +338,7 @@ mcp__wallaby__wallaby_allTests()
    ```
 
 2. **檢查是否有未實作的 stub**:
-   // 使用 search_in_files_by_text or search_in_files_by_regex  搜尋 stub 註解
+   // 使用 search_in_files_by_text or search_in_files_by_regex 搜尋 stub 註解
    // AI 內部呼叫的 MCP 參數
    ```json
    {

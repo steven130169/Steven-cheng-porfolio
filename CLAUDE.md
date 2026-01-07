@@ -400,6 +400,3 @@ This project follows a **Red-Green-Refactor** cycle:
 **Workflow Modes** (via `.claude/skills/`):
 - `/feature-start` - Requirements confirmation, technical design, branch creation
 - `/develop` - TDD implementation with Red-Green-Refactor loop
-- `/stabilize` - Feature completion, integration testing, pre-review checks
-- `/debug` - Systematic debugging and issue resolution
-- `/repo-review` - Comprehensive code quality and security review

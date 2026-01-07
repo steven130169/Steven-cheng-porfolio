@@ -12,11 +12,13 @@ model: sonnet
 本 skill 引導你遵循嚴謹的 TDD 流程進行功能開發，整合 Wallaby MCP 即時測試監控和 JetBrains MCP 程式碼品質檢查。
 
 **核心原則**:
+
 - **Red**: 先寫失敗的測試（嚴禁異動 production code）
 - **Green**: 用最少程式碼讓測試通過（嚴禁異動測試）
 - **Refactor**: 反覆執行品質檢查直到成功
 
 **必備工具**:
+
 - Wallaby MCP (`wallaby_allTests`, `wallaby_runtimeValues`)
 - JetBrains MCP (`get_file_problems`, `reformat_file`, `rename_refactoring`)
 
@@ -25,9 +27,11 @@ model: sonnet
 ## 6 步驟工作流程
 
 ### Step 1: 規劃階段 📋
+
 **目標**: 分析 gherkin 案例，規劃所有單元測試
 
 **執行步驟**:
+
 1. 列出所有 gherkin 檔案:
    ```bash
    ls e2e/specs/*.feature
@@ -41,19 +45,20 @@ model: sonnet
    ```
 
 4. 在 plan mode 中:
-   - 分析 Given-When-Then 的業務邏輯
-   - 識別需要的單元測試檔案
-   - 為每個測試案例規劃:
-     - 測試描述
-     - Input 參數
-     - 預期 Output
-   - 識別需要 mock 的依賴
+    - 分析 Given-When-Then 的業務邏輯
+    - 識別需要的單元測試檔案
+    - 為每個測試案例規劃:
+        - 測試描述
+        - Input 參數
+        - 預期 Output
+    - 識別需要 mock 的依賴
 
 5. 將 plan 輸出為結構化格式（詳見 [phases/1-plan.md](phases/1-plan.md)）
 
 6. **提交給人類審查**，等待確認後繼續
 
 **輸出範例**:
+
 ```markdown
 ## Gherkin: 使用者可以購買活動票券
 
@@ -62,14 +67,14 @@ model: sonnet
 #### 測試檔案: frontend/src/server/services/__tests__/order.test.ts
 
 1. **測試案例**: 成功建立訂單
-   - Input: { eventId, tickets, customer }
-   - Expected: { orderId, status: 'pending' }
-   - Mocks: db.insertOrder, payment.createPaymentIntent
+    - Input: { eventId, tickets, customer }
+    - Expected: { orderId, status: 'pending' }
+    - Mocks: db.insertOrder, payment.createPaymentIntent
 
 2. **測試案例**: 庫存不足時拋出錯誤
-   - Input: { quantity: 100 } (超過庫存 10)
-   - Expected: throw Error('庫存不足')
-   - Mocks: db.getTicketTypes
+    - Input: { quantity: 100 } (超過庫存 10)
+    - Expected: throw Error('庫存不足')
+    - Mocks: db.getTicketTypes
 
 ...
 ```
@@ -77,9 +82,11 @@ model: sonnet
 ---
 
 ### Step 2: 啟動 Wallaby 🚀
+
 **目標**: 啟動 Wallaby 即時測試監控
 
 **執行步驟**:
+
 1. 取得 Wallaby run configuration:
    ```typescript
    mcp__jetbrains__get_run_configurations()
@@ -104,18 +111,21 @@ model: sonnet
 ### Step 3-5: TDD 迴圈 🔄
 
 #### Step 3: Red Phase ❌
+
 **目標**: 寫一個**必須失敗**的測試
 
 **嚴格規則**:
+
 - ⛔ **嚴厲禁止異動主程式（production code）**
 - ✅ 一次只寫**一個**測試案例
 - ✅ 測試**必須失敗**
 - ✅ 失敗原因必須是:
-  - 找不到 function/class（尚未實作）
-  - 回傳值與預期不符
+    - 找不到 function/class（尚未實作）
+    - 回傳值與預期不符
 - ⚠️ **不可以是**環境問題（import 錯誤、語法錯誤）
 
 **執行步驟**:
+
 1. 根據 Step 1 的 plan，建立或開啟測試檔案
 2. 寫第一個測試案例（使用 Arrange-Act-Assert 模式）
 3. 儲存檔案
@@ -130,20 +140,23 @@ model: sonnet
 ---
 
 #### Step 4: Green Phase ✅
+
 **目標**: 用**最少的程式碼**讓測試通過
 
 **嚴格規則**:
+
 - ⛔ **嚴厲禁止異動測試程式**
 - ✅ 只寫讓測試通過的**最少程式碼**
 - ✅ 不要過度設計（YAGNI - You Aren't Gonna Need It）
 - ✅ 可以寫 hardcoded 值（之後重構時改善）
 
 **執行步驟**:
+
 1. 開啟 production code 檔案
 2. 實作最少的程式碼讓測試通過:
-   - 建立 function/class（如果不存在）
-   - 實作基本邏輯
-   - 回傳正確的值
+    - 建立 function/class（如果不存在）
+    - 實作基本邏輯
+    - 回傳正確的值
 3. 儲存檔案
 4. 透過 Wallaby 確認測試通過:
    ```typescript
@@ -159,14 +172,17 @@ model: sonnet
 ---
 
 #### Step 5: Refactor Phase ♻️
+
 **目標**: 改善程式碼品質，同時保持測試通過
 
 **執行步驟**:
 
 ##### 5.1 審查異動
+
 ```bash
 git status
 ```
+
 確認哪些檔案被修改，是否需要重構
 
 ##### 5.2 重構迴圈（反覆執行直到成功）
@@ -174,33 +190,40 @@ git status
 **Loop Iteration**:
 
 1️⃣ **檢查問題** (`get_file_problems`)
+
 ```bash
 # 取得異動檔案（透過 git status）
 git status --short
 ```
 
 處理新增檔案:
+
 ```bash
 # 如果有 ?? (Untracked files)，先 git add
 git add <new-files>
 ```
 
 逐一檢查每個異動檔案:
+
 ```text
 mcp__jetbrains__get_file_problems(file, errorsOnly: false)
 ```
+
 - 修復所有 **warnings** 和 **errors**
 - 如果有問題，修復後回到此步驟
 
 2️⃣ **格式化** (`reformat_file`)
+
 ```text
 mcp__jetbrains__reformat_file(file)
 ```
 
 3️⃣ **ESLint 檢查**
+
 ```bash
 npm run lint -w frontend
 ```
+
 - 如果有錯誤，執行:
   ```bash
   npx eslint --fix <file>
@@ -208,16 +231,20 @@ npm run lint -w frontend
 - 如果仍有錯誤，手動修復後回到 1️⃣
 
 4️⃣ **驗證測試仍通過**
+
 ```typescript
 mcp__wallaby__wallaby_allTests()
 ```
+
 - 如果測試失敗，修復後回到 1️⃣
 
 5️⃣ **重複**
+
 - 持續執行 1️⃣ → 2️⃣ → 3️⃣ → 4️⃣
 - **直到**: `get_file_problems` 無問題 + ESLint 通過 + 測試全綠
 
 ##### 5.3 程式碼改善建議
+
 - 提取重複的程式碼為 helper function
 - 重命名變數/函數以提升可讀性（使用 `rename_refactoring`）
 - 移除 unused imports/variables
@@ -228,6 +255,7 @@ mcp__wallaby__wallaby_allTests()
 ---
 
 ### Step 6: Commit & Push 📤
+
 **目標**: 提交乾淨的 commit，符合 commitlint 規範
 
 **執行步驟**:
@@ -262,9 +290,9 @@ mcp__wallaby__wallaby_allTests()
    ```
 
    **Type 規則**:
-   - `test`: 新增或修改測試
-   - `feat`: 新增功能
-   - `refactor`: 重構程式碼
+    - `test`: 新增或修改測試
+    - `feat`: 新增功能
+    - `refactor`: 重構程式碼
 
 5. Push:
    ```bash
@@ -272,9 +300,9 @@ mcp__wallaby__wallaby_allTests()
    ```
 
 6. **處理 Git Hooks 失敗**:
-   - **測試失敗** → 回到 Step 3（TDD 迴圈 - Red Phase）
-   - **品質問題**（lint/format/type errors）→ 回到 Step 5（重構迴圈）
-   - 修復後重新 commit/push
+    - **測試失敗** → 回到 Step 3（TDD 迴圈 - Red Phase）
+    - **品質問題**（lint/format/type errors）→ 回到 Step 5（重構迴圈）
+    - 修復後重新 commit/push
 
    **判斷方式**: 檢查 git hook 錯誤訊息中是否包含測試失敗關鍵字（`test failed`, `FAIL`, `Error:`, Vitest/Playwright 錯誤）
 
@@ -285,26 +313,120 @@ mcp__wallaby__wallaby_allTests()
 ### Step 7: 下一個測試案例 🔁
 
 **判斷**:
-- 如果 Step 1 plan 中還有未完成的測試案例 → 回到 Step 3（Red Phase）
-- 如果所有單元測試都完成 → 執行 gherkin scenario:
-  ```bash
-  npm run test:bdd -w e2e -- --name "<scenario name>"
-  ```
 
-**完成條件**:
+- 如果 Step 1 plan 中還有未完成的測試案例 → 回到 Step 3（Red Phase）
+- 如果所有單元測試都完成 → 驗證 BDD scenario 實作完成度
+
+---
+
+#### 7.1 驗證 BDD Step 實作完整性
+
+**CRITICAL**: Gherkin scenario 的完成不只是「測試執行通過」，必須確保 **所有 BDD step 實作都已完成**。
+
+**執行步驟**:
+
+1. **讀取對應的 step definitions 檔案**:
+   ```bash
+   # 找出對應的 steps 檔案
+   ls e2e/tests/bdd-steps/*.steps.ts
+   ```
+
+2. **檢查是否有未實作的 stub**:
+   // 使用 search_in_files_by_text or search_in_files_by_regex  搜尋 stub 註解
+   // AI 內部呼叫的 MCP 參數
+   ```json
+   {
+      "tool": "search_in_files_by_text",
+      "arguments": {
+         "text": "// Stub",
+         "include": "e2e/tests/bdd-steps/**"
+         }
+   }
+   ```
+
+3. **分析檢查結果**:
+
+   **🔴 未完成（需繼續實作）**:
+   ```typescript
+   // ❌ 發現 stub 實作
+   When('I view the event {string}', async (_eventTitle: string) => {
+     // Stub: open event detail page in Phase 3.
+   });
+   ```
+
+**🟢 已完成**:
+
+   ```typescript
+   // ✅ 有完整實作
+When('I view the event {string}', async (eventTitle: string) => {
+    const page = pageFixture.page;
+    await page.goto(`/events/${eventTitle}`);
+    await page.locator('h1').waitFor({state: 'visible'});
+});
+   ```
+
+4. **如果發現 stub，進入實作流程**:
+    - 回到 **Step 1 (Plan Mode)** 分析該 step 需要的實作
+    - 為該 step 規劃單元測試（如需要）
+    - 執行 Red-Green-Refactor 流程實作功能
+    - 實作 BDD step definition
+    - 重新驗證實作完整性
+
+**檢查清單**:
+
+- [ ] 已讀取 `e2e/tests/bdd-steps/**.steps.ts` 檔案
+- [ ] 已搜尋並確認無 `// Stub:` 註解
+- [ ] 所有 Given/When/Then steps 都有完整實作
+- [ ] 沒有空的 function body 或 placeholder 註解
+
+---
+
+#### 7.2 執行 BDD Scenario 測試
+
+**只有在 7.1 確認所有 step 實作完成後**，才執行 BDD 測試:
+
+```bash
+npm run test:bdd -w e2e -- --name "<scenario name>"
+```
+
+**預期結果**:
+
+- ✅ Scenario 執行成功
+- ✅ 所有 steps 都正確執行（非 pending/skipped）
+- ✅ 所有 assertions 都通過
+
+**如果測試失敗**:
+
+1. 檢查是單元測試問題 → 回到 Step 3（Red Phase）
+2. 檢查是 BDD step 實作問題 → 修正 step definition
+3. 檢查是整合問題 → 使用 Wallaby runtime values 除錯
+
+---
+
+#### 7.3 Scenario 完成條件
+
+**完整完成條件**（所有項目必須全部符合）:
+
 - ✅ 所有單元測試通過
+- ✅ **所有 BDD step definitions 實作完成（無 stub）**
 - ✅ Gherkin scenario 可執行並通過
+- ✅ Step definitions 有適當的 assertions
 - ✅ Git commit & push 成功
 
+---
+
 **下一步**:
-- 回到 Step 1，處理下一個 gherkin scenario
-- 或結束 develop skill（所有 scenarios 完成）
+
+- 如果當前 scenario **未完全實作** → 回到 7.1 繼續實作
+- 如果當前 scenario **已完全實作** → 回到 Step 1，處理下一個 gherkin scenario
+- 如果**所有 scenarios 完成** → 結束 develop skill
 
 ---
 
 ## TDD 紀律守則
 
 ### 禁止事項 ⛔
+
 1. **Red Phase 不可異動 production code**
 2. **Green Phase 不可異動測試**
 3. **不可跳過測試直接寫 production code**
@@ -312,6 +434,7 @@ mcp__wallaby__wallaby_allTests()
 5. **不可一次寫多個測試**
 
 ### 必須事項 ✅
+
 1. **必須使用 Wallaby 即時監控**
 2. **必須反覆執行重構迴圈直到成功**
 3. **必須符合 commitlint 規範**
@@ -324,6 +447,7 @@ mcp__wallaby__wallaby_allTests()
 ## MCP Tools 參考
 
 ### Wallaby MCP
+
 - `wallaby_allTests()` - 取得所有測試狀況
 - `wallaby_failingTests()` - 取得失敗的測試
 - `wallaby_runtimeValues(file, line, lineContent, expression)` - 除錯變數值
@@ -332,6 +456,7 @@ mcp__wallaby__wallaby_allTests()
 詳見 [mcp-tools/wallaby-reference.md](mcp-tools/wallaby-reference.md)
 
 ### JetBrains MCP
+
 - `get_file_problems(filePath, errorsOnly)` - 取得檔案問題
 - `reformat_file(path)` - 格式化檔案
 - `rename_refactoring(pathInProject, symbolName, newName)` - 重命名重構
@@ -344,9 +469,11 @@ mcp__wallaby__wallaby_allTests()
 ## 範例
 
 ### Gherkin → 測試計畫
+
 詳見 [examples/gherkin-to-tests.md](examples/gherkin-to-tests.md)
 
 ### 完整重構迴圈
+
 詳見 [examples/refactor-loop.md](examples/refactor-loop.md)
 
 ---
@@ -366,41 +493,43 @@ mcp__wallaby__wallaby_allTests()
 2. **測試失敗** - 回到 TDD 迴圈（Step 3）
 
    **識別關鍵字**:
-   - `FAIL` (Vitest 測試失敗)
-   - `test failed` (測試失敗訊息)
-   - `Error:` 搭配測試檔案路徑
-   - `FAILED` (Playwright 失敗)
-   - `X failed` (X 個測試失敗)
+    - `FAIL` (Vitest 測試失敗)
+    - `test failed` (測試失敗訊息)
+    - `Error:` 搭配測試檔案路徑
+    - `FAILED` (Playwright 失敗)
+    - `X failed` (X 個測試失敗)
 
    **處理步驟**:
-   - 回到 **Step 3.1 (Red Phase)**
-   - 檢查測試是否正確
-   - 檢查 production code 是否有 bug
-   - 重新執行 Red-Green-Refactor 流程
-   - 確保所有測試通過後再 commit
+    - 回到 **Step 3.1 (Red Phase)**
+    - 檢查測試是否正確
+    - 檢查 production code 是否有 bug
+    - 重新執行 Red-Green-Refactor 流程
+    - 確保所有測試通過後再 commit
 
 3. **品質問題** - 進入重構迴圈（Step 5）
 
    **識別關鍵字**:
-   - `ESLint` 錯誤
-   - `TypeScript` type errors
-   - `Formatting` 問題
-   - `Warning` (非測試相關)
+    - `ESLint` 錯誤
+    - `TypeScript` type errors
+    - `Formatting` 問題
+    - `Warning` (非測試相關)
 
    **處理步驟**:
-   - 進入 **Step 5.2 (重構迴圈)**
-   - 執行 get_file_problems → reformat_file → eslint
-   - 修復所有品質問題
-   - 重新 commit
+    - 進入 **Step 5.2 (重構迴圈)**
+    - 執行 get_file_problems → reformat_file → eslint
+    - 修復所有品質問題
+    - 重新 commit
 
 詳見 [rules/git-hooks.md](rules/git-hooks.md)
 
 ### Wallaby 無法啟動
+
 1. 檢查 JetBrains IDE 是否開啟
 2. 檢查 run configuration 是否存在
 3. 重新執行 `execute_run_configuration`
 
 ### 測試一直失敗
+
 1. 使用 `wallaby_runtimeValues` 檢查變數值
 2. 使用 `wallaby_failingTests` 取得詳細錯誤訊息
 3. 檢查 mock 是否正確設定

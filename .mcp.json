@@ -9,6 +9,10 @@
         "node ~/.wallaby/mcp"
       ],
       "env": {}
+    },
+    "jetbrains": {
+      "type": "sse",
+      "url": "http://127.0.0.1:64342/sse"
     }
   }
 }

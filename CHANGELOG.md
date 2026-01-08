@@ -1,5 +1,7 @@
 # Changelog
 
+## [0.7.1](https://github.com/steven130169/Steven-cheng-porfolio/compare/v0.7.0...v0.7.1) (2026-01-08)
+
 ## [0.7.0](https://github.com/steven130169/Steven-cheng-porfolio/compare/v0.6.2...v0.7.0) (2026-01-08)
 
 ### Features

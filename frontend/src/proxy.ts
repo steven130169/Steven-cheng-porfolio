@@ -2,10 +2,10 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 /**
- * Middleware for Admin API authentication
+ * Proxy for Admin API authentication
  * Checks Bearer token for all /api/admin/* routes
  */
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/api/admin')) {
     const authHeader = request.headers.get('authorization');
     const adminApiKey = process.env.ADMIN_API_KEY || 'test-admin-key';

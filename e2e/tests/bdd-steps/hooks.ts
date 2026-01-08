@@ -13,6 +13,8 @@ let frontendProcess: ChildProcess | undefined; // Only frontend process now
 export const pageFixture = {
   page: undefined as unknown as playwright.Page,
   createdEvent: undefined as any,
+  lastResponse: undefined as any,
+  lastResponseBody: undefined as any,
 };
 
 export const BASE_URL = 'http://localhost:3000';

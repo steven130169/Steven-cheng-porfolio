@@ -2,7 +2,7 @@
 'use client';
 
 import React, {useState, useEffect} from 'react';
-// eslint-disable-next-line
+ 
 import {SiGithub, SiThreads} from '@icons-pack/react-simple-icons';
 import {ArrowRight, Cloud} from 'lucide-react';
 
@@ -79,7 +79,7 @@ const Hero: React.FC = () => {
 
                         <div className="flex items-center gap-6 pt-4 justify-center lg:justify-start">
                             <a href="https://github.chiwencheng.com" target="_blank" rel="noopener noreferrer"
-                                /* eslint-disable-line */
+                                 
                                className="text-dark-text/50 hover:text-primary transition-colors"><SiGithub
                                 className="h-6 w-6"/></a>
                             <a href="https://thread.chiwencheng.com" target="_blank" rel="noopener noreferrer"

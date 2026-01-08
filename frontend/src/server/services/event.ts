@@ -1,8 +1,13 @@
 import {db} from '@/server/db';
-import {events} from '@/server/db/schema';
-import {createEventSchema, type CreateEventInput} from '@/server/validators/event.schema';
+import {events, ticketTypes} from '@/server/db/schema';
+import {
+    createEventSchema,
+    updateEventSchema,
+    type CreateEventInput,
+    type UpdateEventInput
+} from '@/server/validators/event.schema';
 import slugify from 'slugify';
-import {eq} from 'drizzle-orm';
+import {eq, and, isNotNull, ne} from 'drizzle-orm';
 
 export async function createDraftEvent(input: CreateEventInput) {
     // Validate input
@@ -36,4 +41,97 @@ export async function createDraftEvent(input: CreateEventInput) {
         .returning();
 
     return event;
+}
+
+async function validateCapacityUpdate(
+    eventId: number,
+    event: typeof events.$inferSelect,
+    newCapacity: number
+): Promise<void> {
+    if (event.status === 'PUBLISHED') {
+        if (newCapacity < event.totalCapacity) {
+            throw new Error('Cannot decrease capacity for published event');
+        }
+    } else if (event.status === 'DRAFT') {
+        const allocatedTickets = await db
+            .select()
+            .from(ticketTypes)
+            .where(and(
+                eq(ticketTypes.eventId, eventId),
+                isNotNull(ticketTypes.allocation)
+            ));
+
+        const totalAllocated = allocatedTickets.reduce(
+            (sum, tt) => sum + (tt.allocation || 0),
+            0
+        );
+
+        if (newCapacity < totalAllocated) {
+            throw new Error(`New capacity must be >= total allocations: ${totalAllocated}`);
+        }
+    }
+}
+
+async function validateAndGenerateSlug(title: string, eventId: number): Promise<string> {
+    const newSlug = slugify(title, {lower: true, strict: true});
+
+    const existing = await db
+        .select({id: events.id})
+        .from(events)
+        .where(and(
+            eq(events.slug, newSlug),
+            ne(events.id, eventId)
+        ))
+        .limit(1);
+
+    if (existing.length > 0) {
+        throw new Error('Event with this title already exists');
+    }
+
+    return newSlug;
+}
+
+export async function updateEvent(eventId: number, input: UpdateEventInput) {
+    const validatedData = updateEventSchema.parse(input);
+
+    const [event] = await db
+        .select()
+        .from(events)
+        .where(eq(events.id, eventId))
+        .limit(1);
+
+    if (!event) {
+        throw new Error('Event not found');
+    }
+
+    const updateData: Partial<typeof events.$inferInsert> = {
+        updatedAt: new Date(),
+    };
+
+    if (validatedData.totalCapacity !== undefined) {
+        await validateCapacityUpdate(eventId, event, validatedData.totalCapacity);
+        updateData.totalCapacity = validatedData.totalCapacity;
+    }
+
+    if (validatedData.title) {
+        const newSlug = await validateAndGenerateSlug(validatedData.title, eventId);
+        updateData.slug = newSlug;
+        updateData.title = validatedData.title;
+    }
+
+    if (validatedData.description !== undefined) {
+        updateData.description = validatedData.description;
+    }
+
+    if (validatedData.eventDate !== undefined) {
+        updateData.eventDate = validatedData.eventDate ? new Date(validatedData.eventDate) : null;
+    }
+
+    const [updatedEvent] = await db
+        .update(events)
+        .set(updateData)
+        .where(eq(events.id, eventId))
+        .returning();
+
+    return updatedEvent;
 }

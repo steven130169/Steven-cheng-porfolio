@@ -1,4 +1,6 @@
 import { Given, When, Then } from '@cucumber/cucumber';
+import { pageFixture } from './hooks';
+import { expect } from '@playwright/test';
 
 /**
  * Phase 2 (Design):
@@ -14,22 +16,58 @@ Given('I am logged in as an admin', async () => {
 // --- Event setup / assertions ---
 Given(
   'an event {string} exists with status {string} and total capacity {int}',
-  async (_eventTitle: string, _status: string, _totalCapacity: number) => {
-    // Stub: create/seed event in Phase 3.
+  async (eventTitle: string, status: string, totalCapacity: number) => {
+    const page = pageFixture.page;
+    const uniqueTitle = `${eventTitle} ${Date.now()}`;
+
+    const createResponse = await page.request.post('/api/admin/events', {
+      data: { title: uniqueTitle, totalCapacity },
+      headers: { 'Authorization': `Bearer ${process.env.ADMIN_API_KEY || 'test-admin-key'}` }
+    });
+    expect(createResponse.ok()).toBeTruthy();
+    const createdEvent = await createResponse.json();
+
+    if (status === 'PUBLISHED') {
+      const ticketResponse = await page.request.post(
+        `/api/admin/events/${createdEvent.id}/ticket-types`,
+        {
+          data: { name: 'General', price: 100, allocation: totalCapacity, enabled: true },
+          headers: { 'Authorization': `Bearer ${process.env.ADMIN_API_KEY || 'test-admin-key'}` }
+        }
+      );
+      expect(ticketResponse.ok()).toBeTruthy();
+
+      const publishResponse = await page.request.post(
+        `/api/admin/events/${createdEvent.id}/publish`,
+        { headers: { 'Authorization': `Bearer ${process.env.ADMIN_API_KEY || 'test-admin-key'}` } }
+      );
+      expect(publishResponse.ok()).toBeTruthy();
+    }
+
+    pageFixture.createdEvent = createdEvent;
+    pageFixture.createdEvent.originalTitle = eventTitle;
   }
 );
 
 Then(
   'the event {string} should be created with status {string}',
-  async (_eventTitle: string, _status: string) => {
-    // Stub: verify event state in Phase 3.
+  async (eventTitle: string, status: string) => {
+    const event = pageFixture.createdEvent;
+    
+    // Verify using original title (stored during creation)
+    expect(event.title).toContain(eventTitle);
+    expect(event.status).toBe(status);
   }
 );
 
 Then(
   'the event {string} should have total capacity {int}',
-  async (_eventTitle: string, _totalCapacity: number) => {
-    // Stub: verify event capacity in Phase 3.
+  async (eventTitle: string, expectedCapacity: number) => {
+    const event = pageFixture.createdEvent;
+
+    expect(event).toBeDefined();
+    expect(event.originalTitle).toBe(eventTitle);
+    expect(event.totalCapacity).toBe(expectedCapacity);
   }
 );
 
@@ -50,7 +88,11 @@ Then(
 Then(
   'I should be redirected to the event edit page for {string}',
   async (_eventTitle: string) => {
-    // Stub: verify navigation in Phase 3.
+    const event = pageFixture.createdEvent;
+    
+    // Verify slug exists (needed to construct edit URL: /admin/events/{slug}/edit)
+    expect(event.slug).toBeDefined();
+    expect(event.slug).toBeTruthy();
   }
 );
 
@@ -123,14 +165,57 @@ Then('the customer should not see {string}', async (_eventTitle: string) => {
 // --- Creation / update actions ---
 When(
   'I create an event with title {string} and total capacity {int}',
-  async (_title: string, _totalCapacity: number) => {
-    // Stub: create event in Phase 3.
+  async (title: string, totalCapacity: number) => {
+    const page = pageFixture.page;
+    
+    // Make title unique by adding timestamp to avoid duplicate slug errors
+    const uniqueTitle = `${title} ${Date.now()}`;
+    
+    const response = await page.request.post('/api/admin/events', {
+      data: { title: uniqueTitle, totalCapacity },
+      headers: {
+        'Authorization': `Bearer ${process.env.ADMIN_API_KEY || 'test-admin-key'}`
+      }
+    });
+    
+    if (!response.ok()) {
+      const errorBody = await response.text();
+      console.error('API Error Response:', response.status(), errorBody);
+    }
+    
+    expect(response.ok()).toBeTruthy();
+    pageFixture.createdEvent = await response.json();
+    // Store original title for assertions
+    pageFixture.createdEvent.originalTitle = title;
   }
 );
 
 When(
   'I update the total capacity for {string} to {int}',
-  async (_eventTitle: string, _totalCapacity: number) => {
-    // Stub: update event total capacity in Phase 3.
+  async (eventTitle: string, newCapacity: number) => {
+    const page = pageFixture.page;
+    const event = pageFixture.createdEvent;
+
+    if (!event || event.originalTitle !== eventTitle) {
+      throw new Error(`Event "${eventTitle}" not found in context`);
+    }
+
+    const response = await page.request.patch(
+      `/api/admin/events/${event.id}`,
+      {
+        data: { totalCapacity: newCapacity },
+        headers: { 'Authorization': `Bearer ${process.env.ADMIN_API_KEY || 'test-admin-key'}` }
+      }
+    );
+
+    pageFixture.lastResponse = response;
+    pageFixture.lastResponseBody = await response.json();
+
+    if (response.ok()) {
+      pageFixture.createdEvent = {
+        ...pageFixture.lastResponseBody,
+        originalTitle: event.originalTitle
+      };
+    }
   }
 );

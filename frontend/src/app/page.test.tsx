@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import Home from './page';
-import { vi } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 // Mock components to avoid rendering the full tree and dealing with their internal logic/fetches in a unit test for the Page.
 // This is a common practice for testing Page composition.

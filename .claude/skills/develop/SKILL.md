@@ -1,329 +1,541 @@
 ---
-apply: on-demand
 name: develop
-trigger: "當使用者說「開始開發」、「進入開發模式」或已完成 feature-start 準備進入實作階段時"
-description: "引導使用者遵循 TDD 流程進行功能開發，確保每個功能都有完整的測試覆蓋，並符合專案的程式碼品質標準。"
+description: "嚴謹 TDD 流程：讀取 gherkin（e2e/specs/*.feature）→ Plan mode 規劃測試 → 啟動 Wallaby → Red-Green-Refactor 迴圈 → 重構（JetBrains MCP: get_file_problems, reformat_file, ESLint）→ commit（commitlint）。整合 Wallaby MCP 即時監控。觸發：「開始開發」、「進入開發模式」、「TDD」。(project)"
+allowed-tools: Read, Write, Edit, Bash(git:*), Bash(npm:*), TodoWrite, mcp__wallaby__*, mcp__jetbrains__*, EnterPlanMode
 ---
 
-# Develop Mode - 開發模式
+# Develop Skill - 嚴謹 TDD 工作流程
 
-## 目的
-遵循 TDD（Test-Driven Development）流程，確保每個功能都有完整的測試覆蓋，並符合專案的程式碼品質標準。
+## 概述
+
+本 skill 引導你遵循嚴謹的 TDD 流程進行功能開發，整合 Wallaby MCP 即時測試監控和 JetBrains MCP 程式碼品質檢查。
+
+**核心原則**:
+
+- **Red**: 先寫失敗的測試（嚴禁異動 production code）
+- **Green**: 用最少程式碼讓測試通過（嚴禁異動測試）
+- **Refactor**: 反覆執行品質檢查直到成功
+
+**必備工具**:
+
+- Wallaby MCP (`wallaby_allTests`, `wallaby_runtimeValues`)
+- JetBrains MCP (`get_file_problems`, `reformat_file`, `rename_refactoring`)
 
 ---
 
-## 前置條件
+## 6 步驟工作流程
 
-1. ✅ 已完成 Feature Start 流程
-2. ✅ 功能分支已建立
-3. ✅ TODO 清單已建立（`docs/todos/<feature-name>.md`）
-4. ✅ Gherkin feature 檔案已建立（如適用）
+### Step 1: 規劃階段 📋
 
----
+**目標**: 分析 gherkin 案例，規劃所有單元測試
 
-## 開發流程（TDD Cycle）
+**執行步驟**:
 
-### Red-Green-Refactor 循環
+1. 列出所有 gherkin 檔案:
+   ```json
+   {
+   "tool": "find_files_by_glob",
+      "arguments": {
+         "pattern": "e2e/specs/*.feature"
+      }
+   }
+   ```
 
+2. 讀取未完成的 gherkin 案例（查找 `# TODO` 或未實作的 scenarios）
+
+3. **進入 Plan Mode** 分析該 scenario:
+   ```
+
+/plan
+
+   ```
+
+4. 在 plan mode 中:
+    - 分析 Given-When-Then 的業務邏輯
+    - 識別需要的單元測試檔案
+    - 為每個測試案例規劃:
+        - 測試描述
+        - Input 參數
+        - 預期 Output
+    - 識別需要 mock 的依賴
+
+5. 將 plan 輸出為結構化格式（詳見 [phases/1-plan.md](phases/1-plan.md)）
+
+6. **提交給人類審查**，等待確認後繼續
+
+**輸出範例**:
+
+```markdown
+## Gherkin: 使用者可以購買活動票券
+
+### 單元測試計畫
+
+#### 測試檔案: frontend/src/server/services/__tests__/order.test.ts
+
+1. **測試案例**: 成功建立訂單
+    - Input: { eventId, tickets, customer }
+    - Expected: { orderId, status: 'pending' }
+    - Mocks: db.insertOrder, payment.createPaymentIntent
+
+2. **測試案例**: 庫存不足時拋出錯誤
+    - Input: { quantity: 100 } (超過庫存 10)
+    - Expected: throw Error('庫存不足')
+    - Mocks: db.getTicketTypes
+
+...
 ```
-┌─────────────────────────────────────────┐
-│  RED: 撰寫失敗的測試                      │
-│  ↓                                       │
-│  GREEN: 撰寫最少的程式碼讓測試通過         │
-│  ↓                                       │
-│  REFACTOR: 重構程式碼，保持測試通過        │
-│  ↓                                       │
-│  回到 RED（下一個測試案例）                │
-└─────────────────────────────────────────┘
-```
 
 ---
 
-## 執行步驟
+### Step 2: 啟動 Wallaby 🚀
 
-### Step 1: Red - 撰寫測試（Test First）
+**目標**: 啟動 Wallaby 即時測試監控
 
-**執行動作：**
-1. 從 TODO 清單中選擇一個待開發的功能點
-2. 撰寫測試案例（先寫測試，不寫實作）
-3. 執行測試，確認測試**失敗**（Red）
+**執行步驟**:
 
-**測試類型優先順序：**
-1. **Unit Tests** - 測試單一函式或類別
-2. **Integration Tests** - 測試多個模組的整合
-3. **E2E Tests** - 測試完整的使用者流程
+1. 取得 Wallaby run configuration:
+   ```typescript
+   mcp__jetbrains__get_run_configurations()
+   ```
 
-**範例：**
+2. 執行 Wallaby:
+   ```typescript
+   mcp__jetbrains__execute_run_configuration('wallaby')
+   ```
+
+3. 驗證 Wallaby 正常運作:
+   ```typescript
+   mcp__wallaby__wallaby_allTests()
+   ```
+
+**預期輸出**: 顯示所有測試的執行狀況（passing/failing/pending）
+
+詳細指引請見 [phases/2-wallaby-setup.md](phases/2-wallaby-setup.md)
+
+---
+
+### Step 3-5: TDD 迴圈 🔄
+
+#### Step 3: Red Phase ❌
+
+**目標**: 寫一個**必須失敗**的測試
+
+**嚴格規則**:
+
+- ⛔ **嚴厲禁止異動主程式（production code）**
+- ✅ 一次只寫**一個**測試案例
+- ✅ 測試**必須失敗**
+- ✅ 失敗原因必須是:
+    - 找不到 function/class（尚未實作）
+    - 回傳值與預期不符
+- ⚠️ **不可以是**環境問題（import 錯誤、語法錯誤）
+
+**執行步驟**:
+
+1. 根據 Step 1 的 plan，建立或開啟測試檔案
+2. 寫第一個測試案例（使用 Arrange-Act-Assert 模式）
+3. 儲存檔案
+4. 透過 Wallaby 確認測試失敗:
+   ```typescript
+   mcp__wallaby__wallaby_failingTests()
+   ```
+5. 檢查失敗原因是否符合預期（找不到 function 或回傳值錯誤）
+
+詳細指引請見 [phases/3-red.md](phases/3-red.md)
+
+---
+
+#### Step 4: Green Phase ✅
+
+**目標**: 用**最少的程式碼**讓測試通過
+
+**嚴格規則**:
+
+- ⛔ **嚴厲禁止異動測試程式**
+- ✅ 只寫讓測試通過的**最少程式碼**
+- ✅ 不要過度設計（YAGNI - You Aren't Gonna Need It）
+- ✅ 可以寫 hardcoded 值（之後重構時改善）
+
+**執行步驟**:
+
+1. 開啟 production code 檔案
+2. 實作最少的程式碼讓測試通過:
+    - 建立 function/class（如果不存在）
+    - 實作基本邏輯
+    - 回傳正確的值
+3. 儲存檔案
+4. 透過 Wallaby 確認測試通過:
+   ```typescript
+   mcp__wallaby__wallaby_allTests()
+   ```
+5. 如果有錯誤，使用 `wallaby_runtimeValues` 除錯:
+   ```typescript
+   mcp__wallaby__wallaby_runtimeValues(file, line, lineContent, expression)
+   ```
+
+詳細指引請見 [phases/4-green.md](phases/4-green.md)
+
+---
+
+#### Step 5: Refactor Phase ♻️
+
+**目標**: 改善程式碼品質，同時保持測試通過
+
+**執行步驟**:
+
+##### 5.1 審查異動
+
+```bash
+git status
+```
+
+確認哪些檔案被修改，是否需要重構
+
+##### 5.2 重構迴圈（反覆執行直到成功）
+
+**Loop Iteration**:
+
+1️⃣ **檢查問題** (`get_file_problems`)
+
+```bash
+# 取得異動檔案（透過 git status）
+git status --short
+```
+
+處理新增檔案:
+
+```bash
+# 如果有 ?? (Untracked files)，先 git add
+git add <new-files>
+```
+
+逐一檢查每個異動檔案:
+
+```text
+mcp__jetbrains__get_file_problems(file, errorsOnly: false)
+```
+
+- 修復所有 **warnings** 和 **errors**
+- 如果有問題，修復後回到此步驟
+
+2️⃣ **格式化** (`reformat_file`)
+
+```text
+mcp__jetbrains__reformat_file(file)
+```
+
+3️⃣ **ESLint 檢查**
+
+```bash
+npm run lint -w frontend
+```
+
+- 如果有錯誤，執行:
+  ```bash
+  npx eslint --fix <file>
+  ```
+- 如果仍有錯誤，手動修復後回到 1️⃣
+
+4️⃣ **驗證測試仍通過**
+
 ```typescript
-// frontend/src/services/blog.service.spec.ts
-describe('BlogService', () => {
-  it('should create a new blog post', async () => {
-    const service = new BlogService();
-    const post = await service.createPost({
-      title: 'Test Post',
-      content: 'Test Content'
-    });
+mcp__wallaby__wallaby_allTests()
+```
 
-    expect(post.id).toBeDefined();
-    expect(post.title).toBe('Test Post');
-  });
+- 如果測試失敗，修復後回到 1️⃣
+
+5️⃣ **重複**
+
+- 持續執行 1️⃣ → 2️⃣ → 3️⃣ → 4️⃣
+- **直到**: `get_file_problems` 無問題 + ESLint 通過 + 測試全綠
+
+##### 5.3 程式碼改善建議
+
+- 提取重複的程式碼為 helper function
+- 重命名變數/函數以提升可讀性（使用 `rename_refactoring`）
+- 移除 unused imports/variables
+- 簡化複雜的條件判斷
+
+詳細指引請見 [phases/5-refactor.md](phases/5-refactor.md)
+
+---
+
+### Step 6: Commit & Push 📤
+
+**目標**: 提交乾淨的 commit，符合 commitlint 規範
+
+**執行步驟**:
+
+1. 確認所有測試通過:
+   ```typescript
+   mcp__wallaby__wallaby_allTests()
+   ```
+
+2. 查看異動:
+   ```bash
+   git status
+   git diff
+   ```
+
+3. Stage 檔案:
+   ```bash
+   git add <files>
+   ```
+
+4. 撰寫 commit message（符合 Conventional Commits）:
+   ```bash
+   git commit -m "$(cat <<'EOF'
+   <type>(<scope>): <description>
+
+   <body>
+
+   🤖 Generated with Claude Code
+   Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
+   EOF
+   )"
+   ```
+
+   **Type 規則**:
+    - `test`: 新增或修改測試
+    - `feat`: 新增功能
+    - `refactor`: 重構程式碼
+
+5. Push:
+   ```bash
+   git push origin <branch-name>
+   ```
+
+6. **處理 Git Hooks 失敗**:
+    - **測試失敗** → 回到 Step 3（TDD 迴圈 - Red Phase）
+    - **品質問題**（lint/format/type errors）→ 回到 Step 5（重構迴圈）
+    - 修復後重新 commit/push
+
+   **判斷方式**: 檢查 git hook 錯誤訊息中是否包含測試失敗關鍵字（`test failed`, `FAIL`, `Error:`, Vitest/Playwright 錯誤）
+
+詳細指引請見 [phases/6-commit.md](phases/6-commit.md)
+
+---
+
+### Step 7: 下一個測試案例 🔁
+
+**判斷**:
+
+- 如果 Step 1 plan 中還有未完成的測試案例 → 回到 Step 3（Red Phase）
+- 如果所有單元測試都完成 → 驗證 BDD scenario 實作完成度
+
+---
+
+#### 7.1 驗證 BDD Step 實作完整性
+
+**CRITICAL**: Gherkin scenario 的完成不只是「測試執行通過」，必須確保 **所有 BDD step 實作都已完成**。
+
+**執行步驟**:
+
+1. **讀取對應的 step definitions 檔案**:
+   ```bash
+   # 找出對應的 steps 檔案
+   ls e2e/tests/bdd-steps/*.steps.ts
+   ```
+
+2. **檢查是否有未實作的 stub**:
+   // 使用 search_in_files_by_text or search_in_files_by_regex 搜尋 stub 註解
+   // AI 內部呼叫的 MCP 參數
+   ```json
+   {
+      "tool": "search_in_files_by_text",
+      "arguments": {
+         "text": "// Stub",
+         "include": "e2e/tests/bdd-steps/**"
+         }
+   }
+   ```
+
+3. **分析檢查結果**:
+
+   **🔴 未完成（需繼續實作）**:
+   ```typescript
+   // ❌ 發現 stub 實作
+   When('I view the event {string}', async (_eventTitle: string) => {
+     // Stub: open event detail page in Phase 3.
+   });
+   ```
+
+**🟢 已完成**:
+
+   ```typescript
+   // ✅ 有完整實作
+When('I view the event {string}', async (eventTitle: string) => {
+    const page = pageFixture.page;
+    await page.goto(`/events/${eventTitle}`);
+    await page.locator('h1').waitFor({state: 'visible'});
 });
-```
+   ```
 
-**檢查清單：**
-- [ ] 測試案例已撰寫
-- [ ] 測試描述清楚（describe/it 語意明確）
-- [ ] 測試執行後顯示為**失敗**（Red）
-- [ ] 測試失敗原因符合預期（因為功能尚未實作）
+4. **如果發現 stub，進入實作流程**:
+    - 回到 **Step 1 (Plan Mode)** 分析該 step 需要的實作
+    - 為該 step 規劃單元測試（如需要）
+    - 執行 Red-Green-Refactor 流程實作功能
+    - 實作 BDD step definition
+    - 重新驗證實作完整性
 
-**執行測試指令：**
-**✨ 優先使用 Wallaby.js（智能測試執行）：**
+**檢查清單**:
 
-Wallaby.js 提供即時測試回饋，自動偵測程式碼變更並執行相關測試。
+- [ ] 已讀取 `e2e/tests/bdd-steps/**.steps.ts` 檔案
+- [ ] 已搜尋並確認無 `// Stub:` 註解
+- [ ] 所有 Given/When/Then steps 都有完整實作
+- [ ] 沒有空的 function body 或 placeholder 註解
+
+---
+
+#### 7.2 執行 BDD Scenario 測試
+
+**只有在 7.1 確認所有 step 實作完成後**，才執行 BDD 測試:
 
 ```bash
-# 啟動 Wallaby.js（推薦）
-# Wallaby 會自動執行測試並在 IDE 中顯示即時結果
-# 使用 MCP 工具查詢 Wallaby 狀態和結果
+npm run test:bdd -w e2e -- --name "<scenario name>"
 ```
 
-**備選：使用 Vitest CLI（手動測試執行）：**
-```bash
-# 執行所有 Unit Tests
-npm test
+**預期結果**:
 
-# 執行特定檔案
-npm test -- blog.service.spec.ts
+- ✅ Scenario 執行成功
+- ✅ 所有 steps 都正確執行（非 pending/skipped）
+- ✅ 所有 assertions 都通過
 
-# Watch mode（檔案變更時自動重新執行）
-npm test -- --watch
-```
+**如果測試失敗**:
 
-**何時使用 Wallaby vs Vitest CLI：**
-- **優先使用 Wallaby**：日常開發、TDD 循環、需要即時回饋
-- **使用 Vitest CLI**：CI/CD 環境、需要完整測試報告、Wallaby 不可用時
+1. 檢查是單元測試問題 → 回到 Step 3（Red Phase）
+2. 檢查是 BDD step 實作問題 → 修正 step definition
+3. 檢查是整合問題 → 使用 Wallaby runtime values 除錯
 
 ---
 
-### Step 2: Green - 實作功能（Make it Work）
+#### 7.3 Scenario 完成條件
 
-**執行動作：**
-1. 撰寫**最少量**的程式碼，讓測試通過
-2. 不需要考慮優化或完美的設計
-3. 執行測試，確認測試**通過**（Green）
+**完整完成條件**（所有項目必須全部符合）:
 
-**實作原則：**
-- 只寫足夠讓測試通過的程式碼
-- 遵循 `.aiassistant/rules/core.md` 的規範
-- 避免過度設計（YAGNI - You Aren't Gonna Need It）
-
-**範例：**
-```typescript
-// frontend/src/services/blog.service.ts
-export class BlogService {
-  async createPost(data: { title: string; content: string }) {
-    // 最簡單的實作，讓測試通過
-    return {
-      id: crypto.randomUUID(),
-      title: data.title,
-      content: data.content,
-      createdAt: new Date()
-    };
-  }
-}
-```
-
-**檢查清單：**
-- [ ] 程式碼已實作
-- [ ] 測試執行後顯示為**通過**（Green）
-- [ ] 沒有使用 `any` 類型
-- [ ] 沒有使用不安全的型別轉換 `as`
-- [ ] 所有異步操作都有 `await` 或 `.catch()`
+- ✅ 所有單元測試通過
+- ✅ **所有 BDD step definitions 實作完成（無 stub）**
+- ✅ Gherkin scenario 可執行並通過
+- ✅ Step definitions 有適當的 assertions
+- ✅ Git commit & Git push 兩者皆成功
 
 ---
 
-### Step 3: Refactor - 重構程式碼（Make it Right）
+**下一步**:
 
-**執行動作：**
-1. 重構程式碼，改善設計與可讀性
-2. 移除重複的程式碼（DRY - Don't Repeat Yourself）
-3. 執行測試，確保測試**仍然通過**
-
-**重構檢查項目：**
-- [ ] 移除重複的程式碼
-- [ ] 改善變數與函式命名
-- [ ] 簡化複雜的邏輯
-- [ ] 確保符合 SOLID 原則
-- [ ] 測試仍然全部通過
-
-**常見重構模式：**
-- 提取函式（Extract Function）
-- 提取變數（Extract Variable）
-- 移除魔術數字（Replace Magic Number with Constant）
-- 簡化條件式（Simplify Conditional）
+- 如果當前 scenario **未完全實作** → 回到 7.1 繼續實作
+- 如果當前 scenario **已完全實作** → 回到 Step 1，處理下一個 gherkin scenario
+- 如果**所有 scenarios 完成** → 結束 develop skill
 
 ---
 
-### Step 4: 更新 TODO 清單
+## TDD 紀律守則
 
-**執行動作：**
-1. 標記已完成的任務為 `[x]`
-2. 提交程式碼（遵循 Conventional Commits）
-3. 繼續下一個測試案例（回到 Step 1）
+### 禁止事項 ⛔
 
-**Commit Message 規範（@commitlint/config-conventional）：**
+1. **Red Phase 不可異動 production code**
+2. **Green Phase 不可異動測試**
+3. **不可跳過測試直接寫 production code**
+4. **不可寫通過的測試（必須先失敗）**
+5. **不可一次寫多個測試**
 
-格式：`<type>[optional scope]: <description>`
+### 必須事項 ✅
 
-**允許的 type：**
-- `feat`: 新功能
-- `fix`: 修復 bug
-- `docs`: 文件更新
-- `style`: 程式碼格式調整（不影響功能）
-- `refactor`: 重構（不是新功能也不是 bug 修復）
-- `perf`: 效能優化
-- `test`: 測試相關
-- `build`: 建置系統或外部依賴變更
-- `ci`: CI 配置檔案或腳本變更
-- `chore`: 其他不影響 src 或 test 的變更
-- `revert`: 回復先前的 commit
+1. **必須使用 Wallaby 即時監控**
+2. **必須反覆執行重構迴圈直到成功**
+3. **必須符合 commitlint 規範**
+4. **必須處理 git hooks 失敗**
 
-**範例：**
-```bash
-# feat: 新功能
-git add .
-git commit -m "feat: add blog post creation service"
-
-# test: 測試
-git commit -m "test: add unit tests for blog service"
-
-# refactor: 重構
-git commit -m "refactor: simplify blog post creation logic"
-
-# fix: 修復 bug
-git commit -m "fix: resolve null pointer in blog service"
-
-# feat with scope: 帶範圍的新功能
-git commit -m "feat(blog): add post publishing feature"
-
-# breaking change: 重大變更（加入 ! 或 BREAKING CHANGE）
-git commit -m "feat!: change blog API response structure"
-```
-
-**規則：**
-- type 必須是小寫
-- description 必須是小寫開頭
-- description 不能以句號結尾
-- 使用祈使句（如：add、change、fix，而非 added、changed、fixed）
-
-**檢查清單：**
-- [ ] TODO 清單已更新
-- [ ] 程式碼已提交（commit message 符合規範）
-- [ ] 所有測試通過
-- [ ] 沒有 TypeScript 編譯錯誤
+詳細紀律守則請見 [rules/tdd-discipline.md](rules/tdd-discipline.md)
 
 ---
 
-## 程式碼品質檢查
+## MCP Tools 參考
 
-在開發過程中，持續確認以下項目：
+### Wallaby MCP
 
-### 🔒 安全規範（參考 core.md）
-- [ ] 不在程式碼中硬編碼 API 金鑰或敏感資訊
-- [ ] 不在 Log 中輸出 PII（個人識別資訊）
-- [ ] 防止 SQL/Shell Injection（不串接字串組合指令）
-- [ ] 使用環境變數注入配置資訊
+- `wallaby_allTests()` - 取得所有測試狀況
+- `wallaby_failingTests()` - 取得失敗的測試
+- `wallaby_runtimeValues(file, line, lineContent, expression)` - 除錯變數值
+- `wallaby_coveredLinesForFile(file)` - 取得程式碼覆蓋率
 
-### 🧪 測試品質
-- [ ] 單元測試不發起真實網絡請求（使用 Mock）
-- [ ] 測試案例具有獨立性（不依賴執行順序）
-- [ ] 測試覆蓋率達到合理水平（建議 >80%）
+詳見 [mcp-tools/wallaby-reference.md](mcp-tools/wallaby-reference.md)
 
-### ✅ TypeScript 規範
-- [ ] 不使用 `any` 類型
-- [ ] 不使用 `as` 進行不安全的型別轉換
-- [ ] 不使用非空斷言 `!`（除非邏輯上絕對存在）
-- [ ] 使用 Type Guards 或 Schema 驗證（Zod/Valibot）
+### JetBrains MCP
 
-### 🎯 程式碼風格
-- [ ] 遵循專案的 ESLint 規則
-- [ ] 沒有循環依賴
-- [ ] 函式保持簡短（建議 <50 行）
-- [ ] 使用有意義的變數與函式命名
+- `get_file_problems(filePath, errorsOnly)` - 取得檔案問題
+- `reformat_file(path)` - 格式化檔案
+- `rename_refactoring(pathInProject, symbolName, newName)` - 重命名重構
+- `get_symbol_info(filePath, line, column)` - 取得 function 說明
+
+詳見 [mcp-tools/jetbrains-reference.md](mcp-tools/jetbrains-reference.md)
 
 ---
 
-## 執行指令參考
+## 範例
 
-### 測試相關
+### Gherkin → 測試計畫
 
-**✨ 優先使用 Wallaby.js：**
-```bash
-# 透過 MCP 工具與 Wallaby.js 互動
-# Wallaby 提供即時測試執行、覆蓋率視覺化、智能測試選擇
-# 自動偵測檔案變更並執行相關測試
-```
+詳見 [examples/gherkin-to-tests.md](examples/gherkin-to-tests.md)
 
-**Vitest CLI（傳統方式）：**
-```bash
-# 執行所有測試
-npm test
+### 完整重構迴圈
 
-# 執行特定檔案的測試
-npm test -- <file-path>
-
-# Watch mode（自動重新執行測試）
-npm test -- --watch
-
-# 測試覆蓋率報告
-npm test -- --coverage
-
-# E2E 測試
-npm run test:e2e
-```
-
-### 程式碼檢查
-```bash
-# TypeScript 類型檢查
-npm run type-check
-
-# ESLint 檢查
-npm run lint
-
-# 自動修復 ESLint 錯誤
-npm run lint:fix
-
-# 格式化程式碼
-npm run format
-```
+詳見 [examples/refactor-loop.md](examples/refactor-loop.md)
 
 ---
 
-## 完成條件
+## 故障排除
 
-單一功能點開發完成的標準：
-- ✅ 測試已撰寫且通過
-- ✅ 功能已實作
-- ✅ 程式碼已重構
-- ✅ TODO 清單已更新
-- ✅ 程式碼已提交
-- ✅ 符合所有程式碼品質標準
+### Git Hooks 失敗處理
 
----
+**判斷失敗類型**:
 
-## 下一步
+1. **檢查錯誤訊息**
+   ```bash
+   # Git hook 失敗後，查看錯誤輸出
+   git commit  # 如果失敗，會顯示 pre-commit hook 錯誤
+   ```
 
-當所有開發任務完成後，進入 **Stabilize Mode**（穩定化模式）：
-- 執行完整的測試套件
-- 執行 E2E 測試
-- 修復整合問題
-- 準備 Code Review
+2. **測試失敗** - 回到 TDD 迴圈（Step 3）
 
----
+   **識別關鍵字**:
+    - `FAIL` (Vitest 測試失敗)
+    - `test failed` (測試失敗訊息)
+    - `Error:` 搭配測試檔案路徑
+    - `FAILED` (Playwright 失敗)
+    - `X failed` (X 個測試失敗)
 
-## 參考資料
+   **處理步驟**:
+    - 回到 **Step 3.1 (Red Phase)**
+    - 檢查測試是否正確
+    - 檢查 production code 是否有 bug
+    - 重新執行 Red-Green-Refactor 流程
+    - 確保所有測試通過後再 commit
 
-- 專案最高指導原則：`.aiassistant/rules/core.md`
-- TODO 清單：`docs/todos/<feature-name>.md`
-- TDD 最佳實踐：Red-Green-Refactor
-- Commit 規範：Conventional Commits
+3. **品質問題** - 進入重構迴圈（Step 5）
+
+   **識別關鍵字**:
+    - `ESLint` 錯誤
+    - `TypeScript` type errors
+    - `Formatting` 問題
+    - `Warning` (非測試相關)
+
+   **處理步驟**:
+    - 進入 **Step 5.2 (重構迴圈)**
+    - 執行 get_file_problems → reformat_file → eslint
+    - 修復所有品質問題
+    - 重新 commit
+
+詳見 [rules/git-hooks.md](rules/git-hooks.md)
+
+### Wallaby 無法啟動
+
+1. 檢查 JetBrains IDE 是否開啟
+2. 檢查 run configuration 是否存在
+3. 重新執行 `execute_run_configuration`
+
+### 測試一直失敗
+
+1. 使用 `wallaby_runtimeValues` 檢查變數值
+2. 使用 `wallaby_failingTests` 取得詳細錯誤訊息
+3. 檢查 mock 是否正確設定

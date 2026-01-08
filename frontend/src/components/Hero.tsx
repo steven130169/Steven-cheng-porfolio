@@ -2,7 +2,9 @@
 'use client';
 
 import React, {useState, useEffect} from 'react';
-import {ArrowRight, AtSign, Cloud, Github, Linkedin} from 'lucide-react';
+ 
+import {SiGithub, SiThreads} from '@icons-pack/react-simple-icons';
+import {ArrowRight, Cloud} from 'lucide-react';
 
 const images = [
     '/images/ddd.webp',
@@ -14,11 +16,15 @@ const Hero: React.FC = () => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [isAnimating, setIsAnimating] = useState(false);
 
+    const goToNextImage = () => {
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    };
+
     useEffect(() => {
         const timer = setInterval(() => {
             setIsAnimating(true);
             setTimeout(() => {
-                setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+                goToNextImage();
                 setIsAnimating(false);
             }, 1500); // Animation duration
         }, 5000); // Change image every 5 seconds
@@ -47,13 +53,14 @@ const Hero: React.FC = () => {
 
                         <h1 className="text-5xl md:text-7xl font-bold text-dark-text tracking-tight leading-tight">
                             Architecting <br/>
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+                            <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-secondary">
                 High Availability
               </span> Cloud Systems.
                         </h1>
 
                         <p className="text-lg text-dark-text/70 max-w-xl leading-relaxed mx-auto lg:mx-0">
-                            I&apos;m Steven (鄭棋文), a Senior Cloud Architect. I specialize in designing resilient cloud
+                            I&apos;m Steven (鄭棋文), a Senior Cloud Architect. I specialize in designing resilient
+                            cloud
                             infrastructures, optimizing DevOps workflows, and mastering CI/CD pipelines to deliver speed
                             and stability.
                         </p>
@@ -72,13 +79,11 @@ const Hero: React.FC = () => {
 
                         <div className="flex items-center gap-6 pt-4 justify-center lg:justify-start">
                             <a href="https://github.chiwencheng.com" target="_blank" rel="noopener noreferrer"
-                               className="text-dark-text/50 hover:text-primary transition-colors"><Github
-                                className="h-6 w-6"/></a>
-                            <a href="https://cv.chiwencheng.com" target="_blank" rel="noopener noreferrer"
-                               className="text-dark-text/50 hover:text-primary transition-colors"><Linkedin
+                                 
+                               className="text-dark-text/50 hover:text-primary transition-colors"><SiGithub
                                 className="h-6 w-6"/></a>
                             <a href="https://thread.chiwencheng.com" target="_blank" rel="noopener noreferrer"
-                               className="text-dark-text/50 hover:text-primary transition-colors"><AtSign
+                               className="text-dark-text/50 hover:text-primary transition-colors"><SiThreads
                                 className="h-6 w-6"/></a>
                         </div>
                     </div>
@@ -90,11 +95,11 @@ const Hero: React.FC = () => {
                                 <img
                                     key={image}
                                     src={image}
-                                    alt={`Steven Cheng portfolio image ${index + 1}`}
+                                    alt={`Steven Cheng presenting at conference ${index + 1}`}
                                     className={`absolute inset-0 w-full h-full object-cover ${
                                         index === currentImageIndex && isAnimating ? 'animate-ink-splash' : ''
                                     } ${
-                                        index !== currentImageIndex ? 'opacity-0' : 'opacity-100'
+                                        index === currentImageIndex ? 'opacity-100' : 'opacity-0'
                                     }`}
                                 />
                             ))}

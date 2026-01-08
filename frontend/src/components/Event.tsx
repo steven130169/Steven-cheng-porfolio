@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Users, Calendar, ArrowRight, Plus, X } from 'lucide-react';
-import { EventItem } from '../types';
+import { EventItem } from '@/types';
 
 const Event: React.FC = () => {
   const [events, setEvents] = useState<EventItem[]>([]);
@@ -27,8 +27,8 @@ const Event: React.FC = () => {
         }
         setLoading(false);
       })
-      .catch(err => {
-        console.error('Failed to fetch events', err);
+      .catch(error => {
+        console.error('Failed to fetch events', error);
         setLoading(false);
       });
   }, []);
@@ -43,7 +43,7 @@ const Event: React.FC = () => {
       tags: ['New'], // Default tag
       status: 'Upcoming' // Default status
     };
-    
+
     try {
         const res = await fetch('/api/events', {
             method: 'POST',
@@ -51,15 +51,15 @@ const Event: React.FC = () => {
             body: JSON.stringify(eventPayload)
         });
         if (res.ok) {
-            const createdEvent = await res.json();
+            const createdEvent = await res.json() as EventItem;
             setEvents([createdEvent, ...events]);
             setIsFormOpen(false);
             setNewEvent({ title: '', role: '', date: '', description: '' });
         } else {
             console.error('Failed to create event', await res.text());
         }
-    } catch (err) {
-        console.error('Error creating event', err);
+    } catch (error) {
+        console.error('Error creating event', error);
     }
   };
 
@@ -74,17 +74,17 @@ const Event: React.FC = () => {
               I believe in growing together. Here are the community events, study groups, and workshops I organize and host.
             </p>
           </div>
-          
+
           <div className="flex gap-4">
-             <button 
+             <button
                 onClick={() => setIsFormOpen(true)}
                 className="flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-orange-700 transition-colors shadow-md"
              >
                 <Plus className="h-4 w-4 mr-2" /> Add Event
              </button>
-             <a href="#" className="flex items-center text-secondary hover:text-orange-500 transition-colors font-medium group">
+             <button type="button" className="flex items-center text-secondary hover:text-orange-500 transition-colors font-medium group">
                 Join our next meetup <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-             </a>
+             </button>
           </div>
         </div>
 
@@ -97,12 +97,12 @@ const Event: React.FC = () => {
                             <X className="h-6 w-6" />
                         </button>
                     </div>
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={(e) => { void handleSubmit(e); }} className="space-y-4">
                         <div>
                             <label htmlFor="title" className="block text-sm font-medium text-dark-text mb-1">Title</label>
-                            <input 
+                            <input
                                 id="title"
-                                type="text" 
+                                type="text"
                                 required
                                 className="w-full px-4 py-2 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/50 outline-none"
                                 value={newEvent.title}
@@ -111,9 +111,9 @@ const Event: React.FC = () => {
                         </div>
                         <div>
                             <label htmlFor="role" className="block text-sm font-medium text-dark-text mb-1">Role</label>
-                            <input 
+                            <input
                                 id="role"
-                                type="text" 
+                                type="text"
                                 required
                                 className="w-full px-4 py-2 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/50 outline-none"
                                 value={newEvent.role}
@@ -122,9 +122,9 @@ const Event: React.FC = () => {
                         </div>
                         <div>
                             <label htmlFor="date" className="block text-sm font-medium text-dark-text mb-1">Date</label>
-                            <input 
+                            <input
                                 id="date"
-                                type="text" 
+                                type="text"
                                 required
                                 placeholder="e.g., Oct 2025"
                                 className="w-full px-4 py-2 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/50 outline-none"
@@ -134,7 +134,7 @@ const Event: React.FC = () => {
                         </div>
                         <div>
                             <label htmlFor="description" className="block text-sm font-medium text-dark-text mb-1">Description</label>
-                            <textarea 
+                            <textarea
                                 id="description"
                                 required
                                 rows={3}
@@ -169,14 +169,14 @@ const Event: React.FC = () => {
                     <Users className="h-5 w-5 text-dark-text/60" />
                     </div>
                 </div>
-                
+
                 <h3 className="text-xl font-bold text-dark-text mb-2 group-hover:text-secondary transition-colors">{event.title}</h3>
                 <p className="text-sm text-primary font-medium mb-4">{event.role}</p>
-                
+
                 <p className="text-dark-text/70 mb-6 leading-relaxed text-sm h-20">
                     {event.description}
                 </p>
-                
+
                 <div className="flex items-center text-dark-text/50 text-sm mb-6 border-t border-border-light pt-4">
                     <Calendar className="h-4 w-4 mr-2" />
                     {event.date}
@@ -193,7 +193,7 @@ const Event: React.FC = () => {
             ))}
             </div>
         )}
-        
+
         {!loading && events.length > 3 && (
             <div className="text-center mt-12">
                 <button className="px-6 py-3 bg-gray-100 text-dark-text font-medium rounded-lg hover:bg-gray-200 transition-colors">

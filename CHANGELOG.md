@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.7.0](https://github.com/steven130169/Steven-cheng-porfolio/compare/v0.6.2...v0.7.0) (2026-01-08)
+
+### Features
+
+* **events:** add updateEvent API endpoint and BDD implementation ([0e1c5d7](https://github.com/steven130169/Steven-cheng-porfolio/commit/0e1c5d7ba20b5932f3a3890b960b90d853fd0c39))
+
+### Bug Fixes
+
+* **bdd:** auto-configure ADMIN_API_KEY in test hooks ([f112768](https://github.com/steven130169/Steven-cheng-porfolio/commit/f11276852ac4d4c82e8f4a4e4f293a7181de6fbb))
+* **bdd:** use unique event titles to prevent duplicate slug errors ([7e3ddb6](https://github.com/steven130169/Steven-cheng-porfolio/commit/7e3ddb6677b103753029b7baa4c5db54d9af0917))
+
 ## [0.6.2](https://github.com/steven130169/Steven-cheng-porfolio/compare/v0.6.1...v0.6.2) (2026-01-06)
 
 ## [0.6.1](https://github.com/steven130169/Steven-cheng-porfolio/compare/v0.6.0...v0.6.1) (2025-12-30)

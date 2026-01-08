@@ -8,7 +8,7 @@ import {updateEvent} from '@/server/services/event';
  */
 export async function PATCH(
     request: NextRequest,
-    {params}: {params: Promise<{id: string}>}
+    {params}: { params: Promise<{ id: string }> }
 ) {
     try {
         // Parse and validate event ID

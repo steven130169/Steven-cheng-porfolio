@@ -77,7 +77,6 @@ BeforeAll(async function () {
   frontendProcess = spawn('npm', ['run', 'start:frontend'], {
     cwd: projectRoot,
     stdio: 'ignore',
-    shell: true,
     detached: true,
     env: { ...process.env, PORT: '3000', ADMIN_API_KEY: process.env.ADMIN_API_KEY },
   });

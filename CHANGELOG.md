@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.8.0](https://github.com/steven130169/Steven-cheng-porfolio/compare/v0.7.1...v0.8.0) (2026-01-08)
+
+### Features
+
+* **develop:** add comprehensive guide for Git branching and TDD phases ([64d75f5](https://github.com/steven130169/Steven-cheng-porfolio/commit/64d75f52fdd544e0568197f8a37d15f87a40151d))
+
 ## [0.7.1](https://github.com/steven130169/Steven-cheng-porfolio/compare/v0.7.0...v0.7.1) (2026-01-08)
 
 ## [0.7.0](https://github.com/steven130169/Steven-cheng-porfolio/compare/v0.6.2...v0.7.0) (2026-01-08)

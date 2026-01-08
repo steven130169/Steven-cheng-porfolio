@@ -4,12 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test:bdd": "TS_NODE_PROJECT=tsconfig.json cucumber-js -c cucumber.json",
-    "test:bdd:dry": "TS_NODE_PROJECT=tsconfig.json cucumber-js -c cucumber.json --dry-run --format progress"
+    "test:bdd": "NODE_OPTIONS='--import tsx' cucumber-js -c cucumber.json",
+    "test:bdd:dry": "NODE_OPTIONS='--import tsx' cucumber-js -c cucumber.json --dry-run --format progress",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^12.3.0",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.7.3",
     "wait-on": "^9.0.3"
   }

@@ -20,6 +20,7 @@ COPY . .
 
 # Disable telemetry during build
 ENV NEXT_TELEMETRY_DISABLED 1
+ENV DATABASE_URL="postgresql://build-placeholder:build-placeholder@localhost:5432/placeholder"
 
 # Build the frontend project
 RUN npm run build -w frontend
@@ -28,11 +29,10 @@ RUN npm run build -w frontend
 FROM base AS runner
 WORKDIR /app
 
+RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
+
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
-
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
 
 # Copy public folder
 COPY --from=builder /app/frontend/public ./frontend/public

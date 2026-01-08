@@ -1,10 +1,13 @@
 # Phase 2: 啟動 Wallaby - 即時測試監控
 
 ## 目標
+
 啟動 Wallaby MCP 即時測試監控，為 TDD 流程提供即時回饋。
 
 ## 什麼是 Wallaby？
+
 Wallaby.js 是一個智能測試執行工具，提供：
+
 - **即時測試執行**: 檔案變更時自動執行相關測試
 - **Runtime Values**: 顯示變數在測試執行時的實際值
 - **程式碼覆蓋率**: 視覺化顯示哪些程式碼已被測試覆蓋
@@ -19,6 +22,7 @@ mcp__jetbrains__get_run_configurations()
 ```
 
 **預期輸出**:
+
 ```json
 {
   "configurations": [
@@ -32,6 +36,7 @@ mcp__jetbrains__get_run_configurations()
 ```
 
 如果找不到 `wallaby` configuration，檢查：
+
 1. 專案根目錄是否有 `wallaby.js` 配置檔
 2. JetBrains IDE 是否已安裝 Wallaby 插件
 
@@ -44,6 +49,7 @@ mcp__jetbrains__execute_run_configuration('wallaby')
 ```
 
 **預期輸出**:
+
 ```
 Wallaby started successfully
 Watching files for changes...
@@ -60,6 +66,7 @@ mcp__wallaby__wallaby_allTests()
 ```
 
 **預期輸出**:
+
 ```json
 {
   "tests": [
@@ -81,6 +88,7 @@ mcp__wallaby__wallaby_allTests()
 ```
 
 **檢查項目**:
+
 - [ ] `tests` 陣列包含至少 1 個測試
 - [ ] 測試有 `status` 欄位（passing/failing/pending）
 - [ ] 測試有 `file` 和 `line` 資訊
@@ -91,6 +99,7 @@ mcp__wallaby__wallaby_allTests()
 ## Wallaby 狀態檢查
 
 ### 正常運作的指標 ✅
+
 - `wallaby_allTests()` 返回測試列表
 - 測試有正確的 `status`
 - 檔案變更後測試自動執行
@@ -98,9 +107,11 @@ mcp__wallaby__wallaby_allTests()
 ### 異常狀態處理 ❌
 
 #### 問題 1: `wallaby_allTests()` 返回空陣列
+
 **原因**: Wallaby 尚未完全啟動
 
 **解決**:
+
 ```bash
 # 等待 10 秒
 sleep 10
@@ -112,9 +123,11 @@ mcp__wallaby__wallaby_allTests()
 ---
 
 #### 問題 2: 無法執行 run configuration
+
 **錯誤訊息**: `Configuration 'wallaby' not found`
 
 **解決**:
+
 1. 檢查專案根目錄是否有 `wallaby.js`
 2. 如果沒有，建立 `wallaby.js` 配置檔：
    ```javascript
@@ -143,9 +156,11 @@ mcp__wallaby__wallaby_allTests()
 ---
 
 #### 問題 3: JetBrains IDE 未開啟
+
 **錯誤訊息**: `Cannot connect to IDE`
 
 **解決**:
+
 1. 開啟 JetBrains IDE (WebStorm/IntelliJ IDEA)
 2. 確保專案已在 IDE 中開啟
 3. 重新執行 `execute_run_configuration('wallaby')`
@@ -165,9 +180,9 @@ mcp__wallaby__wallaby_allTests()
 
 ## 下一步
 
-Wallaby 成功啟動後，進入 **Step 3: Red Phase** - 開始寫第一個失敗的測試
+Wallaby 成功啟動後，進入 **Step 4: Red Phase** - 開始寫第一個失敗的測試
 
-詳見 [3-red.md](3-red.md)
+詳見 [4-red.md](4-red.md)
 
 ---
 

@@ -277,9 +277,9 @@ export function createOrder(data: OrderData) { ... }  // ✅ 測試需要
 
 ## 下一步
 
-所有測試通過後，進入 **Step 5: Refactor Phase** - 重構程式碼，改善品質
+所有測試通過後，進入 **Step 6: Refactor Phase** - 重構程式碼，改善品質
 
-詳見 [5-refactor.md](5-refactor.md)
+詳見 [6-refactor.md](6-refactor.md)
 
 ---
 

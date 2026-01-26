@@ -142,8 +142,36 @@ When(
 
 When(
     'I add an enabled ticket type {string} with price {int} and no allocation to {string}',
-    async (_ticketTypeName: string, _price: number, _eventTitle: string) => {
-        // Stub: add ticket type in Phase 3.
+    async (ticketTypeName: string, price: number, eventTitle: string) => {
+        const page = pageFixture.page;
+        const event = pageFixture.createdEvent;
+
+        if (!event) {
+            throw new Error(`No event found in context for title: ${eventTitle}`);
+        }
+
+        const response = await page.request.post(
+            `/api/admin/events/${event.id}/ticket-types`,
+            {
+                data: {
+                    name: ticketTypeName,
+                    price: price,
+                    allocation: null,
+                    enabled: true,
+                },
+                headers: {
+                    'Authorization': `Bearer ${process.env.ADMIN_API_KEY || 'test-admin-key'}`,
+                },
+            }
+        );
+
+        expect(response.ok()).toBeTruthy();
+        const ticketType = await response.json();
+
+        if (!pageFixture.createdEvent.ticketTypes) {
+            pageFixture.createdEvent.ticketTypes = [];
+        }
+        pageFixture.createdEvent.ticketTypes.push(ticketType);
     }
 );
 
@@ -170,8 +198,22 @@ Then(
 
 Then(
     'the event {string} should have ticket type {string} with no allocation',
-    async (_eventTitle: string, _ticketTypeName: string) => {
-        // Stub: verify ticket type without allocation in Phase 3.
+    async (eventTitle: string, ticketTypeName: string) => {
+        const event = pageFixture.createdEvent;
+
+        if (!event || !event.ticketTypes) {
+            throw new Error(`No event or ticket types found in context for: ${eventTitle}`);
+        }
+
+        const ticketType = event.ticketTypes.find(
+            (tt: any) => tt.name === ticketTypeName
+        );
+
+        expect(ticketType).toBeDefined();
+        expect(ticketType.name).toBe(ticketTypeName);
+        expect(ticketType.allocation).toBeNull();
+        expect(ticketType.enabled).toBe(true);
+        expect(ticketType.eventId).toBe(event.id);
     }
 );
 

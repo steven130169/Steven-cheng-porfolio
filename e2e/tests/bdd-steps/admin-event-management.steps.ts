@@ -199,12 +199,12 @@ Then(
     async (eventTitle: string, ticketTypeName: string, expectedAllocation: number) => {
         const event = pageFixture.createdEvent;
 
-        if (!event || !event.ticketTypes) {
+        if (!event?.ticketTypes) {
             throw new Error(`No event or ticket types found in context for: ${eventTitle}`);
         }
 
         const ticketType = event.ticketTypes.find(
-            (tt) => tt.name === ticketTypeName
+            (tt: { name: string; }) => tt.name === ticketTypeName
         );
 
         expect(ticketType).toBeDefined();
@@ -220,7 +220,7 @@ Then(
     async (eventTitle: string, ticketTypeName: string) => {
         const event = pageFixture.createdEvent;
 
-        if (!event || !event.ticketTypes) {
+        if (!event?.ticketTypes) {
             throw new Error(`No event or ticket types found in context for: ${eventTitle}`);
         }
 
@@ -362,7 +362,7 @@ When(
         const page = pageFixture.page;
         const event = pageFixture.createdEvent;
 
-        if (!event || event.originalTitle !== eventTitle) {
+        if (event?.originalTitle !== eventTitle) {
             throw new Error(`Event "${eventTitle}" not found in context`);
         }
 

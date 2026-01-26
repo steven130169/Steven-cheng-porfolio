@@ -295,15 +295,37 @@ Then('the request should be rejected with error {string}', async (message: strin
 
 // --- Customer browse visibility ---
 When('a customer browses events', async () => {
-    // Stub: browse published events in Phase 3.
+    const page = pageFixture.page;
+
+    const response = await page.request.get('/api/events');
+    expect(response.ok()).toBeTruthy();
+
+    pageFixture.lastResponse = response;
+    pageFixture.lastResponseBody = await response.json();
 });
 
-Then('the customer should see {string}', async (_eventTitle: string) => {
-    // Stub: verify event visible in Phase 3.
+Then('the customer should see {string}', async (eventTitle: string) => {
+    const events = pageFixture.lastResponseBody;
+
+    expect(Array.isArray(events)).toBe(true);
+
+    const found = events.find(
+        (e: any) => e.title.includes(eventTitle)
+    );
+
+    expect(found).toBeDefined();
 });
 
-Then('the customer should not see {string}', async (_eventTitle: string) => {
-    // Stub: verify event hidden in Phase 3.
+Then('the customer should not see {string}', async (eventTitle: string) => {
+    const events = pageFixture.lastResponseBody;
+
+    expect(Array.isArray(events)).toBe(true);
+
+    const found = events.find(
+        (e: any) => e.title.includes(eventTitle)
+    );
+
+    expect(found).toBeUndefined();
 });
 
 // --- Creation / update actions ---

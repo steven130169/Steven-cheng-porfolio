@@ -75,176 +75,213 @@ npm run lint -w frontend         # ESLint
 
 **Type Checking**: Run `npm run build` - Next.js build performs TypeScript compilation, catching type errors.
 
-## Tool Usage & JetBrains MCP Integration
+## Tool Usage & MCP Integration
 
-This project **mandates JetBrains MCP tools** for all file operations, code analysis, and refactoring tasks. These tools leverage the IDE's indexing and static analysis engine, providing superior performance and accuracy compared to CLI commands.
+**YOU MUST use JetBrains MCP Server (23 tools) and Wallaby MCP Server for ALL interactions with the codebase.** These are not optional preferences — they are mandatory. Only fall back to Claude Code built-in tools or CLI when MCP tools are confirmed unavailable (tool calls return errors).
 
 ### Core Principles
 
-1. **Always use JetBrains MCP first** - Only fall back to Claude Code built-in tools or CLI when MCP tools are unavailable
-2. **Never use CLI for file operations** - Violates Claude Code best practices and wastes resources
-3. **Leverage IDE intelligence** - MCP tools understand code semantics, not just text patterns
+1. **YOU MUST use JetBrains MCP first** for all file operations, code analysis, refactoring, building, and execution
+2. **YOU MUST use Wallaby MCP for test verification** — See [Wallaby MCP Test Verification](#wallaby-mcp-test-verification) section below
+3. **YOU MUST use `get_project_dependencies` and `get_project_modules` to explore the codebase** — Do NOT rely on full-text search (`Grep`, `search_in_files_by_text`) to understand project structure, architecture, or module relationships
+4. **Never use CLI for file operations** — No `cat`, `head`, `tail`, `sed`, `awk`, `find`, `tree`, `grep`, `rg`
+5. **Leverage IDE intelligence** — MCP tools understand code semantics, not just text patterns
 
-### Tool Priority Matrix
+### Complete JetBrains MCP Tool Inventory (23 Tools)
 
-| Task | Priority 1 (Use First) | Priority 2 (Fallback) | Never Use |
-|------|----------------------|---------------------|-----------|
-| **List directory structure** | `mcp__jetbrains__list_directory_tree` | - | `tree`, `ls -R` |
-| **Find files by pattern** | `mcp__jetbrains__find_files_by_glob` | `Glob` | `find` |
-| **Find files by name** | `mcp__jetbrains__find_files_by_name_keyword` | - | `find`, `ls` |
-| **Read file content** | `mcp__jetbrains__get_file_text_by_path` | `Read` | `cat`, `head`, `tail` |
-| **Create new file** | `mcp__jetbrains__create_new_file` | `Write` | `echo >`, `cat <<EOF` |
-| **Replace text** | `mcp__jetbrains__replace_text_in_file` | `Edit` | `sed`, `awk` |
-| **Rename symbols** | `mcp__jetbrains__rename_refactoring` | - | `replace_text_in_file`, `sed` |
-| **Search code** | `mcp__jetbrains__search_in_files_by_text` | `Grep` | `grep`, `rg` |
-| **Search by regex** | `mcp__jetbrains__search_in_files_by_regex` | `Grep` | `grep -E`, `rg` |
-| **Get symbol info** | `mcp__jetbrains__get_symbol_info` | - | Manual documentation lookup |
-| **Check file problems** | `mcp__jetbrains__get_file_problems` | - | `tsc`, `eslint` directly |
-| **Format code** | `mcp__jetbrains__reformat_file` | - | `prettier`, `eslint --fix` |
+All 23 tools are listed below by category. **YOU MUST** be familiar with and use the appropriate tool for each task.
 
-### When to Use Each Tool
+#### Category 1: Project Understanding & Exploration (EXPLORE FIRST)
 
-#### Project Navigation
+> **CRITICAL:** When you need to understand the codebase, **start with these structural exploration tools**, NOT full-text search. Full-text search (`search_in_files_by_text`, `Grep`) finds occurrences of strings — it does NOT help you understand architecture, dependencies, or module boundaries.
+
+| # | Tool | Purpose | When to Use |
+|---|------|---------|-------------|
+| 1 | `mcp__jetbrains__get_project_dependencies` | List all project dependencies (libraries) | **FIRST STEP** when exploring a new codebase or understanding what libraries are available |
+| 2 | `mcp__jetbrains__get_project_modules` | List all modules with their types | **FIRST STEP** when understanding project structure, workspace layout, and module boundaries |
+| 3 | `mcp__jetbrains__get_repositories` | List all VCS roots | Understanding multi-repo structure |
+| 4 | `mcp__jetbrains__list_directory_tree` | Directory tree (like `tree`) | Exploring folder structure at any depth |
+| 5 | `mcp__jetbrains__get_all_open_file_paths` | Currently open files in IDE | Understanding what the developer is working on |
+
 ```typescript
-// ✅ CORRECT: Explore directory structure
+// ✅ CORRECT: Understanding the codebase (do this FIRST)
+// Step 1: What modules exist?
+mcp__jetbrains__get_project_modules({
+    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
+});
+
+// Step 2: What dependencies are installed?
+mcp__jetbrains__get_project_dependencies({
+    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
+});
+
+// Step 3: Explore directory structure
 mcp__jetbrains__list_directory_tree({
     directoryPath: 'frontend/src/server',
     maxDepth: 3,
     projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
 });
 
-// ✅ CORRECT: Find files by pattern
-mcp__jetbrains__find_files_by_glob({
-    globPattern: '**/__tests__/**/*.test.ts',
-    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
-});
+// ❌ WRONG: Using grep/search to "understand" the codebase
+Grep({ pattern: 'import.*from', path: 'frontend/src' });  // This finds strings, not structure
+Bash({ command: 'tree frontend/src' });
+```
 
-// ✅ CORRECT: Find files by name (ultra-fast, uses IDE index)
-mcp__jetbrains__find_files_by_name_keyword({
-    nameKeyword: 'order',
-    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
-});
+#### Category 2: File Discovery
 
-// ❌ WRONG: Using CLI
-Bash({ command: 'tree frontend/src/server' });
+| # | Tool | Purpose | When to Use |
+|---|------|---------|-------------|
+| 6 | `mcp__jetbrains__find_files_by_name_keyword` | Find files by name substring (IDE index, ultra-fast) | **Preferred** — when you know part of the filename |
+| 7 | `mcp__jetbrains__find_files_by_glob` | Find files by glob pattern | When you need pattern matching (e.g., `**/*.test.ts`) |
+
+```typescript
+// ✅ CORRECT
+mcp__jetbrains__find_files_by_name_keyword({ nameKeyword: 'order', projectPath: '...' });
+mcp__jetbrains__find_files_by_glob({ globPattern: '**/__tests__/**/*.test.ts', projectPath: '...' });
+
+// ❌ WRONG
 Bash({ command: 'find . -name "*.test.ts"' });
+Glob({ pattern: '**/*.test.ts' });  // Only as fallback
 ```
 
-#### File Operations
+#### Category 3: File Reading & Writing
+
+| # | Tool | Purpose | When to Use |
+|---|------|---------|-------------|
+| 8 | `mcp__jetbrains__get_file_text_by_path` | Read file content with truncation control | Reading any source file |
+| 9 | `mcp__jetbrains__create_new_file` | Create new file (with parent dirs) | Creating new source/test files |
+| 10 | `mcp__jetbrains__replace_text_in_file` | Find and replace text in file | Text-only changes (comments, strings, log messages) |
+| 11 | `mcp__jetbrains__open_file_in_editor` | Open file in IDE editor | Directing developer's attention to a file |
+
 ```typescript
-// ✅ CORRECT: Read file with truncation control
-mcp__jetbrains__get_file_text_by_path({
-    pathInProject: 'frontend/src/server/services/order.ts',
-    maxLinesCount: 100,
-    truncateMode: 'MIDDLE',
-    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
-});
+// ✅ CORRECT
+mcp__jetbrains__get_file_text_by_path({ pathInProject: 'frontend/src/server/services/event.ts', projectPath: '...' });
+mcp__jetbrains__create_new_file({ pathInProject: 'frontend/src/server/services/payment.ts', text: '...', projectPath: '...' });
 
-// ✅ CORRECT: Create new file with safety
-mcp__jetbrains__create_new_file({
-    pathInProject: 'frontend/src/server/services/payment.ts',
-    text: 'export function processPayment() { ... }',
-    overwrite: false,
-    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
-});
-
-// ❌ WRONG: Using CLI
-Bash({ command: 'cat frontend/src/server/services/order.ts' });
-Bash({ command: 'echo "export function..." > payment.ts' });
+// ❌ WRONG
+Read({ file_path: '/Users/.../event.ts' });  // Only as fallback
+Bash({ command: 'cat frontend/src/server/services/event.ts' });
 ```
 
-#### Code Modification
+#### Category 4: Code Intelligence & Refactoring
 
-**Text Modification vs Code Refactoring**:
-
-| Operation Type | Tool | Use Cases |
-|---------------|------|-----------|
-| **Text-only changes** | `replace_text_in_file` | Log messages, comments, JSDoc, string literals |
-| **Code refactoring** | `rename_refactoring` | Variable names, function names, class names |
+| # | Tool | Purpose | When to Use |
+|---|------|---------|-------------|
+| 12 | `mcp__jetbrains__get_symbol_info` | Symbol documentation, type info, declaration | Understanding what a function/variable does, finding its declaration |
+| 13 | `mcp__jetbrains__rename_refactoring` | Rename symbol across entire project | Renaming variables, functions, classes (updates ALL references) |
+| 14 | `mcp__jetbrains__search_in_files_by_text` | Text search using IDE index | Finding specific usages of a known symbol/string |
+| 15 | `mcp__jetbrains__search_in_files_by_regex` | Regex search using IDE index | Finding patterns in code |
 
 ```typescript
-// ✅ CORRECT: Text modification (comments, strings)
-mcp__jetbrains__replace_text_in_file({
-    pathInProject: 'frontend/src/server/services/order.ts',
-    oldText: 'console.log("Order created")',
-    newText: 'console.log("Order created successfully")',
-    replaceAll: true,
-    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
+// ✅ CORRECT: Understanding a symbol
+mcp__jetbrains__get_symbol_info({
+    filePath: 'frontend/src/server/services/event.ts',
+    line: 10, column: 20,
+    projectPath: '...'
 });
 
-// ✅ CORRECT: Symbol refactoring (updates ALL references across project)
+// ✅ CORRECT: Renaming (updates ALL references across project)
 mcp__jetbrains__rename_refactoring({
-    pathInProject: 'frontend/src/server/services/order.ts',
-    symbolName: 'processOrder',
-    newName: 'createOrder',
-    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
+    pathInProject: 'frontend/src/server/services/event.ts',
+    symbolName: 'processOrder', newName: 'createOrder',
+    projectPath: '...'
 });
 
 // ❌ WRONG: Using replace_text for code symbols (misses cross-file references)
-mcp__jetbrains__replace_text_in_file({
-    pathInProject: 'frontend/src/server/services/order.ts',
-    oldText: 'processOrder',
-    newText: 'createOrder',
-    replaceAll: true  // Only replaces in ONE file, breaks code!
-});
+mcp__jetbrains__replace_text_in_file({ oldText: 'processOrder', newText: 'createOrder', replaceAll: true });
 ```
 
-#### Code Search & Analysis
+#### Category 5: Code Quality & Building
+
+| # | Tool | Purpose | When to Use |
+|---|------|---------|-------------|
+| 16 | `mcp__jetbrains__get_file_problems` | Run IDE inspections on a file | After editing a file — check for errors and warnings |
+| 17 | `mcp__jetbrains__reformat_file` | Format file per project code style | After editing — apply consistent formatting |
+| 18 | `mcp__jetbrains__build_project` | Trigger project build, return errors | After edits — validate compilation and type checking |
+
 ```typescript
-// ✅ CORRECT: Search using IDE index (10x faster)
-mcp__jetbrains__search_in_files_by_text({
-    searchText: 'createOrder',
-    caseSensitive: true,
-    fileMask: '*.ts',
-    directoryToSearch: 'frontend/src',
-    maxUsageCount: 50,
-    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
-});
+// ✅ CORRECT: Post-edit validation workflow
+// 1. Check problems
+mcp__jetbrains__get_file_problems({ filePath: 'frontend/src/server/services/event.ts', projectPath: '...' });
+// 2. Format
+mcp__jetbrains__reformat_file({ path: 'frontend/src/server/services/event.ts', projectPath: '...' });
+// 3. Build to verify types
+mcp__jetbrains__build_project({ projectPath: '...' });
 
-// ✅ CORRECT: Regex search with context highlighting
-mcp__jetbrains__search_in_files_by_regex({
-    regexPattern: 'function\\s+\\w+Order',
-    caseSensitive: false,
-    fileMask: '*.ts',
-    maxUsageCount: 100,
-    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
-});
-
-// ✅ CORRECT: Get symbol documentation (like Cmd+J in IDE)
-mcp__jetbrains__get_symbol_info({
-    filePath: 'frontend/src/server/services/order.ts',
-    line: 42,
-    column: 10,
-    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
-});
-
-// ❌ WRONG: Using CLI grep
-Bash({ command: 'grep -r "createOrder" frontend/src' });
+// ❌ WRONG
+Bash({ command: 'prettier --write ...' });
+Bash({ command: 'eslint --fix ...' });
+Bash({ command: 'npm run build -w frontend' });  // Only as fallback
 ```
 
-#### Code Quality & Refactoring
+#### Category 6: Execution & Run Configurations
+
+| # | Tool | Purpose | When to Use |
+|---|------|---------|-------------|
+| 19 | `mcp__jetbrains__get_run_configurations` | List all IDE run configurations | Discovering available run/debug configs |
+| 20 | `mcp__jetbrains__execute_run_configuration` | Execute a specific run config | Running tasks defined in IDE (dev server, specific tests, etc.) |
+| 21 | `mcp__jetbrains__execute_terminal_command` | Run shell command in IDE terminal | When no other MCP tool fits and CLI is truly needed |
+
 ```typescript
-// ✅ CORRECT: Check file problems (errors + warnings)
-mcp__jetbrains__get_file_problems({
-    filePath: 'frontend/src/server/services/order.ts',
-    errorsOnly: false,
-    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
-});
+// ✅ CORRECT: Use run configurations when available
+mcp__jetbrains__get_run_configurations({ projectPath: '...' });
+mcp__jetbrains__execute_run_configuration({ configurationName: 'dev', projectPath: '...' });
 
-// ✅ CORRECT: Format file according to project style
-mcp__jetbrains__reformat_file({
-    path: 'frontend/src/server/services/order.ts',
-    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
-});
-
-// ❌ WRONG: Running formatters directly
-Bash({ command: 'prettier --write frontend/src/server/services/order.ts' });
-Bash({ command: 'eslint --fix frontend/src/server/services/order.ts' });
+// For CLI-only operations (git, npm scripts without IDE config)
+mcp__jetbrains__execute_terminal_command({ command: 'npm run lint -w frontend', projectPath: '...' });
 ```
+
+#### Category 7: Jupyter Notebooks
+
+| # | Tool | Purpose | When to Use |
+|---|------|---------|-------------|
+| 22 | `mcp__jetbrains__runNotebookCell` | Execute Jupyter notebook cell(s) | Running notebook cells in IDE |
+
+#### Category 8: System
+
+| # | Tool | Purpose | When to Use |
+|---|------|---------|-------------|
+| 23 | `mcp__jetbrains__permission_prompt` | Handle permission prompts | When tool execution requires user confirmation |
+
+### Tool Priority Matrix (Quick Reference)
+
+| Task | Priority 1 (YOU MUST Use) | Priority 2 (Fallback) | Never Use |
+|------|--------------------------|----------------------|-----------|
+| **Understand project structure** | `get_project_modules` + `get_project_dependencies` | `list_directory_tree` | `Grep`, `grep`, full-text search |
+| **List directory structure** | `list_directory_tree` | - | `tree`, `ls -R` |
+| **Find files by name** | `find_files_by_name_keyword` | `find_files_by_glob`, `Glob` | `find`, `ls` |
+| **Read file content** | `get_file_text_by_path` | `Read` | `cat`, `head`, `tail` |
+| **Create new file** | `create_new_file` | `Write` | `echo >`, `cat <<EOF` |
+| **Replace text** | `replace_text_in_file` | `Edit` | `sed`, `awk` |
+| **Rename symbols** | `rename_refactoring` | - | `replace_text_in_file`, `sed` |
+| **Search code** | `search_in_files_by_text` | `Grep` | `grep`, `rg` |
+| **Search by regex** | `search_in_files_by_regex` | `Grep` | `grep -E`, `rg` |
+| **Get symbol info** | `get_symbol_info` | - | Manual lookup |
+| **Check file problems** | `get_file_problems` | - | `tsc`, `eslint` |
+| **Format code** | `reformat_file` | - | `prettier`, `eslint --fix` |
+| **Build project** | `build_project` | `Bash(npm run build)` | - |
+| **Run/verify unit tests** | `mcp__wallaby__wallaby_*` | - | `npm run test:unit`, `vitest` |
+| **Debug test values** | `mcp__wallaby__wallaby_runtimeValues` | - | `console.log` |
+| **Check test coverage** | `mcp__wallaby__wallaby_coveredLinesForFile` | - | `vitest --coverage` |
+
+### Codebase Exploration Workflow (YOU MUST Follow)
+
+When entering a new session or exploring unfamiliar parts of the codebase:
+
+```
+Step 1: get_project_modules        → Understand workspace/module layout
+Step 2: get_project_dependencies   → Know what libraries are available
+Step 3: get_repositories           → Understand VCS structure
+Step 4: list_directory_tree        → Drill into specific directories
+Step 5: get_file_text_by_path      → Read specific files of interest
+Step 6: get_symbol_info            → Understand specific symbols/APIs
+```
+
+**Anti-pattern:** Do NOT jump straight to `search_in_files_by_text` or `Grep` to understand what the codebase does. These tools find string matches — they do not explain architecture, module boundaries, or dependency relationships.
 
 ### Project-Specific Configuration
 
-**Project Path**: Always include in MCP tool calls:
+**Project Path** — Always include in ALL MCP tool calls:
 ```typescript
 projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
 ```
@@ -254,53 +291,171 @@ projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
 - File paths are relative to project root
 - Main workspaces: `frontend/`, `e2e/`
 
-### Performance Guidelines
-
-**JetBrains MCP Performance Advantages**:
-- `find_files_by_name_keyword`: ~50ms (IDE index) vs ~500ms (CLI find)
-- `search_in_files_by_text`: ~100ms (IDE index) vs ~800ms (grep)
-- Automatic exclusion of `node_modules/`, `.git/`, `.next/` (no manual filtering needed)
-
 ### Common Workflows
 
 **Refactoring Loop** (TDD Refactor Phase):
 ```typescript
 // 1. Check problems
-const problems = await mcp__jetbrains__get_file_problems(file, false);
-
+mcp__jetbrains__get_file_problems({ filePath: file, errorsOnly: false, projectPath: '...' });
 // 2. Fix issues (repeat until clean)
-while (problems.problems.length > 0) {
-    // Fix each problem...
-    problems = await mcp__jetbrains__get_file_problems(file, false);
-}
-
 // 3. Rename symbols if needed
-await mcp__jetbrains__rename_refactoring(file, 'oldName', 'newName');
-
+mcp__jetbrains__rename_refactoring({ pathInProject: file, symbolName: 'oldName', newName: 'newName', projectPath: '...' });
 // 4. Format code
-await mcp__jetbrains__reformat_file(file);
-
-// 5. Verify with ESLint
-Bash({ command: 'npm run lint -w frontend' });
+mcp__jetbrains__reformat_file({ path: file, projectPath: '...' });
+// 5. Build to verify
+mcp__jetbrains__build_project({ projectPath: '...' });
+// 6. Verify tests pass (use Wallaby MCP)
+mcp__wallaby__wallaby_failingTests();
 ```
 
 **Symbol Exploration**:
 ```typescript
-// 1. Search for symbol usage
-const usage = await mcp__jetbrains__search_in_files_by_text({
-    searchText: 'createOrder',
-    fileMask: '*.ts',
+// 1. Get symbol info (type, docs, declaration)
+mcp__jetbrains__get_symbol_info({ filePath: file, line: 42, column: 10, projectPath: '...' });
+// 2. Find all usages
+mcp__jetbrains__search_in_files_by_text({ searchText: 'createOrder', fileMask: '*.ts', projectPath: '...' });
+```
+
+## Wallaby MCP Test Verification
+
+This project **mandates Wallaby MCP tools** for all test execution and verification during development. Wallaby provides instant, continuous test feedback through the IDE — **never run tests via CLI** (`npm run test:unit`, `vitest`, `cd frontend && npm run test:unit`) when Wallaby MCP is available.
+
+### Ensuring Wallaby Is Running (YOU MUST)
+
+Before using any `mcp__wallaby__wallaby_*` tool, **YOU MUST** confirm Wallaby is running. If a Wallaby MCP tool call returns an error (e.g., connection refused, not available), follow this mandatory startup sequence:
+
+```typescript
+// Step 1: Find the Wallaby run configuration
+mcp__jetbrains__get_run_configurations({
+    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
+});
+// Look for a configuration with "Wallaby" in its name
+
+// Step 2: Start Wallaby via the run configuration
+mcp__jetbrains__execute_run_configuration({
+    configurationName: '<Wallaby config name from Step 1>',
     projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
 });
 
-// 2. Get detailed documentation
-const info = await mcp__jetbrains__get_symbol_info({
-    filePath: 'frontend/src/server/services/order.ts',
-    line: 42,
-    column: 10,
-    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
+// Step 3: Retry the Wallaby MCP tool call
+mcp__wallaby__wallaby_failingTests();
+```
+
+**DO NOT** skip Wallaby and fall back to CLI tests (`npm run test:unit`) without first attempting to start Wallaby through the above steps. CLI is only acceptable after confirming Wallaby cannot be started.
+
+### Why Wallaby MCP Over CLI
+
+| Aspect | Wallaby MCP | CLI (`npm run test:unit`) |
+|--------|-------------|--------------------------|
+| **Speed** | Instant (only re-runs affected tests) | Full suite every time |
+| **Feedback** | Per-line coverage + runtime values | Terminal output only |
+| **Context** | Knows which tests cover which lines | No mapping |
+| **Integration** | IDE inline annotations | Separate terminal window |
+
+### Mandatory Wallaby MCP Tools
+
+| Task | Wallaby MCP Tool | Never Use |
+|------|-----------------|-----------|
+| **Check all failing tests** | `mcp__wallaby__wallaby_failingTests` | `npm run test:unit`, `vitest` |
+| **Check all tests status** | `mcp__wallaby__wallaby_allTests` | `npm run test:unit -- --reporter=verbose` |
+| **Get failing tests for a file** | `mcp__wallaby__wallaby_failingTestsForFile` | `vitest run <file>` |
+| **Get all tests for a file** | `mcp__wallaby__wallaby_allTestsForFile` | `cd frontend && npm run test:unit -- <file>` |
+| **Get tests at specific line** | `mcp__wallaby__wallaby_allTestsForFileAndLine` | Manual search |
+| **Get failing tests at line** | `mcp__wallaby__wallaby_failingTestsForFileAndLine` | Manual search |
+| **Get test by ID** | `mcp__wallaby__wallaby_testById` | - |
+| **Get runtime values** | `mcp__wallaby__wallaby_runtimeValues` | `console.log` debugging |
+| **Get runtime values by test** | `mcp__wallaby__wallaby_runtimeValuesByTest` | `console.log` debugging |
+| **Check code coverage** | `mcp__wallaby__wallaby_coveredLinesForFile` | `vitest --coverage` |
+| **Check test coverage** | `mcp__wallaby__wallaby_coveredLinesForTest` | - |
+| **Update snapshots** | `mcp__wallaby__wallaby_updateTestSnapshots` | `vitest -u` |
+| **Update file snapshots** | `mcp__wallaby__wallaby_updateFileSnapshots` | `vitest -u <file>` |
+| **Update all snapshots** | `mcp__wallaby__wallaby_updateProjectSnapshots` | `vitest -u` |
+
+### TDD Workflow with Wallaby MCP
+
+During the Red-Green-Refactor cycle, use Wallaby MCP at every phase:
+
+#### Red Phase (Write failing test)
+```typescript
+// 1. Write the failing test in the test file
+
+// 2. Verify the test fails (MUST use Wallaby, NOT CLI)
+mcp__wallaby__wallaby_failingTestsForFile({
+    file: 'frontend/src/server/services/__tests__/event.test.ts'
+});
+
+// 3. Confirm the specific test is in the failing list
+// Look for your new test name in the response
+```
+
+#### Green Phase (Make test pass)
+```typescript
+// 1. Write minimal implementation
+
+// 2. Verify the test passes (MUST use Wallaby, NOT CLI)
+mcp__wallaby__wallaby_failingTestsForFile({
+    file: 'frontend/src/server/services/__tests__/event.test.ts'
+});
+// Expected: your test should NO LONGER appear in failing tests
+
+// 3. Alternatively, check all tests for the file
+mcp__wallaby__wallaby_allTestsForFile({
+    file: 'frontend/src/server/services/__tests__/event.test.ts'
+});
+// Expected: all tests show as passing
+```
+
+#### Refactor Phase (Improve code)
+```typescript
+// 1. Refactor the code
+
+// 2. Verify no regressions (MUST use Wallaby, NOT CLI)
+mcp__wallaby__wallaby_failingTests();
+// Expected: no failing tests in entire project
+
+// 3. Check coverage hasn't dropped
+mcp__wallaby__wallaby_coveredLinesForFile({
+    file: 'frontend/src/server/services/event.ts'
 });
 ```
+
+#### Debugging with Runtime Values
+```typescript
+// Instead of adding console.log, use Wallaby runtime values:
+mcp__wallaby__wallaby_runtimeValues({
+    file: 'frontend/src/server/services/event.ts',
+    line: 42,
+    lineContent: '    const totalAllocated = existingAllocated + (input.allocation || 0);',
+    expression: 'totalAllocated'
+});
+
+// For a specific test:
+mcp__wallaby__wallaby_runtimeValuesByTest({
+    file: 'frontend/src/server/services/event.ts',
+    line: 42,
+    expression: 'totalAllocated',
+    testId: '<test-id-from-previous-wallaby-call>'
+});
+```
+
+### Pre-Commit Verification
+
+Before every `git commit`, **always** run:
+```typescript
+// ✅ CORRECT: Use Wallaby to verify all tests pass
+mcp__wallaby__wallaby_failingTests();
+// Expected: empty failing tests list
+
+// ❌ WRONG: Running CLI tests
+Bash({ command: 'cd frontend && npm run test:unit' });
+```
+
+### When CLI Test Execution Is Acceptable
+
+CLI test commands (`npm run test:unit`, `npm run test:bdd`, `npm run test:e2e`) are **only** acceptable in these situations:
+- **CI/CD pipelines** (no IDE available)
+- **BDD/E2E tests** (Wallaby covers unit tests only; Playwright/Cucumber tests still use CLI)
+- **Wallaby MCP is confirmed unavailable** (tool calls return errors)
 
 ## Critical Development Constraints
 
@@ -371,14 +526,7 @@ fix(auth): resolve login redirect loop
 docs(readme): update database migration notes
 ```
 
-## Architecture Decision Records (ADR)
 
-All major architectural decisions are documented in `docs/adr/`. Review these to understand the "why" behind technical choices:
-- ADR-0002: Monorepo structure with NPM Workspaces
-- ADR-0004: Hybrid testing strategy (Unit, E2E, BDD)
-- ADR-0007: GCP Cloud Run and Firestore selection (now migrated to PostgreSQL)
-- ADR-0010: Unified Next.js Monolith architecture
-- ADR-0012: Event Ticketing & Commerce Engine strategy
 
 ## Deployment Architecture
 
@@ -390,13 +538,3 @@ All major architectural decisions are documented in `docs/adr/`. Review these to
 
 **Next.js Configuration**: `output: "standalone"` for optimized Docker builds
 
-## TDD Workflow
-
-This project follows a **Red-Green-Refactor** cycle:
-1. **Red**: Write failing test first (BDD features or unit tests)
-2. **Green**: Implement minimum code to pass the test
-3. **Refactor**: Improve code while keeping tests green
-
-**Workflow Modes** (via `.claude/skills/`):
-- `/feature-start` - Requirements confirmation, technical design, branch creation
-- `/develop` - TDD implementation with Red-Green-Refactor loop

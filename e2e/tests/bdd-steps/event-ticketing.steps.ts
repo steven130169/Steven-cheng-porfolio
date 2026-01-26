@@ -1,5 +1,6 @@
 import { Given, When, Then } from '@cucumber/cucumber';
 import { pageFixture } from './hooks';
+import { expect } from '@playwright/test';
 
 /**
  * Event Ticketing BDD Steps
@@ -36,16 +37,41 @@ Given(
 );
 
 Given(
-  'the event has an enabled ticket type {string} with price {int} and allocation {int}',
-  async (ticketTypeName: string, price: number, allocation: number) => {
-    if (mockEventData) {
-      mockEventData.ticketTypes.push({
-        name: ticketTypeName,
-        price,
-        allocation,
-      });
+    'the event has an enabled ticket type {string} with price {int} and allocation {int}',
+    async (ticketTypeName: string, price: number, allocation: number) => {
+        if (pageFixture.createdEvent?.id) {
+            const page = pageFixture.page;
+            const event = pageFixture.createdEvent;
+
+            const response = await page.request.post(
+                `/api/admin/events/${event.id}/ticket-types`,
+                {
+                    data: {
+                        name: ticketTypeName,
+                        price: price,
+                        allocation: allocation,
+                        enabled: true,
+                    },
+                    headers: {
+                        'Authorization': `Bearer ${process.env.ADMIN_API_KEY || 'test-admin-key'}`,
+                    },
+                }
+            );
+            expect(response.ok()).toBeTruthy();
+            const ticketType = await response.json();
+
+            if (!pageFixture.createdEvent.ticketTypes) {
+                pageFixture.createdEvent.ticketTypes = [];
+            }
+            pageFixture.createdEvent.ticketTypes.push(ticketType);
+        } else if (mockEventData) {
+            mockEventData.ticketTypes.push({
+                name: ticketTypeName,
+                price,
+                allocation,
+            });
+        }
     }
-  }
 );
 
 Given(

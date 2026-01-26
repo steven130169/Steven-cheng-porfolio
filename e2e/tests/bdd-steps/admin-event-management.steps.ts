@@ -129,14 +129,16 @@ When(
             }
         );
 
-        expect(response.ok()).toBeTruthy();
-        const ticketType = await response.json();
+        const body = await response.json();
+        pageFixture.lastResponse = response;
+        pageFixture.lastResponseBody = body;
 
-        // Store in context for Then step
-        if (!pageFixture.createdEvent.ticketTypes) {
-            pageFixture.createdEvent.ticketTypes = [];
+        if (response.ok()) {
+            if (!pageFixture.createdEvent.ticketTypes) {
+                pageFixture.createdEvent.ticketTypes = [];
+            }
+            pageFixture.createdEvent.ticketTypes.push(body);
         }
-        pageFixture.createdEvent.ticketTypes.push(ticketType);
     }
 );
 
@@ -219,8 +221,19 @@ Then(
 
 Then(
     'the event {string} should not include ticket type {string}',
-    async (_eventTitle: string, _ticketTypeName: string) => {
-        // Stub: verify ticket type absence in Phase 3.
+    async (eventTitle: string, ticketTypeName: string) => {
+        const event = pageFixture.createdEvent;
+
+        if (!event) {
+            throw new Error(`No event found in context for: ${eventTitle}`);
+        }
+
+        const ticketTypes = event.ticketTypes || [];
+        const found = ticketTypes.find(
+            (tt: any) => tt.name === ticketTypeName
+        );
+
+        expect(found).toBeUndefined();
     }
 );
 
@@ -230,8 +243,14 @@ When('I publish the event {string}', async (_eventTitle: string) => {
 });
 
 // --- Generic requests/errors ---
-Then('the request should be rejected with error {string}', async (_message: string) => {
-    // Stub: verify error response in Phase 3.
+Then('the request should be rejected with error {string}', async (message: string) => {
+    const lastResponse = pageFixture.lastResponse;
+
+    expect(lastResponse).toBeDefined();
+    expect(lastResponse.ok()).toBeFalsy();
+
+    const body = pageFixture.lastResponseBody;
+    expect(body.error).toBe(message);
 });
 
 // --- Customer browse visibility ---

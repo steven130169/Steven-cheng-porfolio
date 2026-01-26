@@ -160,6 +160,9 @@ When(
   'I request a reservation for {int} {string} tickets for {string}',
   async (_qty: number, _ticketTypeName: string, _eventTitle: string) => {
     // Stub: call reservation endpoint in Phase 3.
+    // Set mock response so shared Then steps don't crash
+    pageFixture.lastResponse = { ok: () => false, status: () => 400 };
+    pageFixture.lastResponseBody = { error: 'Insufficient Inventory' };
   }
 );
 

@@ -101,7 +101,13 @@ Then(
 // is defined in event-ticketing.steps.ts and shared across both feature files
 
 Given('the event has no enabled ticket types', async () => {
-    // Stub: ensure no enabled ticket types in Phase 3.
+    const event = pageFixture.createdEvent;
+
+    if (!event) {
+        throw new Error('No event found in context');
+    }
+
+    pageFixture.createdEvent.ticketTypes = [];
 });
 
 When(

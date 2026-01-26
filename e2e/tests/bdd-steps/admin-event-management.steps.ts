@@ -42,6 +42,7 @@ Given(
                 {headers: {'Authorization': `Bearer ${process.env.ADMIN_API_KEY || 'test-admin-key'}`}}
             );
             expect(publishResponse.ok()).toBeTruthy();
+            createdEvent.status = 'PUBLISHED';
         }
 
         pageFixture.createdEvent = createdEvent;
@@ -73,15 +74,25 @@ Then(
 
 Then(
     'the event {string} should have status {string}',
-    async (_eventTitle: string, _status: string) => {
-        // Stub: verify event status in Phase 3.
+    async (_eventTitle: string, status: string) => {
+        const event = pageFixture.createdEvent;
+
+        expect(event).toBeDefined();
+        expect(event.status).toBe(status);
     }
 );
 
 Then(
     'the event {string} should remain in status {string}',
-    async (_eventTitle: string, _status: string) => {
-        // Stub: verify no status change in Phase 3.
+    async (_eventTitle: string, expectedStatus: string) => {
+        const event = pageFixture.createdEvent;
+
+        if (!event) {
+            throw new Error('No event found in context');
+        }
+
+        // Event status should not have changed (publish was rejected)
+        expect(event.status).toBe(expectedStatus);
     }
 );
 
@@ -244,8 +255,31 @@ Then(
 );
 
 // --- Publishing ---
-When('I publish the event {string}', async (_eventTitle: string) => {
-    // Stub: publish event in Phase 3.
+When('I publish the event {string}', async (eventTitle: string) => {
+    const page = pageFixture.page;
+    const event = pageFixture.createdEvent;
+
+    if (!event) {
+        throw new Error(`No event found in context for title: ${eventTitle}`);
+    }
+
+    const response = await page.request.post(
+        `/api/admin/events/${event.id}/publish`,
+        {
+            headers: {
+                'Authorization': `Bearer ${process.env.ADMIN_API_KEY || 'test-admin-key'}`,
+            },
+        }
+    );
+
+    const body = await response.json();
+
+    pageFixture.lastResponse = response;
+    pageFixture.lastResponseBody = body;
+
+    if (response.ok()) {
+        pageFixture.createdEvent.status = body.status || 'PUBLISHED';
+    }
 });
 
 // --- Generic requests/errors ---

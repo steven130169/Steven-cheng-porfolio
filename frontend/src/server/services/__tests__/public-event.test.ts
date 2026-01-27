@@ -1,42 +1,33 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/unbound-method */
-import {describe, it, expect, vi, beforeEach} from 'vitest';
-import {getPublishedEvents} from '../public-event';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('@/server/db', () => ({
-    db: {
-        select: vi.fn(),
-    },
-}));
+vi.mock('@/server/db', async () => {
+    const { createTestDb } = await import('../../db/__tests__/test-db');
+    return createTestDb();
+});
 
-import {db} from '@/server/db';
+import { db } from '@/server/db';
+import { events } from '@/server/db/schema';
+import { sql } from 'drizzle-orm';
+import { getPublishedEvents } from '../public-event';
 
 describe('getPublishedEvents', () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
+    beforeEach(async () => {
+        await db.execute(sql`TRUNCATE events, ticket_types, orders CASCADE`);
     });
 
     it('should return only published events', async () => {
-        const mockPublishedEvent = {
-            id: 1,
+        await db.insert(events).values({
             title: 'Published Event',
             slug: 'published-event',
             status: 'PUBLISHED',
             totalCapacity: 100,
-            description: 'A published event',
-            eventDate: null,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        };
-
-        const mockSelectChain = {
-            from: vi.fn().mockReturnValue({
-                where: vi.fn().mockResolvedValue([mockPublishedEvent]),
-            }),
-        };
-
-        vi.mocked(db.select).mockReturnValue(mockSelectChain as any);
+        });
+        await db.insert(events).values({
+            title: 'Draft Event',
+            slug: 'draft-event',
+            status: 'DRAFT',
+            totalCapacity: 50,
+        });
 
         const result = await getPublishedEvents();
 
@@ -46,13 +37,12 @@ describe('getPublishedEvents', () => {
     });
 
     it('should return empty array when no published events exist', async () => {
-        const mockSelectChain = {
-            from: vi.fn().mockReturnValue({
-                where: vi.fn().mockResolvedValue([]),
-            }),
-        };
-
-        vi.mocked(db.select).mockReturnValue(mockSelectChain as any);
+        await db.insert(events).values({
+            title: 'Draft Event',
+            slug: 'draft-event',
+            status: 'DRAFT',
+            totalCapacity: 50,
+        });
 
         const result = await getPublishedEvents();
 

@@ -271,4 +271,17 @@ describe('publishEvent', () => {
         expect(result.status).toBe('PUBLISHED');
         expect(result.id).toBe(event.id);
     });
+
+    it('should reject publishing when no enabled ticket types exist', async () => {
+        const [event] = await db.insert(events).values({
+            title: 'Tech Conf 2025',
+            slug: 'tech-conf-2025',
+            status: 'DRAFT',
+            totalCapacity: 10,
+        }).returning();
+
+        await expect(
+            publishEvent(event.id)
+        ).rejects.toThrow('At least one enabled ticket type is required');
+    });
 });

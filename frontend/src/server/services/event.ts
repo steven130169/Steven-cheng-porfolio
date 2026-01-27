@@ -104,7 +104,7 @@ export async function updateEvent(eventId: number, input: UpdateEventInput) {
     }
 
     if (validatedData.eventDate !== undefined) {
-        updateData.eventDate = validatedData.eventDate ? new Date(validatedData.eventDate) : null;
+        updateData.eventDate = new Date(validatedData.eventDate)
     }
 
     const [updatedEvent] = await db

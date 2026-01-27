@@ -8,7 +8,7 @@ vi.mock('@/server/db', async () => {
 import { db } from '@/server/db';
 import { events, ticketTypes } from '@/server/db/schema';
 import { sql } from 'drizzle-orm';
-import { createTicketType } from '../ticket-type';
+import { createTicketType, getTotalAllocated } from '../ticket-type';
 
 describe('createTicketType', () => {
     beforeEach(async () => {
@@ -180,5 +180,64 @@ describe('createTicketType', () => {
 
         expect(result.allocation).toBe(5);
         expect(result.eventId).toBe(event.id);
+    });
+});
+
+describe('getTotalAllocated', () => {
+    beforeEach(async () => {
+        await db.execute(sql`TRUNCATE events, ticket_types, orders CASCADE`);
+    });
+
+    it('should sum only non-null allocations for an event', async () => {
+        const [event] = await db.insert(events).values({
+            title: 'Tech Conf 2025',
+            slug: 'tech-conf-2025',
+            status: 'DRAFT',
+            totalCapacity: 100,
+        }).returning();
+
+        await db.insert(ticketTypes).values([
+            { eventId: event.id, name: 'Early Bird', price: 100, allocation: 30, enabled: true },
+            { eventId: event.id, name: 'VIP', price: 300, allocation: 20, enabled: true },
+            { eventId: event.id, name: 'General', price: 150, allocation: null, enabled: true },
+        ]);
+
+        const total = await getTotalAllocated(event.id);
+
+        expect(total).toBe(50);
+    });
+
+    it('should return 0 when no ticket types have allocations', async () => {
+        const [event] = await db.insert(events).values({
+            title: 'Tech Conf 2025',
+            slug: 'tech-conf-2025',
+            status: 'DRAFT',
+            totalCapacity: 100,
+        }).returning();
+
+        await db.insert(ticketTypes).values({
+            eventId: event.id,
+            name: 'General',
+            price: 150,
+            allocation: null,
+            enabled: true,
+        });
+
+        const total = await getTotalAllocated(event.id);
+
+        expect(total).toBe(0);
+    });
+
+    it('should return 0 when event has no ticket types', async () => {
+        const [event] = await db.insert(events).values({
+            title: 'Tech Conf 2025',
+            slug: 'tech-conf-2025',
+            status: 'DRAFT',
+            totalCapacity: 100,
+        }).returning();
+
+        const total = await getTotalAllocated(event.id);
+
+        expect(total).toBe(0);
     });
 });

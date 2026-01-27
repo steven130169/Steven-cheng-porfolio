@@ -58,3 +58,19 @@ export async function createTicketType(input: {
     // 5. Return created ticket type
     return ticketType;
 }
+
+export async function getTotalAllocated(eventId: number): Promise<number> {
+    const allocatedTicketTypes = await db
+        .select()
+        .from(ticketTypes)
+        .where(
+            and(
+                eq(ticketTypes.eventId, eventId),
+                isNotNull(ticketTypes.allocation)
+            )
+        );
+
+    return allocatedTicketTypes
+        .filter((tt): tt is typeof tt & { allocation: number } => tt.allocation !== null)
+        .reduce((sum, tt) => sum + tt.allocation, 0);
+}

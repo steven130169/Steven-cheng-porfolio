@@ -101,9 +101,10 @@ BeforeAll(async function () {
 });
 
 Before(async function () {
-  // No separate backend to reset now. Reset logic needs to be moved to Next.js API route / server action if needed.
-  // For now, E2E/BDD will operate without a clean backend state for each scenario.
-  // This will be re-addressed when implementing Next.js API routes/Server Actions for data.
+  // Reset fixture state to prevent leaking between scenarios
+  pageFixture.createdEvent = undefined;
+  pageFixture.lastResponse = undefined;
+  pageFixture.lastResponseBody = undefined;
 
   context = await browser.newContext({
     baseURL: BASE_URL,

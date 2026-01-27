@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.10.0](https://github.com/steven130169/Steven-cheng-porfolio/compare/v0.9.0...v0.10.0) (2026-01-27)
+
+### Features
+
+* **events:** add getTotalAllocated shared function with tests ([dcc12db](https://github.com/steven130169/Steven-cheng-porfolio/commit/dcc12db10cefc1c49f255dfd866e2c45054323fd))
+* **events:** add publishEvent service with happy path test ([d7db202](https://github.com/steven130169/Steven-cheng-porfolio/commit/d7db202f228d5396175f751dbee43341ae70080b))
+
+### Bug Fixes
+
+* **events:** ensure eventDate is always updated to a Date object ([e6b09ba](https://github.com/steven130169/Steven-cheng-porfolio/commit/e6b09ba4fdf6f617294359a745871125e408431e))
+
 ## [0.9.0](https://github.com/steven130169/Steven-cheng-porfolio/compare/v0.8.0...v0.9.0) (2026-01-27)
 
 ### Features

@@ -10,7 +10,7 @@ deployed as a unified service on GCP Cloud Run.
 
 **Key Architectural Pattern**: Unlike microservices, all business logic, API routes, and UI components live in the same
 Next.js application (`frontend/`). The presentation layer is in `frontend/src/app/` (App Router pages and API routes),
-while server-side business logic resides in `frontend/src/server/`.
+while servvalidateAndGenerateSluger-side business logic resides in `frontend/src/server/`.
 
 ## Monorepo Structure
 

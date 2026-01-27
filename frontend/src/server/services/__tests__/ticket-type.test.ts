@@ -1,14 +1,14 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import {describe, it, expect, vi, beforeEach} from 'vitest';
 
 vi.mock('@/server/db', async () => {
-    const { createTestDb } = await import('../../db/__tests__/test-db');
+    const {createTestDb} = await import('../../db/__tests__/test-db');
     return createTestDb();
 });
 
-import { db } from '@/server/db';
-import { events, ticketTypes } from '@/server/db/schema';
-import { sql } from 'drizzle-orm';
-import { createTicketType, getTotalAllocated } from '../ticket-type';
+import {db} from '@/server/db';
+import {events, ticketTypes} from '@/server/db/schema';
+import {sql} from 'drizzle-orm';
+import {createTicketType, getTotalAllocated} from '../ticket-type';
 
 describe('createTicketType', () => {
     beforeEach(async () => {
@@ -197,9 +197,9 @@ describe('getTotalAllocated', () => {
         }).returning();
 
         await db.insert(ticketTypes).values([
-            { eventId: event.id, name: 'Early Bird', price: 100, allocation: 30, enabled: true },
-            { eventId: event.id, name: 'VIP', price: 300, allocation: 20, enabled: true },
-            { eventId: event.id, name: 'General', price: 150, allocation: null, enabled: true },
+            {eventId: event.id, name: 'Early Bird', price: 100, allocation: 30, enabled: true},
+            {eventId: event.id, name: 'VIP', price: 300, allocation: 20, enabled: true},
+            {eventId: event.id, name: 'General', price: 150, allocation: null, enabled: true},
         ]);
 
         const total = await getTotalAllocated(event.id);

@@ -28,7 +28,7 @@ export async function createTicketType(input: {
         throw new Error('Allocations exceed total capacity');
     }
 
-    // 3. Insert ticket type into database
+    // 3. Insert a ticket type into a database
     const [ticketType] = await db
         .insert(ticketTypes)
         .values({

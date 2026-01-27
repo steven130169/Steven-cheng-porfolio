@@ -98,9 +98,9 @@ are confirmed unavailable (tool calls return errors).
 1. **YOU MUST use JetBrains MCP first** for all file operations, code analysis, refactoring, building, and execution
 2. **YOU MUST use Wallaby MCP for test verification** —
    See [Wallaby MCP Test Verification](#wallaby-mcp-test-verification) section below
-3. **YOU MUST use `get_project_dependencies` and `get_project_modules` to explore the codebase** — Do NOT rely on
-   full-text search (`Grep`, `search_in_files_by_text`) to understand project structure, architecture, or module
-   relationships
+3. **YOU MUST read `package.json` files to understand project dependencies** — For Node.js projects, directly read
+   `package.json` at root and workspace levels to understand dependencies and scripts. Do NOT rely on full-text
+   search (`Grep`, `search_in_files_by_text`) alone to understand project structure
 4. **Never use CLI for file operations** — No `cat`, `head`, `tail`, `sed`, `awk`, `find`, `tree`, `grep`, `rg`
 5. **Leverage IDE intelligence** — MCP tools understand code semantics, not just text patterns
 
@@ -113,23 +113,26 @@ All 23 tools are listed below by category. **YOU MUST** be familiar with and use
 > **CRITICAL:** When you need to understand the codebase, **start with these structural exploration tools**, NOT
 > full-text search. Full-text search (`search_in_files_by_text`, `Grep`) finds occurrences of strings — it does NOT help
 > you understand architecture, dependencies, or module boundaries.
+>
+> **For Node.js projects:** Read `package.json` files directly to understand dependencies and npm scripts.
 
-| # | Tool                                       | Purpose                                   | When to Use                                                                                  |
-|---|--------------------------------------------|-------------------------------------------|----------------------------------------------------------------------------------------------|
-| 1 | `mcp__jetbrains__get_project_dependencies` | List all project dependencies (libraries) | **FIRST STEP** when exploring a new codebase or understanding what libraries are available   |
-| 2 | `mcp__jetbrains__get_project_modules`      | List all modules with their types         | **FIRST STEP** when understanding project structure, workspace layout, and module boundaries |
-| 3 | `mcp__jetbrains__get_repositories`         | List all VCS roots                        | Understanding multi-repo structure                                                           |
-| 4 | `mcp__jetbrains__list_directory_tree`      | Directory tree (like `tree`)              | Exploring folder structure at any depth                                                      |
+| # | Tool                                    | Purpose            | When to Use                             |
+|---|-----------------------------------------|--------------------|-----------------------------------------|
+| 1 | `mcp__jetbrains__get_repositories`      | List all VCS roots | Understanding multi-repo structure      |
+| 2 | `mcp__jetbrains__list_directory_tree`   | Directory tree     | Exploring folder structure at any depth |
+| 3 | `mcp__jetbrains__get_file_text_by_path` | Read file content  | Reading `package.json`, config files    |
 
 ```typescript
-// ✅ CORRECT: Understanding the codebase (do this FIRST)
-// Step 1: What modules exist?
-mcp__jetbrains__get_project_modules({
+// ✅ CORRECT: Understanding the codebase (do this FIRST for Node.js projects)
+// Step 1: Read root package.json to understand workspaces and root dependencies
+mcp__jetbrains__get_file_text_by_path({
+    pathInProject: 'package.json',
     projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
 });
 
-// Step 2: What dependencies are installed?
-mcp__jetbrains__get_project_dependencies({
+// Step 2: Read workspace package.json files to understand workspace-specific dependencies
+mcp__jetbrains__get_file_text_by_path({
+    pathInProject: 'frontend/package.json',
     projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
 });
 
@@ -139,6 +142,13 @@ mcp__jetbrains__list_directory_tree({
     maxDepth: 3,
     projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
 });
+
+// Step 4: Read workspace package.json files to understand workspace-specific dependencies
+mcp__jetbrains__get_file_text_by_path({
+    pathInProject: 'e2e/package.json',
+    projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
+});
+
 
 // ❌ WRONG: Using grep/search to "understand" the codebase
 Grep({pattern: 'import.*from', path: 'frontend/src'});  // This finds strings, not structure
@@ -240,7 +250,8 @@ Bash({command: 'eslint --fix ...'});
 Bash({command: 'npm run build -w frontend'});  // Only as fallback
 ```
 
-**Post-edit Rule**: After editing any file, run `get_file_problems` with `errorsOnly: false` on that file and YOU MUST fix ALL reported errors and warnings before proceeding.
+**Post-edit Rule**: After editing any file, run `get_file_problems` with `errorsOnly: false` on that file and YOU MUST
+fix ALL reported errors and warnings before proceeding.
 
 #### Category 6: Execution & Run Configurations
 
@@ -273,36 +284,35 @@ mcp__jetbrains__execute_terminal_command({command: 'npm run lint -w frontend', p
 
 ### Tool Priority Matrix (Quick Reference)
 
-| Task                             | Priority 1 (YOU MUST Use)                          | Priority 2 (Fallback)        | Never Use                        |
-|----------------------------------|----------------------------------------------------|------------------------------|----------------------------------|
-| **Understand project structure** | `get_project_modules` + `get_project_dependencies` | `list_directory_tree`        | `Grep`, `grep`, full-text search |
-| **List directory structure**     | `list_directory_tree`                              | -                            | `tree`, `ls -R`                  |
-| **Find files by name**           | `find_files_by_name_keyword`                       | `find_files_by_glob`, `Glob` | `find`, `ls`                     |
-| **Read file content**            | `get_file_text_by_path`                            | `Read`                       | `cat`, `head`, `tail`            |
-| **Create new file**              | `create_new_file`                                  | `Write`                      | `echo >`, `cat <<EOF`            |
-| **Replace text**                 | `replace_text_in_file`                             | `Edit`                       | `sed`, `awk`                     |
-| **Rename symbols**               | `rename_refactoring`                               | -                            | `replace_text_in_file`, `sed`    |
-| **Search code**                  | `search_in_files_by_text`                          | `Grep`                       | `grep`, `rg`                     |
-| **Search by regex**              | `search_in_files_by_regex`                         | `Grep`                       | `grep -E`, `rg`                  |
-| **Get symbol info**              | `get_symbol_info`                                  | -                            | Manual lookup                    |
-| **Check file problems**          | `get_file_problems`                                | -                            | `tsc`, `eslint`                  |
-| **Format code**                  | `reformat_file`                                    | -                            | `prettier`, `eslint --fix`       |
-| **Build project**                | `build_project`                                    | `Bash(npm run build)`        | -                                |
-| **Run/verify unit tests**        | `mcp__wallaby__wallaby_*`                          | -                            | `npm run test:unit`, `vitest`    |
-| **Debug test values**            | `mcp__wallaby__wallaby_runtimeValues`              | -                            | `console.log`                    |
-| **Check test coverage**          | `mcp__wallaby__wallaby_coveredLinesForFile`        | -                            | `vitest --coverage`              |
+| Task                             | Priority 1 (YOU MUST Use)                         | Priority 2 (Fallback)        | Never Use                        |
+|----------------------------------|---------------------------------------------------|------------------------------|----------------------------------|
+| **Understand project structure** | Read `package.json` files + `list_directory_tree` | -                            | `Grep`, `grep`, full-text search |
+| **List directory structure**     | `list_directory_tree`                             | -                            | `tree`, `ls -R`                  |
+| **Find files by name**           | `find_files_by_name_keyword`                      | `find_files_by_glob`, `Glob` | `find`, `ls`                     |
+| **Read file content**            | `get_file_text_by_path`                           | `Read`                       | `cat`, `head`, `tail`            |
+| **Create new file**              | `create_new_file`                                 | `Write`                      | `echo >`, `cat <<EOF`            |
+| **Replace text**                 | `replace_text_in_file`                            | `Edit`                       | `sed`, `awk`                     |
+| **Rename symbols**               | `rename_refactoring`                              | -                            | `replace_text_in_file`, `sed`    |
+| **Search code**                  | `search_in_files_by_text`                         | `Grep`                       | `grep`, `rg`                     |
+| **Search by regex**              | `search_in_files_by_regex`                        | `Grep`                       | `grep -E`, `rg`                  |
+| **Get symbol info**              | `get_symbol_info`                                 | -                            | Manual lookup                    |
+| **Check file problems**          | `get_file_problems`                               | -                            | `tsc`, `eslint`                  |
+| **Format code**                  | `reformat_file`                                   | -                            | `prettier`, `eslint --fix`       |
+| **Build project**                | `build_project`                                   | `Bash(npm run build)`        | -                                |
+| **Run/verify unit tests**        | `mcp__wallaby__wallaby_*`                         | -                            | `npm run test:unit`, `vitest`    |
+| **Debug test values**            | `mcp__wallaby__wallaby_runtimeValues`             | -                            | `console.log`                    |
+| **Check test coverage**          | `mcp__wallaby__wallaby_coveredLinesForFile`       | -                            | `vitest --coverage`              |
 
 ### Codebase Exploration Workflow (YOU MUST Follow)
 
 When entering a new session or exploring unfamiliar parts of the codebase:
 
 ```
-Step 1: get_project_modules        → Understand workspace/module layout
-Step 2: get_project_dependencies   → Know what libraries are available
-Step 3: get_repositories           → Understand VCS structure
-Step 4: list_directory_tree        → Drill into specific directories
-Step 5: get_file_text_by_path      → Read specific files of interest
-Step 6: get_symbol_info            → Understand specific symbols/APIs
+Step 1: get_file_text_by_path      → Read package.json files (root and workspaces) to understand dependencies and scripts
+Step 2: get_repositories           → Understand VCS structure
+Step 3: list_directory_tree        → Drill into specific directories
+Step 4: get_file_text_by_path      → Read specific files of interest (config, source files)
+Step 5: get_symbol_info            → Understand specific symbols/APIs
 ```
 
 **Antipattern:** Do NOT jump straight to `search_in_files_by_text` or `Grep` to understand what the codebase does.

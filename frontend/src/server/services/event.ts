@@ -1,32 +1,21 @@
 import {db} from '@/server/db';
 import {events} from '@/server/db/schema';
 import {
-    createEventSchema,
-    updateEventSchema,
     type CreateEventInput,
-    type UpdateEventInput
+    createEventSchema,
+    type UpdateEventInput,
+    updateEventSchema
 } from '@/server/validators/event.schema';
 import slugify from 'slugify';
-import {eq, and, ne} from 'drizzle-orm';
+import {and, eq, ne} from 'drizzle-orm';
 import {getTotalAllocated} from '@/server/services/ticket-type';
 
 export async function createDraftEvent(input: CreateEventInput) {
     // Validate input
     const validatedData = createEventSchema.parse(input);
 
-    // Generate slug
-    const slug = slugify(validatedData.title, {lower: true, strict: true});
-
-    // Check slug uniqueness
-    const existing = await db
-        .select({id: events.id})
-        .from(events)
-        .where(eq(events.slug, slug))
-        .limit(1);
-
-    if (existing.length > 0) {
-        throw new Error('Event with this title already exists');
-    }
+    // Generate and validate slug
+    const slug = await validateAndGenerateSlug(validatedData.title);
 
     // Create event
     const [event] = await db
@@ -62,20 +51,22 @@ async function validateCapacityUpdate(
     }
 }
 
-async function validateAndGenerateSlug(title: string, eventId: number): Promise<string> {
+async function validateAndGenerateSlug(title: string, eventId?: number): Promise<string> {
     const newSlug = slugify(title, {lower: true, strict: true});
+
+    const conditions = [eq(events.slug, newSlug)];
+    if (eventId !== undefined) {
+        conditions.push(ne(events.id, eventId));
+    }
 
     const existing = await db
         .select({id: events.id})
         .from(events)
-        .where(and(
-            eq(events.slug, newSlug),
-            ne(events.id, eventId)
-        ))
+        .where(and(...conditions))
         .limit(1);
 
     if (existing.length > 0) {
-        throw new Error('Event with this title already exists');
+        throw new Error('Event with this slug already exists');
     }
 
     return newSlug;
@@ -104,8 +95,7 @@ export async function updateEvent(eventId: number, input: UpdateEventInput) {
     }
 
     if (validatedData.title) {
-        const newSlug = await validateAndGenerateSlug(validatedData.title, eventId);
-        updateData.slug = newSlug;
+        updateData.slug = await validateAndGenerateSlug(validatedData.title, eventId);
         updateData.title = validatedData.title;
     }
 

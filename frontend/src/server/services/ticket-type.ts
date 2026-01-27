@@ -20,30 +20,15 @@ export async function createTicketType(input: {
         throw new Error('Event not found');
     }
 
-    // 2. Calculate existing allocations (sum of non-null allocations)
-    const existingTicketTypes = await db
-        .select()
-        .from(ticketTypes)
-        .where(
-            and(
-                eq(ticketTypes.eventId, input.eventId),
-                isNotNull(ticketTypes.allocation)
-            )
-        );
-
-    const existingAllocated = existingTicketTypes.reduce(
-        (sum, tt) => sum + (tt.allocation || 0),
-        0
-    );
-
-    // 3. Validate new allocation + existing <= event.totalCapacity
+    // 2. Validate new allocation + existing <= event.totalCapacity
+    const existingAllocated = await getTotalAllocated(input.eventId);
     const totalAllocated = existingAllocated + (input.allocation || 0);
 
     if (input.allocation && totalAllocated > event.totalCapacity) {
         throw new Error('Allocations exceed total capacity');
     }
 
-    // 4. Insert ticket type into database
+    // 3. Insert a ticket type into a database
     const [ticketType] = await db
         .insert(ticketTypes)
         .values({
@@ -55,6 +40,22 @@ export async function createTicketType(input: {
         })
         .returning();
 
-    // 5. Return created ticket type
+    // 4. Return created ticket type
     return ticketType;
+}
+
+export async function getTotalAllocated(eventId: number): Promise<number> {
+    const allocatedTicketTypes = await db
+        .select()
+        .from(ticketTypes)
+        .where(
+            and(
+                eq(ticketTypes.eventId, eventId),
+                isNotNull(ticketTypes.allocation)
+            )
+        );
+
+    return allocatedTicketTypes
+        .filter((tt): tt is typeof tt & { allocation: number } => tt.allocation !== null)
+        .reduce((sum, tt) => sum + tt.allocation, 0);
 }

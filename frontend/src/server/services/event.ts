@@ -1,31 +1,21 @@
 import {db} from '@/server/db';
 import {events, ticketTypes} from '@/server/db/schema';
 import {
-    createEventSchema,
-    updateEventSchema,
     type CreateEventInput,
-    type UpdateEventInput
+    createEventSchema,
+    type UpdateEventInput,
+    updateEventSchema
 } from '@/server/validators/event.schema';
 import slugify from 'slugify';
-import {eq, and, isNotNull, ne} from 'drizzle-orm';
+import {and, eq, ne} from 'drizzle-orm';
+import {getTotalAllocated} from '@/server/services/ticket-type';
 
 export async function createDraftEvent(input: CreateEventInput) {
     // Validate input
     const validatedData = createEventSchema.parse(input);
 
-    // Generate slug
-    const slug = slugify(validatedData.title, {lower: true, strict: true});
-
-    // Check slug uniqueness
-    const existing = await db
-        .select({id: events.id})
-        .from(events)
-        .where(eq(events.slug, slug))
-        .limit(1);
-
-    if (existing.length > 0) {
-        throw new Error('Event with this title already exists');
-    }
+    // Generate and validate slug
+    const slug = await validateAndGenerateSlug(validatedData.title);
 
     // Create event
     const [event] = await db
@@ -53,18 +43,7 @@ async function validateCapacityUpdate(
             throw new Error('Cannot decrease capacity for published event');
         }
     } else if (event.status === 'DRAFT') {
-        const allocatedTickets = await db
-            .select()
-            .from(ticketTypes)
-            .where(and(
-                eq(ticketTypes.eventId, eventId),
-                isNotNull(ticketTypes.allocation)
-            ));
-
-        const totalAllocated = allocatedTickets.reduce(
-            (sum, tt) => sum + (tt.allocation || 0),
-            0
-        );
+        const totalAllocated = await getTotalAllocated(eventId);
 
         if (newCapacity < totalAllocated) {
             throw new Error(`New capacity must be >= total allocations: ${totalAllocated}`);
@@ -72,20 +51,22 @@ async function validateCapacityUpdate(
     }
 }
 
-async function validateAndGenerateSlug(title: string, eventId: number): Promise<string> {
+async function validateAndGenerateSlug(title: string, eventId?: number): Promise<string> {
     const newSlug = slugify(title, {lower: true, strict: true});
+
+    const conditions = [eq(events.slug, newSlug)];
+    if (eventId !== undefined) {
+        conditions.push(ne(events.id, eventId));
+    }
 
     const existing = await db
         .select({id: events.id})
         .from(events)
-        .where(and(
-            eq(events.slug, newSlug),
-            ne(events.id, eventId)
-        ))
+        .where(and(...conditions))
         .limit(1);
 
     if (existing.length > 0) {
-        throw new Error('Event with this title already exists');
+        throw new Error('Event with this slug already exists');
     }
 
     return newSlug;
@@ -114,8 +95,7 @@ export async function updateEvent(eventId: number, input: UpdateEventInput) {
     }
 
     if (validatedData.title) {
-        const newSlug = await validateAndGenerateSlug(validatedData.title, eventId);
-        updateData.slug = newSlug;
+        updateData.slug = await validateAndGenerateSlug(validatedData.title, eventId);
         updateData.title = validatedData.title;
     }
 
@@ -124,12 +104,54 @@ export async function updateEvent(eventId: number, input: UpdateEventInput) {
     }
 
     if (validatedData.eventDate !== undefined) {
-        updateData.eventDate = validatedData.eventDate ? new Date(validatedData.eventDate) : null;
+        updateData.eventDate = new Date(validatedData.eventDate)
     }
 
     const [updatedEvent] = await db
         .update(events)
         .set(updateData)
+        .where(eq(events.id, eventId))
+        .returning();
+
+    return updatedEvent;
+}
+
+export async function publishEvent(eventId: number) {
+    const [event] = await db
+        .select()
+        .from(events)
+        .where(eq(events.id, eventId))
+        .limit(1);
+
+    if (!event) {
+        throw new Error('Event not found');
+    }
+
+    // Already published — return as-is (idempotent)
+    if (event.status === 'PUBLISHED') {
+        return event;
+    }
+
+    // Check at least one enabled ticket type exists
+    const enabledTicketTypes = await db
+        .select()
+        .from(ticketTypes)
+        .where(and(
+            eq(ticketTypes.eventId, eventId),
+            eq(ticketTypes.enabled, true)
+        ));
+
+    if (enabledTicketTypes.length === 0) {
+        throw new Error('At least one enabled ticket type is required');
+    }
+
+    // Update status to PUBLISHED
+    const [updatedEvent] = await db
+        .update(events)
+        .set({
+            status: 'PUBLISHED',
+            updatedAt: new Date(),
+        })
         .where(eq(events.id, eventId))
         .returning();
 

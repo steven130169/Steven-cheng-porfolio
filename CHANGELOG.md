@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.9.0](https://github.com/steven130169/Steven-cheng-porfolio/compare/v0.8.0...v0.9.0) (2026-01-27)
+
+### Features
+
+* **api:** add public GET /api/events endpoint for published events ([78459fc](https://github.com/steven130169/Steven-cheng-porfolio/commit/78459fccc3cab42f30c289dc12205ef592e8a408))
+* **events:** add getPublishedEvents service with unit tests ([c9d4e32](https://github.com/steven130169/Steven-cheng-porfolio/commit/c9d4e32ad642a7eaf56fe6443576d292c126cc8f))
+
+### Bug Fixes
+
+* **bdd:** reset pageFixture state between scenarios ([8449e97](https://github.com/steven130169/Steven-cheng-porfolio/commit/8449e97cd2349799432bd18c78bf8f65879096b3))
+* **bdd:** set mock response in reservation stub to prevent cascading failures ([92f326c](https://github.com/steven130169/Steven-cheng-porfolio/commit/92f326c29298f6e04e7b9d603086713f5086f247))
+
 ## [0.8.0](https://github.com/steven130169/Steven-cheng-porfolio/compare/v0.7.1...v0.8.0) (2026-01-08)
 
 ### Features

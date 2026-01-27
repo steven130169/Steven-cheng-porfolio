@@ -290,4 +290,26 @@ describe('publishEvent', () => {
             publishEvent(999)
         ).rejects.toThrow('Event not found');
     });
+
+    it('should return already published event without error', async () => {
+        const [event] = await db.insert(events).values({
+            title: 'Tech Conf 2025',
+            slug: 'tech-conf-2025',
+            status: 'PUBLISHED',
+            totalCapacity: 10,
+        }).returning();
+
+        await db.insert(ticketTypes).values({
+            eventId: event.id,
+            name: 'Early Bird',
+            price: 100,
+            allocation: 10,
+            enabled: true,
+        });
+
+        const result = await publishEvent(event.id);
+
+        expect(result.status).toBe('PUBLISHED');
+        expect(result.id).toBe(event.id);
+    });
 });

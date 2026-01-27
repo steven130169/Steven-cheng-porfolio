@@ -225,7 +225,7 @@ describe('updateEvent', () => {
 
         // Try to rename Event B to "Event A" (which generates slug 'event-a')
         await expect(
-            updateEvent(eventB.id, { title: 'Event A' })
+            updateEvent(eventB.id, {title: 'Event A'})
         ).rejects.toThrow('Event with this slug already exists');
     });
 
@@ -240,7 +240,7 @@ describe('updateEvent', () => {
 
         // Update to a new date
         const newDate = '2026-12-31T23:59:59Z';
-        const result = await updateEvent(event.id, { eventDate: newDate });
+        const result = await updateEvent(event.id, {eventDate: newDate});
         expect(result.eventDate?.toISOString()).toBe(new Date(newDate).toISOString());
     });
 });

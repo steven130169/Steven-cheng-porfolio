@@ -284,4 +284,10 @@ describe('publishEvent', () => {
             publishEvent(event.id)
         ).rejects.toThrow('At least one enabled ticket type is required');
     });
+
+    it('should reject publishing when event not found', async () => {
+        await expect(
+            publishEvent(999)
+        ).rejects.toThrow('Event not found');
+    });
 });

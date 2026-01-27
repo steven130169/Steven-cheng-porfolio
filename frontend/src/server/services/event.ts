@@ -1,5 +1,5 @@
 import {db} from '@/server/db';
-import {events, ticketTypes} from '@/server/db/schema';
+import {events} from '@/server/db/schema';
 import {
     createEventSchema,
     updateEventSchema,
@@ -7,7 +7,8 @@ import {
     type UpdateEventInput
 } from '@/server/validators/event.schema';
 import slugify from 'slugify';
-import {eq, and, isNotNull, ne} from 'drizzle-orm';
+import {eq, and, ne} from 'drizzle-orm';
+import {getTotalAllocated} from '@/server/services/ticket-type';
 
 export async function createDraftEvent(input: CreateEventInput) {
     // Validate input
@@ -53,18 +54,7 @@ async function validateCapacityUpdate(
             throw new Error('Cannot decrease capacity for published event');
         }
     } else if (event.status === 'DRAFT') {
-        const allocatedTickets = await db
-            .select()
-            .from(ticketTypes)
-            .where(and(
-                eq(ticketTypes.eventId, eventId),
-                isNotNull(ticketTypes.allocation)
-            ));
-
-        const totalAllocated = allocatedTickets.reduce(
-            (sum, tt) => sum + (tt.allocation || 0),
-            0
-        );
+        const totalAllocated = await getTotalAllocated(eventId);
 
         if (newCapacity < totalAllocated) {
             throw new Error(`New capacity must be >= total allocations: ${totalAllocated}`);

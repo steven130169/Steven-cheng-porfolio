@@ -1,5 +1,5 @@
 import {db} from '@/server/db';
-import {events} from '@/server/db/schema';
+import {events, ticketTypes} from '@/server/db/schema';
 import {
     type CreateEventInput,
     createEventSchema,
@@ -110,6 +110,48 @@ export async function updateEvent(eventId: number, input: UpdateEventInput) {
     const [updatedEvent] = await db
         .update(events)
         .set(updateData)
+        .where(eq(events.id, eventId))
+        .returning();
+
+    return updatedEvent;
+}
+
+export async function publishEvent(eventId: number) {
+    const [event] = await db
+        .select()
+        .from(events)
+        .where(eq(events.id, eventId))
+        .limit(1);
+
+    if (!event) {
+        throw new Error('Event not found');
+    }
+
+    // Already published — return as-is (idempotent)
+    if (event.status === 'PUBLISHED') {
+        return event;
+    }
+
+    // Check at least one enabled ticket type exists
+    const enabledTicketTypes = await db
+        .select()
+        .from(ticketTypes)
+        .where(and(
+            eq(ticketTypes.eventId, eventId),
+            eq(ticketTypes.enabled, true)
+        ));
+
+    if (enabledTicketTypes.length === 0) {
+        throw new Error('At least one enabled ticket type is required');
+    }
+
+    // Update status to PUBLISHED
+    const [updatedEvent] = await db
+        .update(events)
+        .set({
+            status: 'PUBLISHED',
+            updatedAt: new Date(),
+        })
         .where(eq(events.id, eventId))
         .returning();
 

@@ -8,7 +8,7 @@ vi.mock('@/server/db', async () => {
 import {db} from '@/server/db';
 import {events, ticketTypes} from '@/server/db/schema';
 import {sql} from 'drizzle-orm';
-import {createDraftEvent, updateEvent} from '../event';
+import {createDraftEvent, updateEvent, publishEvent} from '../event';
 
 describe('createDraftEvent', () => {
     beforeEach(async () => {
@@ -242,5 +242,33 @@ describe('updateEvent', () => {
         const newDate = '2026-12-31T23:59:59Z';
         const result = await updateEvent(event.id, { eventDate: newDate });
         expect(result.eventDate?.toISOString()).toBe(new Date(newDate).toISOString());
+    });
+});
+
+describe('publishEvent', () => {
+    beforeEach(async () => {
+        await db.execute(sql`TRUNCATE events, ticket_types, orders CASCADE`);
+    });
+
+    it('should publish a DRAFT event with enabled ticket types', async () => {
+        const [event] = await db.insert(events).values({
+            title: 'Tech Conf 2025',
+            slug: 'tech-conf-2025',
+            status: 'DRAFT',
+            totalCapacity: 10,
+        }).returning();
+
+        await db.insert(ticketTypes).values({
+            eventId: event.id,
+            name: 'Early Bird',
+            price: 100,
+            allocation: 10,
+            enabled: true,
+        });
+
+        const result = await publishEvent(event.id);
+
+        expect(result.status).toBe('PUBLISHED');
+        expect(result.id).toBe(event.id);
     });
 });

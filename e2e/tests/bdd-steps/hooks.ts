@@ -17,6 +17,8 @@ export const pageFixture = {
   createdOrder: undefined as any,
   lastResponse: undefined as any,
   lastResponseBody: undefined as any,
+  concurrentRequests: undefined as any,
+  concurrentResults: undefined as any,
 };
 
 export const BASE_URL = 'http://localhost:3000';
@@ -109,6 +111,8 @@ Before(async function () {
   pageFixture.createdOrder = undefined;
   pageFixture.lastResponse = undefined;
   pageFixture.lastResponseBody = undefined;
+  pageFixture.concurrentRequests = undefined;
+  pageFixture.concurrentResults = undefined;
 
   context = await browser.newContext({
     baseURL: BASE_URL,

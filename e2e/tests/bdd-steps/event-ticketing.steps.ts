@@ -89,8 +89,30 @@ Given(
 
 Given(
   'there are {int} active {string} reservations for {string}',
-  async (_count: number, _ticketTypeName: string, _eventTitle: string) => {
-    // Stub: seed reservations in Phase 3.
+  async (count: number, ticketTypeName: string, _eventTitle: string) => {
+    const page = pageFixture.page;
+    const event = pageFixture.createdEvent;
+
+    if (!event?.ticketTypes) {
+      throw new Error('No ticket types found for event');
+    }
+
+    const ticketType = event.ticketTypes.find((tt) => tt.name === ticketTypeName);
+    if (!ticketType) {
+      throw new Error(`Ticket type "${ticketTypeName}" not found`);
+    }
+
+    // Create multiple reservations to simulate existing bookings
+    for (let i = 0; i < count; i++) {
+      await page.request.post('/api/reservations', {
+        data: {
+          eventId: Number.parseInt(event.id, 10),
+          ticketTypeId: ticketType.id,
+          quantity: 1,
+          customerEmail: `user${i}@example.com`,
+        },
+      });
+    }
   }
 );
 
@@ -213,15 +235,73 @@ When(
 
 When(
   'User A requests a reservation for {int} {string} ticket for {string}',
-  async (_qty: number, _ticketTypeName: string, _eventTitle: string) => {
-    // Stub: concurrency test in Phase 3.
+  async (qty: number, ticketTypeName: string, _eventTitle: string) => {
+    const page = pageFixture.page;
+    const event = pageFixture.createdEvent;
+
+    if (!event?.ticketTypes) {
+      throw new Error('No ticket types found for event');
+    }
+
+    const ticketType = event.ticketTypes.find((tt) => tt.name === ticketTypeName);
+    if (!ticketType) {
+      throw new Error(`Ticket type "${ticketTypeName}" not found`);
+    }
+
+    // Store request data for concurrent execution
+    if (!pageFixture.concurrentRequests) {
+      pageFixture.concurrentRequests = [];
+    }
+
+    pageFixture.concurrentRequests.push({
+      user: 'A',
+      data: {
+        eventId: Number.parseInt(event.id, 10),
+        ticketTypeId: ticketType.id,
+        quantity: qty,
+        customerEmail: 'userA@example.com',
+      },
+    });
   }
 );
 
 When(
   'User B requests a reservation for {int} {string} ticket for {string} at the same time',
-  async (_qty: number, _ticketTypeName: string, _eventTitle: string) => {
-    // Stub: concurrency test in Phase 3.
+  async (qty: number, ticketTypeName: string, _eventTitle: string) => {
+    const page = pageFixture.page;
+    const event = pageFixture.createdEvent;
+
+    if (!event?.ticketTypes) {
+      throw new Error('No ticket types found for event');
+    }
+
+    const ticketType = event.ticketTypes.find((tt) => tt.name === ticketTypeName);
+    if (!ticketType) {
+      throw new Error(`Ticket type "${ticketTypeName}" not found`);
+    }
+
+    if (!pageFixture.concurrentRequests) {
+      pageFixture.concurrentRequests = [];
+    }
+
+    pageFixture.concurrentRequests.push({
+      user: 'B',
+      data: {
+        eventId: Number.parseInt(event.id, 10),
+        ticketTypeId: ticketType.id,
+        quantity: qty,
+        customerEmail: 'userB@example.com',
+      },
+    });
+
+    // Execute all concurrent requests simultaneously
+    const results = await Promise.allSettled(
+      pageFixture.concurrentRequests.map((req) =>
+        page.request.post('/api/reservations', {data: req.data})
+      )
+    );
+
+    pageFixture.concurrentResults = results;
   }
 );
 
@@ -246,11 +326,24 @@ Then('the reservation should expire in {int} minutes', async (minutes: number) =
 });
 
 Then('only one reservation request should succeed', async () => {
-  // Stub: verify concurrency behavior in Phase 3.
+  const results = pageFixture.concurrentResults;
+  expect(results).toBeDefined();
+  expect(results.length).toBe(2);
+
+  const succeeded = results.filter((r: any) => r.status === 'fulfilled' && r.value.ok());
+  const failed = results.filter((r: any) => r.status === 'fulfilled' && !r.value.ok());
+
+  expect(succeeded.length).toBe(1);
+  expect(failed.length).toBe(1);
 });
 
-Then('the other request should be rejected with error {string}', async (_message: string) => {
-  // Stub: verify failure in Phase 3.
+Then('the other request should be rejected with error {string}', async (message: string) => {
+  const results = pageFixture.concurrentResults;
+  const failed = results.filter((r: any) => r.status === 'fulfilled' && !r.value.ok());
+
+  expect(failed.length).toBe(1);
+  const errorBody = await failed[0].value.json();
+  expect(errorBody.error).toContain(message);
 });
 
 Then('the availability for {string} should be {int}', async (_ticketType: string, _avail: number) => {

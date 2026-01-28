@@ -2,13 +2,17 @@ import {NextRequest, NextResponse} from 'next/server';
 import {publishEvent} from '@/server/services/event';
 
 /**
- * POST /api/admin/events/:id/publish
- * Publish an event (change status from DRAFT to PUBLISHED)
+ * Handles the POST request to publish an event.
+ *
+ * @param {_request} _request - The incoming request object.
+ * @param {Object} options - An object containing the route parameters.
+ * @param {Promise<{ id: string }>} options.params - A promise resolving to an object with the route parameter `id`.
+ * @return {Promise<NextResponse>} A response containing the event publishing status or an error message.
  */
 export async function POST(
     _request: NextRequest,
     {params}: { params: Promise<{ id: string }> }
-) {
+): Promise<NextResponse> {
     try {
         const {id} = await params;
         const eventId = Number.parseInt(id, 10);

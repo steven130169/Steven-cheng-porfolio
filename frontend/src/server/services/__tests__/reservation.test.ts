@@ -56,7 +56,7 @@ describe('createReservation', () => {
         const now = new Date();
         const expectedExpiry = new Date(now.getTime() + 15 * 60 * 1000);
         const diff = Math.abs(reservation.expiresAt.getTime() - expectedExpiry.getTime());
-        expect(diff).toBeLessThan(1000); // Within 1 second tolerance
+        expect(diff).toBeLessThan(1000); // Within 1-second tolerance
     });
 
     it('should reject reservation when insufficient inventory', async () => {

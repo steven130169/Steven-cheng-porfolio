@@ -2,6 +2,19 @@ import {db} from '@/server/db';
 import {events, ticketTypes} from '@/server/db/schema';
 import {eq, and, isNotNull} from 'drizzle-orm';
 
+/**
+ * Creates a new ticket type for a specified event.
+ *
+ * @param {Object} input - The details of the ticket type to be created.
+ * @param {number} input.eventId - The unique identifier of the event for which the ticket type is being created.
+ * @param {string} input.name - The name of the ticket type.
+ * @param {number} input.price - The price of the ticket type.
+ * @param {number|null} input.allocation - The number of tickets allocated for this type, or `null` for unrestricted allocation.
+ * @param {boolean} input.enabled - A flag indicating whether the ticket type is enabled and available for purchase.
+ * @return {Promise<Object>} Returns a Promise that resolves to the created ticket type object.
+ * @throws {Error} If the specified event does not exist.
+ * @throws {Error} If the total allocation exceeds the event's total capacity.
+ */
 export async function createTicketType(input: {
     eventId: number;
     name: string;
@@ -44,6 +57,12 @@ export async function createTicketType(input: {
     return ticketType;
 }
 
+/**
+ * Calculates the total number of allocated tickets for a given event.
+ *
+ * @param eventId The unique identifier of the event for which the total allocated tickets are to be calculated.
+ * @return A promise that resolves to the total number of allocated tickets for the specified event.
+ */
 export async function getTotalAllocated(eventId: number): Promise<number> {
     const allocatedTicketTypes = await db
         .select()

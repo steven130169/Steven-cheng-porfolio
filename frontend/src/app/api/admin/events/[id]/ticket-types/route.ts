@@ -3,13 +3,20 @@ import {createTicketTypeSchema} from '@/server/validators/event.schema';
 import {createTicketType} from '@/server/services/ticket-type';
 
 /**
- * POST /api/admin/events/:id/ticket-types
- * Add a ticket type to an event
+ * Handles the creation of a new ticket type for a specific event.
+ *
+ * @param {NextRequest} request - The incoming HTTP request object containing the body of the request.
+ * @param {Object} context - The context object containing route parameters.
+ * @param {Promise<{ id: string }>} context.params - A promise resolving to an object with the `id` parameter representing the event ID.
+ * @return {Promise<NextResponse>} A JSON response indicating the result of the operation.
+ * The response includes the created ticket type on success (status 201), an error message for invalid inputs or failed validations (status 400),
+ * or an internal server error message in case of unexpected errors (status 500). Specific error messages are provided for "Event not found" (status 404)
+ * or "Allocations exceed total capacity" (status 400).
  */
 export async function POST(
     request: NextRequest,
     {params}: { params: Promise<{ id: string }> }
-) {
+): Promise<NextResponse> {
     try {
         const {id} = await params;
         const eventId = Number.parseInt(id, 10);

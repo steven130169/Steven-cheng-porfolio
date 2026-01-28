@@ -5,7 +5,14 @@ import {eq, and, sum} from 'drizzle-orm';
 
 const RESERVATION_EXPIRY_MINUTES = 15;
 
-export async function createReservation(input: CreateReservationInput) {
+/**
+ * Creates a reservation for a specified event and ticket type, locking inventory to prevent race conditions.
+ *
+ * @param {CreateReservationInput} input - The input data required to create a reservation. Includes event ID, ticket type ID, quantity, and customer email.
+ * @return {Promise<object>} A promise that resolves to the created reservation object.
+ * @throws {Error} If the ticket type or event is not found, or if there is insufficient inventory available.
+ */
+export async function createReservation(input: CreateReservationInput): Promise<typeof reservations.$inferInsert> {
     const validatedData = createReservationSchema.parse(input);
 
     return await db.transaction(async (tx) => {
@@ -32,7 +39,7 @@ export async function createReservation(input: CreateReservationInput) {
             throw new Error('Event not found');
         }
 
-        // Calculate available inventory within transaction
+        // Calculate available inventory within a transaction
         const [result] = await tx
             .select({total: sum(reservations.quantity)})
             .from(reservations)

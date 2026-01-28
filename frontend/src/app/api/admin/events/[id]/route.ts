@@ -2,14 +2,23 @@ import {NextRequest, NextResponse} from 'next/server';
 import {updateEventSchema} from '@/server/validators/event.schema';
 import {updateEvent} from '@/server/services/event';
 
+
 /**
- * PATCH /api/admin/events/[id]
- * Update an existing event
+ * Handles an HTTP PATCH request to update an event based on the provided event ID and request body.
+ *
+ * @param {NextRequest} request - The incoming HTTP request containing the event data to update.
+ * @param {Object} options - An object containing additional parameters.
+ * @param {Promise<{ id: string }>} options.params - A promise resolving to an object containing the event ID as a string.
+ * @return {Promise<NextResponse>} A response indicating the outcome of the operation:
+ * - 200: Updated event data if the operation succeeds.
+ * - 400: Validation or business logic error, such as invalid input or constraints violations.
+ * - 404: Event not found.
+ * - 500: Internal server error in case of unexpected issues.
  */
 export async function PATCH(
     request: NextRequest,
     {params}: { params: Promise<{ id: string }> }
-) {
+): Promise<NextResponse> {
     try {
         // Parse and validate event ID
         const {id} = await params;

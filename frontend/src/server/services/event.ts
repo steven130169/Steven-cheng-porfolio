@@ -10,7 +10,13 @@ import slugify from 'slugify';
 import {and, eq, ne} from 'drizzle-orm';
 import {getTotalAllocated} from '@/server/services/ticket-type';
 
-export async function createDraftEvent(input: CreateEventInput) {
+/**
+ * Creates a draft event by validating input data, generating a unique slug, and inserting the event into the database.
+ *
+ * @param {CreateEventInput} input - The input data for creating the draft event, including title, description, status, total capacity, and optional event date.
+ * @return {Promise<Object>} A promise that resolves to the created draft event object.
+ */
+export async function createDraftEvent(input: CreateEventInput): Promise<typeof events.$inferInsert> {
     // Validate input
     const validatedData = createEventSchema.parse(input);
 
@@ -51,6 +57,15 @@ async function validateCapacityUpdate(
     }
 }
 
+/**
+ * Validates the uniqueness of a slug generated from the provided title and event ID
+ * and returns the generated slug if it is unique.
+ *
+ * @param {string} title - The title from which the slug is generated.
+ * @param {number} [eventId] - The optional ID of the event, used to exclude the current event from uniqueness validation.
+ * @return {Promise<string>} A promise that resolves to the generated unique slug.
+ * @throws {Error} If a slug generated from the title already exists for another event.
+ */
 async function validateAndGenerateSlug(title: string, eventId?: number): Promise<string> {
     const newSlug = slugify(title, {lower: true, strict: true});
 
@@ -72,7 +87,15 @@ async function validateAndGenerateSlug(title: string, eventId?: number): Promise
     return newSlug;
 }
 
-export async function updateEvent(eventId: number, input: UpdateEventInput) {
+/**
+ * Updates the details of an existing event.
+ *
+ * @param {number} eventId - The unique identifier of the event to update.
+ * @param {UpdateEventInput} input - An object containing the updated event details.
+ * @return {Promise<Object>} A promise that resolves to the updated event object.
+ * @throws {Error} Throws an error if the event is not found or if the input is invalid.
+ */
+export async function updateEvent(eventId: number, input: UpdateEventInput): Promise<typeof events.$inferInsert> {
     const validatedData = updateEventSchema.parse(input);
 
     const [event] = await db
@@ -116,7 +139,16 @@ export async function updateEvent(eventId: number, input: UpdateEventInput) {
     return updatedEvent;
 }
 
-export async function publishEvent(eventId: number) {
+/**
+ * Publishes an event by updating its status to "PUBLISHED".
+ * The event must exist and have at least one enabled ticket type to be published.
+ *
+ * @param {number} eventId - The unique identifier of the event to be published.
+ * @return {Promise<object>} A promise that resolves to the updated event object after publishing.
+ * @throws {Error} If the event does not exist.
+ * @throws {Error} If there are no enabled ticket types for the event.
+ */
+export async function publishEvent(eventId: number): Promise<typeof events.$inferInsert> {
     const [event] = await db
         .select()
         .from(events)

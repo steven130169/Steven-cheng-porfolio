@@ -2,11 +2,21 @@ import {NextRequest, NextResponse} from 'next/server';
 import {createEventSchema} from '@/server/validators/event.schema';
 import {createDraftEvent} from '@/server/services/event';
 
+
 /**
- * POST /api/admin/events
- * Create a new draft event
+ * Handles the HTTP POST request for creating a new draft event.
+ *
+ * This method parses the incoming request body, validates the input against a defined schema,
+ * and attempts to create a draft event. It returns appropriate responses based on the outcome
+ * of the operation, including validation and server errors.
+ *
+ * @param {NextRequest} request - The request object containing the HTTP POST data.
+ * @return {Promise<NextResponse>} A response object with the status and payload:
+ * - 201: Contains the successfully created draft event data.
+ * - 400: Contains error details for validation or duplicate event title issues.
+ * - 500: Contains a generic error message for unexpected server issues.
  */
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<NextResponse> {
     try {
         const body = await request.json() as unknown;
 

@@ -13,6 +13,8 @@ let frontendProcess: ChildProcess | undefined; // Only frontend process now
 export const pageFixture = {
   page: undefined as unknown as playwright.Page,
   createdEvent: undefined as any,
+  createdReservation: undefined as any,
+  createdOrder: undefined as any,
   lastResponse: undefined as any,
   lastResponseBody: undefined as any,
 };
@@ -103,6 +105,8 @@ BeforeAll(async function () {
 Before(async function () {
   // Reset fixture state to prevent leaking between scenarios
   pageFixture.createdEvent = undefined;
+  pageFixture.createdReservation = undefined;
+  pageFixture.createdOrder = undefined;
   pageFixture.lastResponse = undefined;
   pageFixture.lastResponseBody = undefined;
 

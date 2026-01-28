@@ -96,8 +96,30 @@ Given(
 
 Given(
   'I have an active reservation for {int} {string} ticket for {string}',
-  async (_qty: number, _ticketTypeName: string, _eventTitle: string) => {
-    // Stub: create reservation in Phase 3.
+  async (qty: number, ticketTypeName: string, eventTitle: string) => {
+    const page = pageFixture.page;
+    const event = pageFixture.createdEvent;
+
+    if (!event?.ticketTypes) {
+      throw new Error('No ticket types found for event');
+    }
+
+    const ticketType = event.ticketTypes.find((tt) => tt.name === ticketTypeName);
+    if (!ticketType) {
+      throw new Error(`Ticket type "${ticketTypeName}" not found`);
+    }
+
+    const response = await page.request.post('/api/reservations', {
+      data: {
+        eventId: Number.parseInt(event.id, 10),
+        ticketTypeId: ticketType.id,
+        quantity: qty,
+        customerEmail: 'test@example.com',
+      },
+    });
+
+    expect(response.ok()).toBeTruthy();
+    pageFixture.createdReservation = await response.json();
   }
 );
 
@@ -158,11 +180,34 @@ Then(
 // --- Reservation ---
 When(
   'I request a reservation for {int} {string} tickets for {string}',
-  async (_qty: number, _ticketTypeName: string, _eventTitle: string) => {
-    // Stub: call reservation endpoint in Phase 3.
-    // Set mock response so shared Then steps don't crash
-    pageFixture.lastResponse = { ok: () => false, status: () => 400 };
-    pageFixture.lastResponseBody = { error: 'Insufficient Inventory' };
+  async (qty: number, ticketTypeName: string, _eventTitle: string) => {
+    const page = pageFixture.page;
+    const event = pageFixture.createdEvent;
+
+    if (!event?.ticketTypes) {
+      throw new Error('No ticket types found for event');
+    }
+
+    const ticketType = event.ticketTypes.find((tt) => tt.name === ticketTypeName);
+    if (!ticketType) {
+      throw new Error(`Ticket type "${ticketTypeName}" not found`);
+    }
+
+    const response = await page.request.post('/api/reservations', {
+      data: {
+        eventId: Number.parseInt(event.id, 10),
+        ticketTypeId: ticketType.id,
+        quantity: qty,
+        customerEmail: 'test@example.com',
+      },
+    });
+
+    pageFixture.lastResponse = response;
+    pageFixture.lastResponseBody = await response.json();
+
+    if (response.ok()) {
+      pageFixture.createdReservation = pageFixture.lastResponseBody;
+    }
   }
 );
 
@@ -181,11 +226,23 @@ When(
 );
 
 Then('the reservation should be created', async () => {
-  // Stub: verify reservation exists in Phase 3.
+  const response = pageFixture.lastResponse;
+  expect(response.ok()).toBeTruthy();
+  expect(pageFixture.createdReservation).toBeDefined();
+  expect(pageFixture.createdReservation.status).toBe('ACTIVE');
 });
 
-Then('the reservation should expire in {int} minutes', async (_minutes: number) => {
-  // Stub: verify expiresAt in Phase 3.
+Then('the reservation should expire in {int} minutes', async (minutes: number) => {
+  const reservation = pageFixture.createdReservation;
+  expect(reservation).toBeDefined();
+
+  const expiresAt = new Date(reservation.expiresAt);
+  const now = new Date();
+  const expectedExpiry = new Date(now.getTime() + minutes * 60 * 1000);
+
+  // Allow 5-second tolerance
+  const diff = Math.abs(expiresAt.getTime() - expectedExpiry.getTime());
+  expect(diff).toBeLessThan(5000);
 });
 
 Then('only one reservation request should succeed', async () => {
@@ -202,39 +259,73 @@ Then('the availability for {string} should be {int}', async (_ticketType: string
 
 // --- Checkout / payment ---
 When('I open the checkout page for my reservation', async () => {
-  // Stub
+  // Stub: UI page not implemented yet
 });
 
 Then('I should see the reservation expiry time', async () => {
-  // Stub
+  // Stub: UI page not implemented yet
 });
 
 When('my payment succeeds for the reservation', async () => {
-  // Stub
+  const page = pageFixture.page;
+  const reservation = pageFixture.createdReservation;
+
+  if (!reservation) {
+    throw new Error('No reservation found');
+  }
+
+  // Create order from reservation (simulating payment success)
+  const response = await page.request.post('/api/orders', {
+    data: {
+      reservationId: reservation.id,
+    },
+  });
+
+  pageFixture.lastResponse = response;
+  pageFixture.lastResponseBody = await response.json();
+
+  if (response.ok()) {
+    pageFixture.createdOrder = pageFixture.lastResponseBody;
+  }
 });
 
 When('my payment fails for the reservation', async () => {
-  // Stub
+  // Stub: simulate payment failure
 });
 
 Then('an order should be created for {string}', async (_eventTitle: string) => {
-  // Stub
+  expect(pageFixture.createdOrder).toBeDefined();
+  expect(pageFixture.createdOrder.id).toBeDefined();
 });
 
 Then('the reservation should be marked as consumed', async () => {
-  // Stub
+  const page = pageFixture.page;
+  const reservation = pageFixture.createdReservation;
+
+  const response = await page.request.get(`/api/reservations/${reservation.id}`);
+  expect(response.ok()).toBeTruthy();
+
+  const updatedReservation = await response.json();
+  expect(updatedReservation.status).toBe('CONSUMED');
 });
 
-Then('the order status should be {string}', async (_status: string) => {
-  // Stub
+Then('the order status should be {string}', async (status: string) => {
+  expect(pageFixture.createdOrder.status).toBe(status);
 });
 
 Then('I should be allowed to retry payment', async () => {
-  // Stub
+  // Stub: UI retry flow not implemented yet
 });
 
 Then('the reservation should remain active', async () => {
-  // Stub
+  const page = pageFixture.page;
+  const reservation = pageFixture.createdReservation;
+
+  const response = await page.request.get(`/api/reservations/${reservation.id}`);
+  expect(response.ok()).toBeTruthy();
+
+  const updatedReservation = await response.json();
+  expect(updatedReservation.status).toBe('ACTIVE');
 });
 
 // --- Time ---

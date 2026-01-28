@@ -7,7 +7,7 @@ vi.mock('@/server/db', async () => {
 
 import {createReservation} from '../reservation';
 import {db} from '@/server/db';
-import {events, ticketTypes} from '@/server/db/schema';
+import {events, ticketTypes, reservations} from '@/server/db/schema';
 import {sql} from 'drizzle-orm';
 
 describe('createReservation', () => {
@@ -57,5 +57,28 @@ describe('createReservation', () => {
         const expectedExpiry = new Date(now.getTime() + 15 * 60 * 1000);
         const diff = Math.abs(reservation.expiresAt.getTime() - expectedExpiry.getTime());
         expect(diff).toBeLessThan(1000); // Within 1 second tolerance
+    });
+
+    it('should reject reservation when insufficient inventory', async () => {
+        // Create 9 existing reservations (only 1 left)
+        for (let i = 0; i < 9; i++) {
+            await db.insert(reservations).values({
+                eventId: testEventId,
+                ticketTypeId: testTicketTypeId,
+                quantity: 1,
+                customerEmail: `user${i}@example.com`,
+                status: 'ACTIVE',
+                expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+            });
+        }
+
+        const input = {
+            eventId: testEventId,
+            ticketTypeId: testTicketTypeId,
+            quantity: 2,
+            customerEmail: 'test@example.com',
+        };
+
+        await expect(createReservation(input)).rejects.toThrow('Insufficient Inventory');
     });
 });

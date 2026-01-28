@@ -130,7 +130,7 @@ mcp__jetbrains__get_file_text_by_path({
     projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
 });
 
-// Step 2: Read workspace package.json files to understand workspace-specific dependencies
+// Step 2: Read workspace package.json files to understand frontend dependencies
 mcp__jetbrains__get_file_text_by_path({
     pathInProject: 'frontend/package.json',
     projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
@@ -143,7 +143,7 @@ mcp__jetbrains__list_directory_tree({
     projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'
 });
 
-// Step 4: Read workspace package.json files to understand workspace-specific dependencies
+// Step 4: Read workspace package.json files to understand e2e dependencies
 mcp__jetbrains__get_file_text_by_path({
     pathInProject: 'e2e/package.json',
     projectPath: '/Users/stevencheng/codebase/Steven-cheng-porfolio'

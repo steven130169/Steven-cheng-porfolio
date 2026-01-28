@@ -13,21 +13,32 @@ Given(
   async (eventTitle: string, totalCapacity: number, status: string) => {
     const page = pageFixture.page;
 
-    // Create real event via API
-    const response = await page.request.post('/api/admin/events', {
-      data: {
-        title: eventTitle,
-        slug: eventTitle.toLowerCase().replace(/\s+/g, '-'),
-        status,
-        totalCapacity,
-      },
-      headers: {
-        'Authorization': `Bearer ${process.env.ADMIN_API_KEY || 'test-admin-key'}`,
-      },
+    // Create unique title to avoid slug conflicts
+    const uniqueTitle = `${eventTitle} ${Date.now()}`;
+
+    // Create event via admin API
+    const createResponse = await page.request.post('/api/admin/events', {
+      data: {title: uniqueTitle, totalCapacity},
+      headers: {'Authorization': `Bearer ${process.env.ADMIN_API_KEY || 'test-admin-key'}`}
     });
 
-    expect(response.ok()).toBeTruthy();
-    pageFixture.createdEvent = await response.json();
+    if (!createResponse.ok()) {
+      const errorBody = await createResponse.text();
+      console.error('API Error Response:', createResponse.status(), errorBody);
+    }
+
+    expect(createResponse.ok()).toBeTruthy();
+    const createdEvent = await createResponse.json();
+
+    // If status is PUBLISHED, we need to publish the event (requires ticket type first)
+    if (status === 'PUBLISHED') {
+      // Note: Ticket types will be added in subsequent Background steps
+      // Status will be set to PUBLISHED after ticket types are added
+      createdEvent.pendingStatus = 'PUBLISHED';
+    }
+
+    pageFixture.createdEvent = createdEvent;
+    pageFixture.createdEvent.originalTitle = eventTitle;
   }
 );
 
@@ -97,6 +108,17 @@ Given(
         pageFixture.createdEvent.ticketTypes = [];
       }
       pageFixture.createdEvent.ticketTypes.push(ticketType);
+
+      // If this event should be PUBLISHED and has at least one ticket type, publish it now
+      if (event.pendingStatus === 'PUBLISHED') {
+        const publishResponse = await page.request.post(
+          `/api/admin/events/${event.id}/publish`,
+          {headers: {'Authorization': `Bearer ${process.env.ADMIN_API_KEY || 'test-admin-key'}`}}
+        );
+        expect(publishResponse.ok()).toBeTruthy();
+        pageFixture.createdEvent.status = 'PUBLISHED';
+        delete pageFixture.createdEvent.pendingStatus;
+      }
     }
   }
 );

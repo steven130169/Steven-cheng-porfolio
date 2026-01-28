@@ -1,5 +1,5 @@
 import {Given, When, Then} from '@cucumber/cucumber';
-import {pageFixture} from './hooks';
+import {pageFixture} from './hooks.ts';
 import {expect} from '@playwright/test';
 
 /**

@@ -509,7 +509,18 @@ mcp__wallaby__wallaby_runtimeValuesByTest({
 
 Before every `git commit`, **always** run:
 
+```bash
+git status # Step 1: Check for uncommitted changes
+```
+
 ```typescript
+//Step 2: reformat ALL changed files
+mcp__jetbrains__reformat_file({path: '<Changes file path>', projectPath: '...'});
+
+//Step 3: Check for code problems of ALL changed files
+mcp__jetbrains__get_file_problems({filePath: '<Changed file path>', errorsOnly: false, projectPath: '...'});
+
+//Step 4: check failing tests list (use Wallaby MCP)
 // ✅ CORRECT: Use Wallaby to verify all tests pass
 mcp__wallaby__wallaby_failingTests();
 // Expected: empty failing tests list

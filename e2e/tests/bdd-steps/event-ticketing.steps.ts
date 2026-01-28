@@ -4,35 +4,30 @@ import { expect } from '@playwright/test';
 
 /**
  * Event Ticketing BDD Steps
- * Uses Playwright route mocking to intercept API calls
+ * Uses real API calls to test reservation flow
  */
-
-// Store mock data in World context
-interface EventData {
-  id: string;
-  title: string;
-  totalCapacity: number;
-  status: string;
-  ticketTypes: Array<{
-    name: string;
-    price: number;
-    allocation: number | null;
-  }>;
-}
-
-export let mockEventData: EventData | null = null;
 
 // --- Data setup ---
 Given(
   'an event {string} exists with total capacity {int} and status {string}',
   async (eventTitle: string, totalCapacity: number, status: string) => {
-    mockEventData = {
-      id: '1',
-      title: eventTitle,
-      totalCapacity,
-      status,
-      ticketTypes: [],
-    };
+    const page = pageFixture.page;
+
+    // Create real event via API
+    const response = await page.request.post('/api/admin/events', {
+      data: {
+        title: eventTitle,
+        slug: eventTitle.toLowerCase().replace(/\s+/g, '-'),
+        status,
+        totalCapacity,
+      },
+      headers: {
+        'Authorization': `Bearer ${process.env.ADMIN_API_KEY || 'test-admin-key'}`,
+      },
+    });
+
+    expect(response.ok()).toBeTruthy();
+    pageFixture.createdEvent = await response.json();
   }
 );
 
@@ -77,12 +72,31 @@ Given(
 Given(
   'the event has an enabled ticket type {string} with price {int} and no allocation',
   async (ticketTypeName: string, price: number) => {
-    if (mockEventData) {
-      mockEventData.ticketTypes.push({
-        name: ticketTypeName,
-        price,
-        allocation: null,
-      });
+    if (pageFixture.createdEvent?.id) {
+      const page = pageFixture.page;
+      const event = pageFixture.createdEvent;
+
+      const response = await page.request.post(
+        `/api/admin/events/${event.id}/ticket-types`,
+        {
+          data: {
+            name: ticketTypeName,
+            price: price,
+            allocation: null,
+            enabled: true,
+          },
+          headers: {
+            'Authorization': `Bearer ${process.env.ADMIN_API_KEY || 'test-admin-key'}`,
+          },
+        }
+      );
+      expect(response.ok()).toBeTruthy();
+      const ticketType = await response.json();
+
+      if (!pageFixture.createdEvent.ticketTypes) {
+        pageFixture.createdEvent.ticketTypes = [];
+      }
+      pageFixture.createdEvent.ticketTypes.push(ticketType);
     }
   }
 );
@@ -155,31 +169,6 @@ Given(
 // --- Browse / view ---
 When('I browse events', async () => {
   const page = pageFixture.page;
-
-  // Mock the /api/events endpoint
-  await page.route('**/api/events', async (route) => {
-    if (route.request().method() === 'GET') {
-      const events = mockEventData ? [
-        {
-          id: mockEventData.id,
-          title: mockEventData.title,
-          role: 'Conference',
-          date: '2025',
-          description: `A ${mockEventData.status.toLowerCase()} event with ${mockEventData.totalCapacity} capacity`,
-          tags: ['Tech'],
-          status: mockEventData.status,
-        }
-      ] : [];
-
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(events),
-      });
-    } else {
-      await route.continue();
-    }
-  });
 
   // Navigate to homepage which contains the events section
   await page.goto('/');

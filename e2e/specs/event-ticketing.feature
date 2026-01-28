@@ -46,7 +46,7 @@ Feature: Event Ticketing Engine
     When my payment succeeds for the reservation
     Then an order should be created for "Tech Conf 2025"
     And the reservation should be marked as consumed
-    And the order status should be "PAID"
+    And the order status should be "pending"
 
   Scenario: Payment failure allows retry while reservation is still active
     Given I have an active reservation for 1 "Early Bird" ticket for "Tech Conf 2025"

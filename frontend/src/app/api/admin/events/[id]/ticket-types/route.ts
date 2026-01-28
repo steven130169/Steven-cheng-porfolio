@@ -33,7 +33,7 @@ export async function POST(
         // Validate input
         const validatedData = createTicketTypeSchema.parse(body);
 
-        // Create ticket type using service
+        // Create a ticket type using service
         const ticketType = await createTicketType({
             eventId,
             name: validatedData.name,

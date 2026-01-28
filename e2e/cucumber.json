@@ -2,9 +2,6 @@
   "default": {
     "import": [
       "tests/bdd-steps/**/*.ts"
-    ],
-    "paths": [
-      "specs/**/*.feature"
     ]
   }
 }

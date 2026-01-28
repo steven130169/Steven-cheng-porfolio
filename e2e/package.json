@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test:bdd": "NODE_OPTIONS='--import tsx' cucumber-js -c cucumber.json",
+    "test:bdd": "NODE_OPTIONS='--import tsx' cucumber-js specs/**/*.feature -c cucumber.json",
     "test:bdd:dry": "NODE_OPTIONS='--import tsx' cucumber-js -c cucumber.json --dry-run --format progress",
     "test:e2e": "playwright test"
   },

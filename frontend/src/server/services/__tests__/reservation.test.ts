@@ -5,7 +5,7 @@ vi.mock('@/server/db', async () => {
     return createTestDb();
 });
 
-import {createReservation} from '../reservation';
+import {createReservation, getReservationById, markReservationConsumed} from '../reservation';
 import {db} from '@/server/db';
 import {events, ticketTypes, reservations} from '@/server/db/schema';
 import {sql} from 'drizzle-orm';
@@ -122,5 +122,102 @@ describe('createReservation', () => {
         if (failures[0].status === 'rejected') {
             expect((failures[0].reason as Error).message).toContain('Insufficient Inventory');
         }
+    });
+});
+
+describe('getReservationById', () => {
+    let testEventId: number;
+    let testTicketTypeId: number;
+
+    beforeEach(async () => {
+        // Cleanup
+        await db.execute(sql`TRUNCATE events, ticket_types, orders, reservations CASCADE`);
+
+        // Seed test data
+        const [event] = await db.insert(events).values({
+            title: 'Test Event',
+            slug: 'test-event',
+            status: 'PUBLISHED',
+            totalCapacity: 10,
+        }).returning();
+        testEventId = event.id;
+
+        const [ticketType] = await db.insert(ticketTypes).values({
+            eventId: testEventId,
+            name: 'Early Bird',
+            price: 100,
+            allocation: 10,
+            enabled: true,
+        }).returning();
+        testTicketTypeId = ticketType.id;
+    });
+
+    it('should return reservation by id', async () => {
+        const [reservation] = await db.insert(reservations).values({
+            eventId: testEventId,
+            ticketTypeId: testTicketTypeId,
+            quantity: 2,
+            customerEmail: 'test@example.com',
+            status: 'ACTIVE',
+            expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+        }).returning();
+
+        const result = await getReservationById(reservation.id);
+
+        expect(result).toBeDefined();
+        expect(result?.id).toBe(reservation.id);
+        expect(result?.status).toBe('ACTIVE');
+    });
+
+    it('should return null when reservation not found', async () => {
+        const result = await getReservationById(99_999);
+        expect(result).toBeNull();
+    });
+});
+
+describe('markReservationConsumed', () => {
+    let testEventId: number;
+    let testTicketTypeId: number;
+
+    beforeEach(async () => {
+        // Cleanup
+        await db.execute(sql`TRUNCATE events, ticket_types, orders, reservations CASCADE`);
+
+        // Seed test data
+        const [event] = await db.insert(events).values({
+            title: 'Test Event',
+            slug: 'test-event',
+            status: 'PUBLISHED',
+            totalCapacity: 10,
+        }).returning();
+        testEventId = event.id;
+
+        const [ticketType] = await db.insert(ticketTypes).values({
+            eventId: testEventId,
+            name: 'Early Bird',
+            price: 100,
+            allocation: 10,
+            enabled: true,
+        }).returning();
+        testTicketTypeId = ticketType.id;
+    });
+
+    it('should mark reservation as consumed', async () => {
+        const [reservation] = await db.insert(reservations).values({
+            eventId: testEventId,
+            ticketTypeId: testTicketTypeId,
+            quantity: 2,
+            customerEmail: 'test@example.com',
+            status: 'ACTIVE',
+            expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+        }).returning();
+
+        const updated = await markReservationConsumed(reservation.id);
+
+        expect(updated.status).toBe('CONSUMED');
+    });
+
+    it('should throw error when reservation not found', async () => {
+        await expect(markReservationConsumed(99_999)).rejects.toThrow('Reservation not found');
     });
 });

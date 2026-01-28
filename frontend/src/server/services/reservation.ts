@@ -77,3 +77,46 @@ export async function createReservation(input: CreateReservationInput): Promise<
         return reservation;
     });
 }
+
+/**
+ * Retrieves a reservation by its ID.
+ *
+ * @param {number} reservationId - The unique identifier of the reservation to retrieve.
+ * @return {Promise<object | null>} A promise that resolves to the reservation object if found, or null if not found.
+ */
+export async function getReservationById(reservationId: number) {
+    const [reservation] = await db
+        .select()
+        .from(reservations)
+        .where(eq(reservations.id, reservationId))
+        .limit(1);
+
+    return reservation ?? null;
+}
+
+/**
+ * Marks a reservation as consumed (i.e., converted into an order).
+ *
+ * @param {number} reservationId - The unique identifier of the reservation to mark as consumed.
+ * @return {Promise<object>} A promise that resolves to the updated reservation object with status 'CONSUMED'.
+ * @throws {Error} If the reservation with the given ID is not found.
+ */
+export async function markReservationConsumed(reservationId: number) {
+    const [reservation] = await db
+        .select()
+        .from(reservations)
+        .where(eq(reservations.id, reservationId))
+        .limit(1);
+
+    if (!reservation) {
+        throw new Error('Reservation not found');
+    }
+
+    const [updated] = await db
+        .update(reservations)
+        .set({status: 'CONSUMED'})
+        .where(eq(reservations.id, reservationId))
+        .returning();
+
+    return updated;
+}

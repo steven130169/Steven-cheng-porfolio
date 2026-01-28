@@ -18,12 +18,8 @@ This project uses **NPM Workspaces**. Commands often need workspace targeting:
 
 ```bash
 npm run dev -w frontend          # Run dev server in frontend workspace
-npm run test:unit -w frontend    # Run unit tests in frontend workspace
-npm run test:bdd -w e2e          # Run BDD tests in e2e workspace
 ```
-
 **Workspaces:**
-
 - `frontend/` - Next.js Monolith (App Router, TypeScript, React 19)
 - `e2e/` - Playwright and Cucumber tests
 
@@ -56,11 +52,13 @@ npm run start:frontend           # Alternative command
 
 ### Testing (Three-Tier Strategy)
 
-```bash
-npm run test                     # Runs ALL tests sequentially (unit → e2e → bdd)
-npm run test:frontend:unit       # Vitest unit tests only
-npm run test:e2e                 # Playwright E2E smoke tests
-npm run test:bdd                 # Cucumber BDD feature tests
+```typescript
+// Run all unit tests
+mcp__wallaby__wallaby_allTests();
+// Playwright E2E tests
+mcp__jetbrains__execute_run_configuration({configurationName: 'Playwright All Tests', projectPath: '...'})
+//Cucumber BDD feature tests
+mcp__jetbrains__execute_run_configuration({configurationName: 'Cucumber All Tests', projectPath: '...'})
 ```
 
 **Testing Philosophy**: "Test Behavior, Not Implementation"
@@ -71,9 +69,12 @@ npm run test:bdd                 # Cucumber BDD feature tests
 
 **Running Specific Tests**:
 
+```typescript
+//Single unit test file
+mcp__wallaby__wallaby_allTestsForFile();
+```
+
 ```bash
-cd frontend && npm run test:unit -- <file-path>           # Single unit test file
-cd frontend && npm run test:unit -- --watch               # Watch mode
 npm run test:e2e -- --headed                              # E2E with visible browser
 npm run test:e2e -- --ui                                  # Playwright UI mode
 ```
@@ -82,7 +83,17 @@ npm run test:e2e -- --ui                                  # Playwright UI mode
 
 ```bash
 npm run build -w frontend        # Next.js production build (also type checks)
-npm run lint -w frontend         # ESLint
+```
+```typescript
+// Run IDE inspections on a file
+mcp__jetbrains__get_file_problems({
+    filePath: '<Changed file path>',
+    errorsOnly: false,
+    projectPath: '...'
+});
+
+// Format file per project code style
+mcp__jetbrains__reformat_file({path: '<Changed file path>', projectPath: '...'});
 ```
 
 **Type Checking**: Run `npm run build` - Next.js build performs TypeScript compilation, catching type errors.
@@ -393,7 +404,7 @@ mcp__wallaby__wallaby_failingTests();
 ```
 
 **DO NOT** skip Wallaby and fall back to CLI tests (`npm run test:unit`) without first attempting to start Wallaby
-through the above steps. CLI is only acceptable after confirming Wallaby cannot be started.
+through the above steps. If mcp__wallaby__wallaby_failingTests fails, repeat the entire sequence (Steps 1–3) up to 2 times. If it still fails, you MUST STOP the agent.
 
 ### Why Wallaby MCP Over CLI
 
@@ -513,8 +524,6 @@ CLI test commands (`npm run test:unit`, `npm run test:bdd`, `npm run test:e2e`) 
 situations:
 
 - **CI/CD pipelines** (no IDE available)
-- **BDD/E2E tests** (Wallaby covers unit tests only; Playwright/Cucumber tests still use CLI)
-- **Wallaby MCP is confirmed unavailable** (tool calls return errors)
 
 ### Security Boundaries
 

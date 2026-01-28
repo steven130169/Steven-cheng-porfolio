@@ -5,70 +5,68 @@ import {eq, and, sum} from 'drizzle-orm';
 
 const RESERVATION_EXPIRY_MINUTES = 15;
 
-async function getAvailableInventory(eventId: number, ticketTypeId: number): Promise<number> {
-    // Get ticket type allocation
-    const [ticketType] = await db
-        .select()
-        .from(ticketTypes)
-        .where(eq(ticketTypes.id, ticketTypeId))
-        .limit(1);
-
-    if (!ticketType) {
-        throw new Error('Ticket type not found');
-    }
-
-    // Get event total capacity
-    const [event] = await db
-        .select()
-        .from(events)
-        .where(eq(events.id, eventId))
-        .limit(1);
-
-    if (!event) {
-        throw new Error('Event not found');
-    }
-
-    // Calculate reserved quantity (ACTIVE reservations only)
-    const [result] = await db
-        .select({total: sum(reservations.quantity)})
-        .from(reservations)
-        .where(
-            and(
-                eq(reservations.eventId, eventId),
-                eq(reservations.status, 'ACTIVE')
-            )
-        );
-
-    const totalReserved = Number(result.total) || 0;
-
-    // Available = MIN(ticket allocation, event capacity) - reserved
-    const capacity = ticketType.allocation ?? event.totalCapacity;
-    return Math.max(0, capacity - totalReserved);
-}
-
 export async function createReservation(input: CreateReservationInput) {
     const validatedData = createReservationSchema.parse(input);
 
-    // Check inventory availability
-    const available = await getAvailableInventory(validatedData.eventId, validatedData.ticketTypeId);
-    if (available < validatedData.quantity) {
-        throw new Error('Insufficient Inventory');
-    }
+    return await db.transaction(async (tx) => {
+        // Lock the ticket type row to prevent race conditions
+        const [ticketType] = await tx
+            .select()
+            .from(ticketTypes)
+            .where(eq(ticketTypes.id, validatedData.ticketTypeId))
+            .for('update') // Pessimistic lock
+            .limit(1);
 
-    const now = new Date();
-    const expiresAt = new Date(now.getTime() + RESERVATION_EXPIRY_MINUTES * 60 * 1000);
+        if (!ticketType) {
+            throw new Error('Ticket type not found');
+        }
 
-    const [reservation] = await db
-        .insert(reservations)
-        .values({
-            eventId: validatedData.eventId,
-            ticketTypeId: validatedData.ticketTypeId,
-            quantity: validatedData.quantity,
-            customerEmail: validatedData.customerEmail,
-            status: 'ACTIVE',
-            expiresAt,
-        })
-        .returning();
+        // Get event
+        const [event] = await tx
+            .select()
+            .from(events)
+            .where(eq(events.id, validatedData.eventId))
+            .limit(1);
 
-    return reservation;
+        if (!event) {
+            throw new Error('Event not found');
+        }
+
+        // Calculate available inventory within transaction
+        const [result] = await tx
+            .select({total: sum(reservations.quantity)})
+            .from(reservations)
+            .where(
+                and(
+                    eq(reservations.eventId, validatedData.eventId),
+                    eq(reservations.status, 'ACTIVE')
+                )
+            );
+
+        const totalReserved = Number(result.total) || 0;
+        const capacity = ticketType.allocation ?? event.totalCapacity;
+        const available = Math.max(0, capacity - totalReserved);
+
+        if (available < validatedData.quantity) {
+            throw new Error('Insufficient Inventory');
+        }
+
+        // Create reservation
+        const now = new Date();
+        const expiresAt = new Date(now.getTime() + RESERVATION_EXPIRY_MINUTES * 60 * 1000);
+
+        const [reservation] = await tx
+            .insert(reservations)
+            .values({
+                eventId: validatedData.eventId,
+                ticketTypeId: validatedData.ticketTypeId,
+                quantity: validatedData.quantity,
+                customerEmail: validatedData.customerEmail,
+                status: 'ACTIVE',
+                expiresAt,
+            })
+            .returning();
+
+        return reservation;
+    });
 }

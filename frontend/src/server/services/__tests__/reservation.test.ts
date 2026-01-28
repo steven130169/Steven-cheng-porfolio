@@ -81,4 +81,46 @@ describe('createReservation', () => {
 
         await expect(createReservation(input)).rejects.toThrow('Insufficient Inventory');
     });
+
+    it('should prevent concurrent reservations from overselling (race condition)', async () => {
+        // Only 1 ticket available
+        await db.insert(reservations).values({
+            eventId: testEventId,
+            ticketTypeId: testTicketTypeId,
+            quantity: 9,
+            customerEmail: 'existing@example.com',
+            status: 'ACTIVE',
+            expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+        });
+
+        const input1 = {
+            eventId: testEventId,
+            ticketTypeId: testTicketTypeId,
+            quantity: 1,
+            customerEmail: 'userA@example.com',
+        };
+
+        const input2 = {
+            eventId: testEventId,
+            ticketTypeId: testTicketTypeId,
+            quantity: 1,
+            customerEmail: 'userB@example.com',
+        };
+
+        // Simulate concurrent requests
+        const results = await Promise.allSettled([
+            createReservation(input1),
+            createReservation(input2),
+        ]);
+
+        const successes = results.filter(r => r.status === 'fulfilled');
+        const failures = results.filter(r => r.status === 'rejected');
+
+        expect(successes.length).toBe(1);
+        expect(failures.length).toBe(1);
+
+        if (failures[0].status === 'rejected') {
+            expect((failures[0].reason as Error).message).toContain('Insufficient Inventory');
+        }
+    });
 });

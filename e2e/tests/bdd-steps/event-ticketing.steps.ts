@@ -30,9 +30,9 @@ Given(
         expect(createResponse.ok()).toBeTruthy();
         const createdEvent = await createResponse.json();
 
-        // If status is PUBLISHED, we need to publish the event (requires ticket type first)
+        // If status is PUBLISHED, we need to publish the event (requires a ticket type first)
         if (status === 'PUBLISHED') {
-            // Note: Ticket types will be added in subsequent Background steps
+            // Note: Ticket types will be added in later Background steps
             // Status will be set to PUBLISHED after ticket types are added
             createdEvent.pendingStatus = 'PUBLISHED';
         }
@@ -70,12 +70,6 @@ Given(
                 pageFixture.createdEvent.ticketTypes = [];
             }
             pageFixture.createdEvent.ticketTypes.push(ticketType);
-        } else if (mockEventData) {
-            mockEventData.ticketTypes.push({
-                name: ticketTypeName,
-                price,
-                allocation,
-            });
         }
     }
 );
@@ -133,7 +127,7 @@ Given(
             throw new Error('No ticket types found for event');
         }
 
-        const ticketType = event.ticketTypes.find((tt) => tt.name === ticketTypeName);
+        const ticketType = event.ticketTypes.find((tt: { name: string; }) => tt.name === ticketTypeName);
         if (!ticketType) {
             throw new Error(`Ticket type "${ticketTypeName}" not found`);
         }
@@ -162,7 +156,7 @@ Given(
             throw new Error('No ticket types found for event');
         }
 
-        const ticketType = event.ticketTypes.find((tt) => tt.name === ticketTypeName);
+        const ticketType = event.ticketTypes.find((tt: { name: string; }) => tt.name === ticketTypeName);
         if (!ticketType) {
             throw new Error(`Ticket type "${ticketTypeName}" not found`);
         }
@@ -192,7 +186,7 @@ Given(
 When('I browse events', async () => {
     const page = pageFixture.page;
 
-    // Navigate to homepage which contains the events section
+    // Navigate to the homepage which contains the events section
     await page.goto('/');
 
     // Wait for the events section to be visible
@@ -200,7 +194,7 @@ When('I browse events', async () => {
 });
 
 When('I view the event {string}', async (_eventTitle: string) => {
-    // Stub: open event detail page in Phase 3.
+    // Stub: open the event detail page in Phase 3.
 });
 
 Then(
@@ -221,7 +215,7 @@ When(
             throw new Error('No ticket types found for event');
         }
 
-        const ticketType = event.ticketTypes.find((tt) => tt.name === ticketTypeName);
+        const ticketType = event.ticketTypes.find((tt: { name: string; }) => tt.name === ticketTypeName);
         if (!ticketType) {
             throw new Error(`Ticket type "${ticketTypeName}" not found`);
         }
@@ -253,7 +247,7 @@ When(
             throw new Error('No ticket types found for event');
         }
 
-        const ticketType = event.ticketTypes.find((tt) => tt.name === ticketTypeName);
+        const ticketType = event.ticketTypes.find((tt: { name: string; }) => tt.name === ticketTypeName);
         if (!ticketType) {
             throw new Error(`Ticket type "${ticketTypeName}" not found`);
         }
@@ -285,7 +279,7 @@ When(
             throw new Error('No ticket types found for event');
         }
 
-        const ticketType = event.ticketTypes.find((tt) => tt.name === ticketTypeName);
+        const ticketType = event.ticketTypes.find((tt: { name: string; }) => tt.name === ticketTypeName);
         if (!ticketType) {
             throw new Error(`Ticket type "${ticketTypeName}" not found`);
         }
@@ -306,7 +300,7 @@ When(
 
         // Execute all concurrent requests simultaneously
         pageFixture.concurrentResults = await Promise.allSettled(
-            pageFixture.concurrentRequests.map((req) =>
+            pageFixture.concurrentRequests.map((req: { data: any; }) =>
                 page.request.post('/api/reservations', {data: req.data})
             )
         );
@@ -375,7 +369,7 @@ When('my payment succeeds for the reservation', async () => {
         throw new Error('No reservation found');
     }
 
-    // Create order from reservation (simulating payment success)
+    // Create an order from reservation (simulating payment success)
     const response = await page.request.post('/api/orders', {
         data: {
             reservationId: reservation.id,

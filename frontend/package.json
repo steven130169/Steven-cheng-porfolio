@@ -19,6 +19,7 @@
   "dependencies": {
     "@icons-pack/react-simple-icons": "^13.8.0",
     "@neondatabase/serverless": "^1.0.2",
+    "@types/ws": "^8.18.1",
     "drizzle-orm": "^0.45.1",
     "lucide-react": "^0.556.0",
     "next": "16.1.0-canary.19",
@@ -27,6 +28,7 @@
     "react-dom": "19.2.0",
     "simple-icons": "^16.4.0",
     "slugify": "^1.6.6",
+    "ws": "^8.19.0",
     "zod": "^4.3.5"
   },
   "devDependencies": {

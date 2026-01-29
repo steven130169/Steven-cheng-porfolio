@@ -16,10 +16,13 @@ while server-side business logic resides in `frontend/src/server/`.
 
 This project uses **NPM Workspaces**. Commands often need workspace targeting:
 
-```bash
-npm run dev -w frontend          # Run dev server in frontend workspace
+```typescript
+// Run dev server in frontend workspace
+mcp__jetbrains__execute_terminal_command({command: 'npm run dev -w frontend', projectPath: '...'});
 ```
+
 **Workspaces:**
+
 - `frontend/` - Next.js Monolith (App Router, TypeScript, React 19)
 - `e2e/` - Playwright and Cucumber tests
 
@@ -35,19 +38,16 @@ npm run dev -w frontend          # Run dev server in frontend workspace
 - **Styling**: Tailwind CSS 4
 - **Deployment**: Docker on GCP Cloud Run with standalone output
 
-**Database Schema** (`frontend/src/server/db/schema.ts`):
-
-- `events` - Event listings (id, title, description, slug, timestamps)
-- `ticket_types` - Ticket inventory per event (eventId FK, name, price, inventory)
-- `orders` - Customer orders (customerEmail, status, totalAmount)
-
 ## Development Commands
 
 ### Start Development Server
 
-```bash
-npm run dev                      # Starts Next.js at http://localhost:3000
-npm run start:frontend           # Alternative command
+```typescript
+// Starts Next.js dev server at http://localhost:3000
+mcp__jetbrains__execute_terminal_command({command: 'npm run dev', projectPath: '...'});
+// Start frontend only
+mcp__jetbrains__execute_terminal_command({command: 'npm run start:frontend', projectPath: '...'});
+
 ```
 
 ### Testing (Three-Tier Strategy)
@@ -74,16 +74,19 @@ mcp__jetbrains__execute_run_configuration({configurationName: 'Cucumber All Test
 mcp__wallaby__wallaby_allTestsForFile();
 ```
 
-```bash
-npm run test:e2e -- --headed                              # E2E with visible browser
-npm run test:e2e -- --ui                                  # Playwright UI mode
+```typescript
+mcp__jetbrains__execute_terminal_command({command: 'npm run test:e2e -- --headed', projectPath: '...'});
+mcp__jetbrains__execute_terminal_command({command: 'npm run test:e2e -- --ui', projectPath: '...'});
+
 ```
 
 ### Build & Quality Checks
 
-```bash
-npm run build -w frontend        # Next.js production build (also type checks)
+```typescript
+// Next.js production build (also type checks)
+mcp__jetbrains__execute_terminal_command({command: 'npm run build -w frontend', projectPath: '...'});
 ```
+
 ```typescript
 // Run IDE inspections on a file
 mcp__jetbrains__get_file_problems({
@@ -96,7 +99,9 @@ mcp__jetbrains__get_file_problems({
 mcp__jetbrains__reformat_file({path: '<Changed file path>', projectPath: '...'});
 ```
 
-**Type Checking**: Run `npm run build` - Next.js build performs TypeScript compilation, catching type errors.
+**Type Checking**: Run `mcp__jetbrains__execute_terminal_command({command: 'npm run build', projectPath: '...'});`
+
+- Next.js build performs TypeScript compilation, catching type errors.
 
 ## Tool Usage & MCP Integration
 
@@ -113,7 +118,11 @@ are confirmed unavailable (tool calls return errors).
    `package.json` at root and workspace levels to understand dependencies and scripts. Do NOT rely on full-text
    search (`Grep`, `search_in_files_by_text`) alone to understand project structure
 4. **Never use CLI for file operations** — No `cat`, `head`, `tail`, `sed`, `awk`, `find`, `tree`, `grep`, `rg`
-5. **Leverage IDE intelligence** — MCP tools understand code semantics, not just text patterns
+5. **YOU MUST use `mcp__jetbrains__execute_terminal_command` for ALL other bash commands**
+    - Format: `mcp__jetbrains__execute_terminal_command({command: '', projectPath: '...'})`
+    - Applies to: `npm`, `git`, `ls`, `mkdir`, `rm`, `cp`, `mv`, `chmod`, `curl`, `wget`, and ANY other terminal command
+    - Only exception: File reading commands in rule #4 (which are prohibited)
+6. **Leverage IDE intelligence** — MCP tools understand code semantics, not just text patterns
 
 ### Complete JetBrains MCP Tool Inventory (22 Tools)
 
@@ -404,7 +413,8 @@ mcp__wallaby__wallaby_failingTests();
 ```
 
 **DO NOT** skip Wallaby and fall back to CLI tests (`npm run test:unit`) without first attempting to start Wallaby
-through the above steps. If mcp__wallaby__wallaby_failingTests fails, repeat the entire sequence (Steps 1–3) up to 2 times. If it still fails, you MUST STOP the agent.
+through the above steps. If mcp__wallaby__wallaby_failingTests fails, repeat the entire sequence (Steps 1–3) up to 2
+times. If it still fails, you MUST STOP the agent.
 
 ### Why Wallaby MCP Over CLI
 

@@ -68,6 +68,15 @@ const eslintConfig = defineConfig([
             "jsx-a11y/scope": "error",
         },
     },
+    {
+        files: ["**/*.spec.tsx", "**/*.test.tsx", "**/*.spec.ts", "**/*.test.ts"],
+        rules: {
+            "@typescript-eslint/no-unsafe-call": "off",
+            "@typescript-eslint/no-unsafe-member-access": "off",
+            "@typescript-eslint/no-unsafe-assignment": "off",
+            "@typescript-eslint/no-unsafe-return": "off",
+        },
+    },
     // Override default ignores of eslint-config-next.
     globalIgnores([
         // Default ignores of eslint-config-next:

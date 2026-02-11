@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
 
-import React, {useState, useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import {SiGithub, SiThreads} from '@icons-pack/react-simple-icons'
 import {ArrowRight, Cloud} from 'lucide-react'
 import type {HeroData} from '@/lib/getHomepageData'
@@ -42,7 +42,7 @@ export const HeroClient: React.FC<HeroClientProps> = ({data}) => {
     }
 
     return (
-        <section className="min-h-screen flex items-center pt-32 pb-20">
+        <section id="home" className="min-h-screen flex items-center pt-32 pb-20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <div className="space-y-8 text-center lg:text-left">

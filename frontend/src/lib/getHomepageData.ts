@@ -11,7 +11,7 @@ export async function getHomepageData(): Promise<HomepageType> {
 
     return await payload.findGlobal({
         slug: 'homepage',
-    }) as HomepageType;
+    });
 }
 
 /**

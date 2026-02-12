@@ -53,7 +53,7 @@ describe('HeroClient', () => {
         const dataWithoutBadge: HeroData = {
             ...mockHeroData,
             eventBadge: {
-                ...mockHeroData.eventBadge!,
+                ...mockHeroData.eventBadge,
                 enabled: false,
             },
         };

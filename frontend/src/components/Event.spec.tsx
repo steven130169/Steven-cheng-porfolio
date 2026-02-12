@@ -1,5 +1,5 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import {render, screen, waitFor} from '@testing-library/react';
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import userEvent from '@testing-library/user-event';
 import Event from './Event';
 import React from 'react';
@@ -16,24 +16,28 @@ const mockEvents = [
 const API_EVENTS_URL = '/api/events';
 const LOADING_TEXT = 'Loading events...';
 
+// Helper function to create fetch mock
+const createFetchMock = (events: typeof mockEvents) =>
+    vi.fn((url, options: RequestInit | undefined) => {
+      if (url === API_EVENTS_URL && (!options || !options.method || options.method === 'GET')) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(events),
+        } as Response);
+      }
+      if (url === API_EVENTS_URL && options?.method === 'POST') {
+        const body = JSON.parse(options.body as string) as Record<string, unknown>;
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({...body, id: '999', tags: ['New'], status: 'Upcoming'}),
+        } as Response);
+      }
+      return Promise.reject(new Error(`Unknown URL: ${url}`));
+    });
+
 describe('Event', () => {
   beforeEach(() => {
-    global.fetch = vi.fn((url, options: RequestInit | undefined) => {
-        if (url === API_EVENTS_URL && (!options || !options.method || options.method === 'GET')) {
-            return Promise.resolve({
-                ok: true,
-                json: () => Promise.resolve(mockEvents),
-            } as Response);
-        }
-        if (url === API_EVENTS_URL && options.method === 'POST') {
-             const body = JSON.parse(options.body as string) as unknown;
-             return Promise.resolve({
-                ok: true,
-                json: () => Promise.resolve({ ...body, id: '999', tags: ['New'], status: 'Upcoming' }),
-             } as Response);
-        }
-        return Promise.reject(new Error(`Unknown URL: ${url}`));
-    });
+    global.fetch = createFetchMock(mockEvents);
   });
 
   afterEach(() => {
@@ -60,7 +64,7 @@ describe('Event', () => {
     await user.type(screen.getByLabelText(/role/i), 'Test Speaker');
     await user.type(screen.getByLabelText(/description/i), 'Deep dive.');
     await user.type(screen.getByLabelText(/date/i), 'Dec 2025');
-    
+
     const submitButton = screen.getByRole('button', { name: /save/i });
     await user.click(submitButton);
 
@@ -74,25 +78,17 @@ describe('Event', () => {
     render(<Event />);
     await waitFor(() => expect(screen.queryByText(LOADING_TEXT)).not.toBeInTheDocument());
 
-    expect(screen.getAllByTestId('event-item')).toHaveLength(3); 
-    expect(screen.getByRole('button', { name: /View All Events/i })).toBeInTheDocument(); 
+    expect(screen.getAllByTestId('event-item')).toHaveLength(3);
+    expect(screen.getByRole('button', { name: /View All Events/i })).toBeInTheDocument();
   });
 
   it('does not display the "View All Events" button when there are 3 or fewer events', async () => {
     // Mock fetch to return only 3 events
-    global.fetch = vi.fn((url, options: RequestInit | undefined) => {
-      if (url === API_EVENTS_URL && (!options || !options.method || options.method === 'GET')) {
-          return Promise.resolve({
-              ok: true,
-              json: () => Promise.resolve(mockEvents.slice(0, 3)), // Only 3 events
-          } as Response);
-      }
-      return Promise.reject(new Error(`Unknown URL: ${url}`));
-    });
+    global.fetch = createFetchMock(mockEvents.slice(0, 3));
 
     render(<Event />);
     await waitFor(() => expect(screen.queryByText(LOADING_TEXT)).not.toBeInTheDocument());
-    
+
     expect(screen.getAllByTestId('event-item')).toHaveLength(3);
     expect(screen.queryByRole('button', { name: /View All Events/i })).not.toBeInTheDocument();
   });

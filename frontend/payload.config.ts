@@ -4,6 +4,7 @@ import {postgresAdapter} from '@payloadcms/db-postgres'
 import {buildConfig} from 'payload'
 import type {GlobalConfig} from 'payload'
 import {Events} from '@/collections/Events'
+import {Reservations} from '@/collections/Reservations'
 
 // Homepage Global definition (inline to avoid ESM import issues with Payload CLI)
 const Homepage: GlobalConfig = {
@@ -358,7 +359,7 @@ export default buildConfig({
     editor: lexicalEditor(),
 
     // Define and configure your collections in this array
-    collections: [Events],
+    collections: [Events, Reservations],
     globals: [Homepage],
 
     // Your Payload secret - should be a complex and secure string, unguessable

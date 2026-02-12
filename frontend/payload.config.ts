@@ -5,6 +5,7 @@ import {buildConfig} from 'payload'
 import type {GlobalConfig} from 'payload'
 import {Events} from '@/collections/Events'
 import {Reservations} from '@/collections/Reservations'
+import {Orders} from '@/collections/Orders'
 
 // Homepage Global definition (inline to avoid ESM import issues with Payload CLI)
 const Homepage: GlobalConfig = {
@@ -359,7 +360,7 @@ export default buildConfig({
     editor: lexicalEditor(),
 
     // Define and configure your collections in this array
-    collections: [Events, Reservations],
+    collections: [Events, Reservations, Orders],
     globals: [Homepage],
 
     // Your Payload secret - should be a complex and secure string, unguessable

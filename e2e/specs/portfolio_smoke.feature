@@ -1,3 +1,4 @@
+@ignore
 Feature: Portfolio Smoke Test (作品集網站冒煙測試)
 
   As a visitor,

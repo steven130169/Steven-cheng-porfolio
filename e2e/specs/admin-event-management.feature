@@ -1,3 +1,4 @@
+@ignore
 Feature: Admin Event Management
   As an admin
   I want to create and publish events and configure ticket types

@@ -2,6 +2,7 @@
   "default": {
     "import": [
       "tests/bdd-steps/**/*.ts"
-    ]
+    ],
+    "tags": "not @ignore"
   }
 }

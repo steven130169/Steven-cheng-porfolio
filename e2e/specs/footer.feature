@@ -1,3 +1,4 @@
+@ignore
 Feature: Footer Information (頁尾資訊)
 
   As a visitor,

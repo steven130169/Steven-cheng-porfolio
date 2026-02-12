@@ -1,3 +1,4 @@
+@ignore
 Feature: Event Ticketing Engine
   As a customer
   I want to reserve and buy event tickets

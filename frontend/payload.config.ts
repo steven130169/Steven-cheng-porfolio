@@ -3,6 +3,7 @@ import {lexicalEditor} from '@payloadcms/richtext-lexical'
 import {postgresAdapter} from '@payloadcms/db-postgres'
 import {buildConfig} from 'payload'
 import type {GlobalConfig} from 'payload'
+import {Events} from '@/collections/Events'
 
 // Homepage Global definition (inline to avoid ESM import issues with Payload CLI)
 const Homepage: GlobalConfig = {
@@ -357,7 +358,7 @@ export default buildConfig({
     editor: lexicalEditor(),
 
     // Define and configure your collections in this array
-    collections: [], // 暫時保持為空，不影響現有 API
+    collections: [Events],
     globals: [Homepage],
 
     // Your Payload secret - should be a complex and secure string, unguessable

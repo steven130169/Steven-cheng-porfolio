@@ -1,11 +1,12 @@
 import {NextResponse} from 'next/server';
-import {getPublishedEvents} from '@/server/services/public-event';
+import {getPayload} from 'payload';
+import config from '@payload-config';
 
 
 /**
  * Handles GET requests to retrieve published events.
  *
- * Fetches a list of published events from the underlying data source.
+ * Fetches a list of published events from Payload CMS.
  * If successful, returns a JSON response containing the events with an HTTP status of 200.
  * In case of an error, logs the error and returns a JSON response with an error message
  * and an HTTP status of 500.
@@ -14,9 +15,17 @@ import {getPublishedEvents} from '@/server/services/public-event';
  */
 export async function GET(): Promise<NextResponse> {
     try {
-        const publishedEvents = await getPublishedEvents();
+        const payload = await getPayload({config});
 
-        return NextResponse.json(publishedEvents, {status: 200});
+        const {docs} = await payload.find({
+            collection: 'events',
+            where: {
+                status: {equals: 'PUBLISHED'},
+            },
+            sort: '-eventDate',
+        });
+
+        return NextResponse.json(docs, {status: 200});
     } catch (error) {
         console.error('Error fetching published events:', error);
         return NextResponse.json(

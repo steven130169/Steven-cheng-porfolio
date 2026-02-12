@@ -1,5 +1,6 @@
 import {NextRequest, NextResponse} from 'next/server';
-import {getReservationById} from '@/server/services/reservation';
+import {getPayload} from 'payload';
+import config from '@payload-config';
 
 /**
  * GET /api/reservations/[id]
@@ -11,16 +12,12 @@ export async function GET(
 ) {
     try {
         const {id} = await params;
-        const reservationId = Number.parseInt(id, 10);
+        const payload = await getPayload({config});
 
-        if (Number.isNaN(reservationId)) {
-            return NextResponse.json(
-                {error: 'Invalid reservation ID'},
-                {status: 400}
-            );
-        }
-
-        const reservation = await getReservationById(reservationId);
+        const reservation = await payload.findByID({
+            collection: 'reservations',
+            id,
+        });
 
         if (!reservation) {
             return NextResponse.json(

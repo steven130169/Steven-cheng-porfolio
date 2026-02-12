@@ -1,14 +1,13 @@
-import {describe, it, expect, vi, beforeEach} from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {db} from '@/server/db';
+import {events, ticketTypes} from '@/server/db/schema';
+import {sql} from 'drizzle-orm';
+import {createDraftEvent, publishEvent, updateEvent} from '../event';
 
 vi.mock('@/server/db', async () => {
     const {createTestDb} = await import('../../db/__tests__/test-db');
     return createTestDb();
 });
-
-import {db} from '@/server/db';
-import {events, ticketTypes} from '@/server/db/schema';
-import {sql} from 'drizzle-orm';
-import {createDraftEvent, updateEvent, publishEvent} from '../event';
 
 describe('createDraftEvent', () => {
     beforeEach(async () => {
@@ -100,6 +99,10 @@ describe('updateEvent', () => {
 
         expect(result.totalCapacity).toBe(30);
         expect(result.status).toBe('DRAFT');
+        if (!event.updatedAt || !result.updatedAt) {
+            throw new Error('updatedAt should be defined');
+        }
+
         expect(result.updatedAt.getTime()).toBeGreaterThan(event.updatedAt.getTime());
     });
 

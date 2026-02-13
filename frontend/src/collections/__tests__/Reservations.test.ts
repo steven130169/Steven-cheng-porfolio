@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument */
-import {describe, it, expect} from 'vitest';
+import {describe, expect, it} from 'vitest';
 import {Reservations} from '..';
 
 describe('Reservations Collection', () => {
@@ -8,14 +8,14 @@ describe('Reservations Collection', () => {
     });
 
     it('should have event relationship field', () => {
-        const eventField = Reservations.fields.find((f: any) => f.name === 'event');
+        const eventField = Reservations.fields.find((f: any) => f.name === 'event') as any;
         expect(eventField).toBeDefined();
         expect(eventField?.type).toBe('relationship');
         expect(eventField?.relationTo).toBe('events');
     });
 
     it('should have status field with correct options', () => {
-        const statusField = Reservations.fields.find((f: any) => f.name === 'status');
+        const statusField = Reservations.fields.find((f: any) => f.name === 'status') as any;
         expect(statusField?.type).toBe('select');
         expect(statusField?.options).toContainEqual({label: 'Active', value: 'ACTIVE'});
         expect(statusField?.options).toContainEqual({label: 'Consumed', value: 'CONSUMED'});

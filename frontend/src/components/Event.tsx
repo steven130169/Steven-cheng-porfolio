@@ -33,7 +33,7 @@ const Event: React.FC = () => {
             });
     }, []);
 
-    const handleSubmit = async (e: React.SubmitEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const eventPayload = {
             title: newEvent.title,

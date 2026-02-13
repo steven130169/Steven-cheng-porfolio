@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument */
 import {describe, it, expect} from 'vitest';
-import {Reservations} from '../Reservations';
+import {Reservations} from '..';
 
 describe('Reservations Collection', () => {
     it('should have correct slug', () => {

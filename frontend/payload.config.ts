@@ -3,7 +3,7 @@ import {lexicalEditor} from '@payloadcms/richtext-lexical'
 import {postgresAdapter} from '@payloadcms/db-postgres'
 import {buildConfig} from 'payload'
 import type {GlobalConfig} from 'payload'
-import {Events, Reservations, Orders} from './src/collections/index.js'
+import {Events, Reservations, Orders} from './src/collections/index'
 
 // Homepage Global definition (inline to avoid ESM import issues with Payload CLI)
 const Homepage: GlobalConfig = {
